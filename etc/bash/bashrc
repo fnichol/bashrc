@@ -26,11 +26,18 @@ export HOSTNAME="`hostname | awk -F'.' '{ print $1 }'`"
 
 
 #---------------------------------------------------------------
+# Determine Machine Operating System Tag
+#---------------------------------------------------------------
+
+OS="`uname -s`"
+
+
+#---------------------------------------------------------------
 # Define Default System Paths
 #---------------------------------------------------------------
 
 # Determines the machine OS to perform OS-dependant stuff
-case "`uname -s`" in
+case "$OS" in
 "SunOS")	# Solaris dependant stuff
 	;;
 "Darwin")	# Mac OS X dependant stuff
@@ -153,7 +160,14 @@ prompthost()
 #
 psg()
 {
-	ps wwwaux | egrep $@
+	case "$OS" in
+	Darwin|OpenBSD)
+		ps wwwaux | egrep $@
+		;;
+	SunOS)
+		ps -ef | egrep $@
+		;;
+	esac
 }
 
 #---------------------------------------------------------------
