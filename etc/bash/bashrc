@@ -22,7 +22,7 @@ export BASHRCVERSION
 # Determine Machine Hostname
 #---------------------------------------------------------------
 
-export HOSTNAME="`hostname | awk -F '.' '{ print $1 }'`"
+export HOSTNAME="`hostname | awk -F'.' '{ print $1 }'`"
 
 
 #---------------------------------------------------------------
@@ -31,6 +31,8 @@ export HOSTNAME="`hostname | awk -F '.' '{ print $1 }'`"
 
 # Determines the machine OS to perform OS-dependant stuff
 case "`uname -s`" in
+"SunOS")	# Solaris dependant stuff
+	;;
 "Darwin")	# Mac OS X dependant stuff
 	# Set the PATH based on original /etc/profile from 
 	# 10.3.6 on 2004/11/22.
@@ -68,19 +70,8 @@ export CVS_RSH=`which ssh`
 export CVSROOT=":ext:${LOGNAME}@${CVS_HOSTPATH}"
 
 # Set the default editor
-if [ "`id -ur`" -eq "0" -a "`uname -s`" == "OpenBSD" ]
-then
-	# If the user is root, and we're on OpenBSD use the 
-	# full path to OpenBSD's vi editor
-	export EDITOR=/usr/bin/vi
-	export VISUAL=/usr/bin/vi
-else
-	# If the user is anyone else, then use vi.
-	# NOTE: change this setting in $HOME/.bash_profile
-	# if you want to use another editor
-	export EDITOR=vi
-	export VISUAL=vi
-fi
+export EDITOR=/usr/bin/vi
+export VISUAL=/usr/bin/vi
 
 
 #---------------------------------------------------------------
