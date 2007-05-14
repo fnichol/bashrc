@@ -13,8 +13,7 @@ CVS_HOSTPATH=cvs.talonline.ca:/var/cvs
 
 
 # Gets the cvs version of the bashrc file
-BASHRCVERSION="`echo '$Revision$' | \
-		    awk '{ print $2 }'`"
+BASHRCVERSION="`echo '$Revision$' | awk '{ print $2 }'`"
 export BASHRCVERSION
 
 
@@ -42,13 +41,13 @@ SunOS)		# Solaris dependant stuff
 	case "`uname -r`" in
 	"5.10")
 		ADMINPATH=""
-		if [ -d "/usr/gnu/sbin" ]; then
+		if [ -d "/usr/gnu/sbin" ] ; then
 			ADMINPATH="$ADMINPATH:/usr/gnu/sbin"
 		fi
-		if [ -d "/usr/local/sbin" ]; then
+		if [ -d "/usr/local/sbin" ] ; then
 			ADMINPATH="$ADMINPATH:/usr/local/sbin"
 		fi
-		if [ -d "/usr/platform/`uname -i`/sbin"]; then
+		if [ -d "/usr/platform/`uname -i`/sbin"] ; then
 			ADMINPATH=$ADMINPATH:/usr/platform/`uname -i`/sbin
 		fi
 		ADMINPATH="$ADMINPATH:/sbin:/usr/sbin"
@@ -56,7 +55,7 @@ SunOS)		# Solaris dependant stuff
 		PATH="$ADMINPATH"
 		PATH="$PATH:/usr/gnu/bin:/usr/local/bin:/bin:/usr/bin"
 		PATH="$PATH:/usr/ccs/bin:/usr/openwin/bin/usr/dt/bin"
-		if [ -d "/opt/sun/bin" ]; then
+		if [ -d "/opt/sun/bin" ] ; then
 			PATH="$PATH:/opt/sun/bin"
 		fi
 		PATH="$PATH:/opt/SUNWvts/bin"
@@ -118,6 +117,8 @@ export CVSROOT=":ext:${LOGNAME}@${CVS_HOSTPATH}"
 # Set the default editor
 export EDITOR=/usr/bin/vi
 export VISUAL=/usr/bin/vi
+
+echo "testing..."
 
 
 #---------------------------------------------------------------
