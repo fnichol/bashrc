@@ -39,16 +39,45 @@ OS="`uname -s`"
 # Determines the machine OS to perform OS-dependant stuff
 case "$OS" in
 SunOS)		# Solaris dependant stuff
+	case "`uname -r`" in
+	"5.10")
+		ADMINPATH=""
+		if [ -d "/usr/gnu/sbin" ]; then
+			ADMINPATH="$ADMINPATH:/usr/gnu/sbin"
+		fi
+		if [ -d "/usr/local/sbin" ]; then
+			ADMINPATH="$ADMINPATH:/usr/local/sbin"
+		fi
+		if [ -d "/usr/platform/`uname -i`/sbin"]; then
+			ADMINPATH=$ADMINPATH:/usr/platform/`uname -i`/sbin
+		fi
+		ADMINPATH="$ADMINPATH:/sbin:/usr/sbin"
+
+		PATH="$ADMINPATH"
+		PATH="$PATH:/usr/gnu/bin:/usr/local/bin:/bin:/usr/bin"
+		PATH="$PATH:/usr/ccs/bin:/usr/openwin/bin/usr/dt/bin"
+		if [ -d "/opt/sun/bin" ]; then
+			PATH="$PATH:/opt/sun/bin"
+		fi
+		PATH="$PATH:/opt/SUNWvts/bin"
+
+		MANPATH="$MANPATH"
+		MANPATH="$MANPATH:/usr/gnu/man:/usr/local/man"
+		MANPATH="$MANPATH:/usr/man:/usr/share/man:/opt/SUNWvts/man"
+		;;
+	esac
 	;;
 Darwin)		# Mac OS X dependant stuff
 	# Set the PATH based on original /etc/profile from 
 	# 10.3.6 on 2004/11/22.
 	PATH="/bin:/sbin:/usr/local/bin:/usr/bin:/usr/sbin"
+	MANPATH="$MANPATH"
 	;;
 
 OpenBSD)	# OpenBSD dependant stuff
 	# Set a base PATH for all users
 	PATH="/sbin:/usr/sbin:/bin:/usr/bin:/usr/local/sbin:/usr/local/bin"
+	MANPATH="$MANPATH"
 
 	# If user is not root (uid=0), then expand the PATH
 	if [ "`id -ur`" -ne "0" -a -d "/usr/X11R6/bin" ]
@@ -229,25 +258,6 @@ then
 
 	shopt -s checkwinsize
 	shopt -s histappend
-
-	# If the machine is perfora (web hosting), then change the
-	# following settings
-	if [ "`uname -s`" == "Linux" -a "$HOSTNAME" == "perfora" ]
-	then
-		# Since emacs is not installed on this machine, use
-		# vi instead
-		export EDITOR=vi
-		export VISUAL=vi
-
-		echo -n "cvs user [default=${LOGNAME}]: "
-		read CVSUSER
-		if [ -n "$CVSUSER" ]
-		then
-			export CVSROOT=":ext:${CVSUSER}@${CVS_HOSTPATH}"
-		fi
-
-		alias sql='mysql -h db13.perfora.net -u dbo94759391 -p db94759391'
-	fi
 
 	# Echo the version and date of the profile
 	echo "bashrc v${BASHRCVERSION} (`
