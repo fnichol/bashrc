@@ -312,7 +312,7 @@ CYGWIN_*)	# Windows Cygwin dependant stuff
 esac # uname -s
 
 # If pine is installed, eliminated the .pine-debugX files
-if [ -e /usr/local/bin/pine ]
+if [ -e "/usr/local/bin/pine" ]
 then
 	alias pine="pine -d 0"
 fi
