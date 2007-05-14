@@ -220,7 +220,7 @@ then
 	export HISTSIZE=1000
 
 	# The number of lines contained in the history file
-	export HISTFILESIZE=10000
+	export HISTFILESIZE=100000
 
 	# Ignore commands starting with a space, duplicates,
 	# and a few others.
@@ -319,7 +319,7 @@ fi
 
 # If system is Darwin (Mac), add the super alias to properly
 # become root with bash and environment settings
-if [ "`uname -s`" == "Darwin" ]
+if [ "$OS" == "Darwin" ]
 then
 	alias super="sudo -s -H"
 fi
