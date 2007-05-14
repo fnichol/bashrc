@@ -64,6 +64,8 @@ SunOS)		# Solaris dependant stuff
 		MANPATH="$MANPATH"
 		MANPATH="$MANPATH:/usr/gnu/man:/usr/local/man"
 		MANPATH="$MANPATH:/usr/man:/usr/share/man:/opt/SUNWvts/man"
+
+		ID=/usr/xpg4/bin/id
 		;;
 	esac
 	;;
@@ -72,15 +74,17 @@ Darwin)		# Mac OS X dependant stuff
 	# 10.3.6 on 2004/11/22.
 	PATH="/bin:/sbin:/usr/local/bin:/usr/bin:/usr/sbin"
 	MANPATH="$MANPATH"
+	ID=/usr/bin/id
 	;;
 
 OpenBSD)	# OpenBSD dependant stuff
 	# Set a base PATH for all users
 	PATH="/sbin:/usr/sbin:/bin:/usr/bin:/usr/local/sbin:/usr/local/bin"
 	MANPATH="$MANPATH"
+	ID=/usr/bin/id
 
 	# If user is not root (uid=0), then expand the PATH
-	if [ "`id -ur`" -ne "0" -a -d "/usr/X11R6/bin" ]
+	if [ "`$ID -ur`" -ne "0" -a -d "/usr/X11R6/bin" ]
 	then
 		PATH="$PATH:/usr/X11R6/bin"
 	fi
@@ -224,7 +228,7 @@ then
 
 	# Sets a default prompt. The \[..\] strings are to bold the
 	# prompt text.
-	if [ "`id -ur`" -eq "0" ]
+	if [ "`$ID -ur`" -eq "0" ]
 	then
 		# If the user is root, display a # in the shell
 		PS1="\[\033[41;1m\]\u@\h:\w#\[\033[0m\] "
@@ -239,7 +243,7 @@ then
 
 	case $TERM in
 	xterm*)		# If TERM is an xterm, then add titlebar info
-		if [ "`id -ur`" -eq "0" ]
+		if [ "`$ID -ur`" -eq "0" ]
 		then
 			# If the user is root, display a # in 
 			# the titlebar
