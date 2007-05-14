@@ -65,6 +65,9 @@ SunOS)		# Solaris dependant stuff
 		MANPATH="$MANPATH:/usr/man:/usr/share/man:/opt/SUNWvts/man"
 
 		ID=/usr/xpg4/bin/id
+
+		# Files you make look like rw-r--r--
+		umask 022
 		;;
 	esac
 	;;
