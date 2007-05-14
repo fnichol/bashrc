@@ -231,12 +231,30 @@ then
 	if [ "`$ID -ur`" -eq "0" ]
 	then
 		# If the user is root, display a # in the shell
-		PS1="\[\033[41;1m\]\u@\h:\w#\[\033[0m\] "
-		PS2="\[\033[41;1m\]#\[\033[0m\] "
+		case "$TERM" in
+		*term | rxvt)
+			PS1="\[\033[41;1m\]\u@\h:\w#\[\033[0m\] "
+			PS2="\[\033[41;1m\]#\[\033[0m\] "
+			;;
+
+		*)
+			PS1="\u@\h:\w# "
+			PS2="# "
+			;;
+		esac # TERM
 	else
 		# Display a normal prompt for non-root users
-		PS1="\[\033[`prompthost`\]\u@\h:\w>\[\033[0m\] "
-		PS2="\[\033[`prompthost`\]>\[\033[0m\] "
+		case "$TERM" in
+		*term | rxvt)
+			PS1="\[\033[`prompthost`\]\u@\h:\w>\[\033[0m\] "
+			PS2="\[\033[`prompthost`\]>\[\033[0m\] "
+			;;
+
+		*)
+			PS1="\u@\h:\w> "
+			PS2="> "
+			;;
+		esac # TERM
 	fi
 
 	unset prompthost
