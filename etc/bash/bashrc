@@ -58,6 +58,9 @@ SunOS)		# Solaris dependant stuff
 		if [ -d "/opt/sun/bin" ] ; then
 			PATH="$PATH:/opt/sun/bin"
 		fi
+		if [ -d "/opt/SUNWspro/bin" ] ; then
+			PATH="$PATH:/opt/SUNWspro/bin"
+		fi
 		PATH="$PATH:/opt/SUNWvts/bin"
 
 		MANPATH="$MANPATH"
