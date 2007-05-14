@@ -14,7 +14,7 @@ CVS_HOSTPATH=cvs.talonline.ca:/var/cvs
 
 # Gets the cvs version of the bashrc file
 BASHRCVERSION="`echo '$Revision$' | \
-		    awk -F ' ' '{ print $2 }'`"
+		    awk '{ print $2 }'`"
 export BASHRCVERSION
 
 
@@ -262,7 +262,7 @@ then
 	# Echo the version and date of the profile
 	echo "bashrc v${BASHRCVERSION} (`
 	     echo '$Date$' | \
-	     awk -F ' ' '{ print $2" "$3 }'
+	     awk '{ print $2" "$3 }'
 	     `)"
 	echo
 
