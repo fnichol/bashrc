@@ -22,7 +22,7 @@ export BASHRCVERSION
 # Determine Machine Hostname
 #---------------------------------------------------------------
 
-export HOSTNAME="`hostname | awk -F'.' '{ print $1 }'`"
+HOSTNAME="`hostname | awk -F'.' '{ print $1 }'`"
 
 
 #---------------------------------------------------------------
@@ -38,15 +38,15 @@ OS="`uname -s`"
 
 # Determines the machine OS to perform OS-dependant stuff
 case "$OS" in
-"SunOS")	# Solaris dependant stuff
+SunOS)		# Solaris dependant stuff
 	;;
-"Darwin")	# Mac OS X dependant stuff
+Darwin)		# Mac OS X dependant stuff
 	# Set the PATH based on original /etc/profile from 
 	# 10.3.6 on 2004/11/22.
 	PATH="/bin:/sbin:/usr/local/bin:/usr/bin:/usr/sbin"
 	;;
 
-"OpenBSD")	# OpenBSD dependant stuff
+OpenBSD)	# OpenBSD dependant stuff
 	# Set a base PATH for all users
 	PATH="/sbin:/usr/sbin:/bin:/usr/bin:/usr/local/sbin:/usr/local/bin"
 
@@ -65,7 +65,13 @@ then
 	PATH="$PATH:$HOME/bin"
 fi
 
-export PATH
+# If a $HOME/man directory exists, add it to the MANPATH
+if [ -d "$HOME/man" ]
+then
+	MANPATH="$MANPATH:$HOME/man"
+fi
+
+export PATH MANPATH
 
 
 #---------------------------------------------------------------
