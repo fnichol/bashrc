@@ -216,10 +216,13 @@ psg()
 if [ "$PS1" -a "$LOGNAME" ]
 then
 	# Number of commands to remember in the command history
-	export HISTSIZE=1000
+	export HISTSIZE=100000
 
 	# The number of lines contained in the history file
-	export HISTFILESIZE=100000
+	export HISTFILESIZE=100000000
+
+	# Prepend a timestamp on each history event
+	export HISTTIMEFORMAT="%Y-%m-%dT%H:%M:%S "
 
 	# Ignore commands starting with a space, duplicates,
 	# and a few others.
