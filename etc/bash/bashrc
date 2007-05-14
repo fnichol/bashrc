@@ -68,6 +68,9 @@ SunOS)		# Solaris dependant stuff
 
 		# Files you make look like rw-r--r--
 		umask 022
+
+		# Make less the default pager
+		export PAGER=/usr/gnu/bin/less
 		;;
 	esac
 	;;
