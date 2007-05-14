@@ -314,18 +314,6 @@ alias ll='ls -l'
 alias la='ls -al'
 alias lm='ll | less'
 
-case "`uname -s`" in
-CYGWIN_*)	# Windows Cygwin dependant stuff
-	# Cygwin does not support proper su
-	;;
-
-*)		# All other platforms
-	# Simulate a full login when using su
-	alias su='su -l'
-	;;
-
-esac # uname -s
-
 # If pine is installed, eliminated the .pine-debugX files
 if [ -e "/usr/local/bin/pine" ]
 then
