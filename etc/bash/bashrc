@@ -65,7 +65,11 @@ SunOS)		# Solaris dependant stuff
 
 		MANPATH="$MANPATH"
 		MANPATH="$MANPATH:/usr/gnu/man:/usr/local/man"
-		MANPATH="$MANPATH:/usr/man:/usr/share/man:/opt/SUNWvts/man"
+		MANPATH="$MANPATH:/usr/man:/usr/share/man"
+		if [ -d "/opt/SUNWspro/man" ] ; then
+			MANPATH="$MANPATH:/opt/SUNWspro/man"
+		fi
+		MANPATH="$MANPATH:/opt/SUNWvts/man"
 
 		ID=/usr/xpg4/bin/id
 
