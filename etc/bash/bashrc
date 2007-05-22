@@ -215,85 +215,82 @@ psg()
 # Interactive shell (prompt,history) settings
 #---------------------------------------------------------------
 
-# Skip the following if this is not an interactive shell
-if [ "$PS1" -a "$LOGNAME" ]
-then
-	# Number of commands to remember in the command history
-	export HISTSIZE=100000
+# Skip the rest if this is not an interactive shell
+if [ -z "${PS1}" -a "$-" != "*i*" ]; then
+	return
+fi
 
-	# The number of lines contained in the history file
-	export HISTFILESIZE=100000000
+# Number of commands to remember in the command history
+export HISTSIZE=100000
 
-	# Prepend a timestamp on each history event
-	export HISTTIMEFORMAT="%Y-%m-%dT%H:%M:%S "
+# The number of lines contained in the history file
+export HISTFILESIZE=100000000
 
-	# Ignore commands starting with a space, duplicates,
-	# and a few others.
-	export HISTIGNORE="[ ]*:&:bg:fg:ls -l:ls -al:ls -la:ll:la"
+# Prepend a timestamp on each history event
+export HISTTIMEFORMAT="%Y-%m-%dT%H:%M:%S "
 
-	# Sets a default prompt. The \[..\] strings are to bold the
-	# prompt text.
-	if [ "`$ID -ur`" -eq "0" ]
-	then
-		# If the user is root, display a # in the shell
-		case "$TERM" in
-		*term | rxvt)
-			PS1="\[\033[41;1m\]\u@\h:\w#\[\033[0m\] "
-			PS2="\[\033[41;1m\]#\[\033[0m\] "
-			;;
+# Ignore commands starting with a space, duplicates,
+# and a few others.
+export HISTIGNORE="[ ]*:&:bg:fg:ls -l:ls -al:ls -la:ll:la"
 
-		*)
-			PS1="\u@\h:\w# "
-			PS2="# "
-			;;
-		esac # TERM
-	else
-		# Display a normal prompt for non-root users
-		case "$TERM" in
-		*term | rxvt)
-			PS1="\[\033[`prompthost`\]\u@\h:\w>\[\033[0m\] "
-			PS2="\[\033[`prompthost`\]>\[\033[0m\] "
-			;;
-
-		*)
-			PS1="\u@\h:\w> "
-			PS2="> "
-			;;
-		esac # TERM
-	fi
-
-	unset prompthost
-
-	case $TERM in
-	xterm*)		# If TERM is an xterm, then add titlebar info
-		if [ "`$ID -ur`" -eq "0" ]
-		then
-			# If the user is root, display a # in 
-			# the titlebar
-			PS1="\[\033]0;#\h#\w\007\]${PS1}"
-		else
-			PS1="\[\033]0;\h:\w\007\]${PS1}"
-		fi
+# Sets a default prompt. The \[..\] strings are to bold the
+# prompt text.
+if [ "`$ID -ur`" -eq "0" ]; then
+	# If the user is root, display a # in the shell
+	case "$TERM" in
+	*term | rxvt)
+		PS1="\[\033[41;1m\]\u@\h:\w#\[\033[0m\] "
+		PS2="\[\033[41;1m\]#\[\033[0m\] "
 		;;
 
 	*)
+		PS1="\u@\h:\w# "
+		PS2="# "
+		;;
+	esac # TERM
+else
+	# Display a normal prompt for non-root users
+	case "$TERM" in
+	*term | rxvt)
+		PS1="\[\033[`prompthost`\]\u@\h:\w>\[\033[0m\] "
+		PS2="\[\033[`prompthost`\]>\[\033[0m\] "
 		;;
 
+	*)
+		PS1="\u@\h:\w> "
+		PS2="> "
+		;;
 	esac # TERM
+fi
 
-	export IGNOREEOF=10
+unset prompthost
 
-	shopt -s checkwinsize
-	shopt -s histappend
+case $TERM in
+xterm*)		# If TERM is an xterm, then add titlebar info
+	if [ "`$ID -ur`" -eq "0" ]; then
+		# If the user is root, display a # in 
+		# the titlebar
+		PS1="\[\033]0;#\h#\w\007\]${PS1}"
+	else
+		PS1="\[\033]0;\h:\w\007\]${PS1}"
+	fi
+	;;
 
-	# Echo the version and date of the profile
-	echo "bashrc v${BASHRCVERSION} (`
-	     echo '$Date$' | \
-	     awk '{ print $2" "$3 }'
-	     `)"
-	echo
+*)
+	;;
+esac # TERM
 
-fi # PS -a LOGNAME
+export IGNOREEOF=10
+
+shopt -s checkwinsize
+shopt -s histappend
+
+# Echo the version and date of the profile
+echo "bashrc v${BASHRCVERSION} (`
+     echo '$Date$' | \
+     awk '{ print $2" "$3 }'
+     `)"
+echo
 
 
 #---------------------------------------------------------------
@@ -305,14 +302,12 @@ alias la='ls -al'
 alias lm='ll | less'
 
 # If pine is installed, eliminated the .pine-debugX files
-if [ -e "/usr/local/bin/pine" ]
-then
+if [ -e "/usr/local/bin/pine" ]; then
 	alias pine="pine -d 0"
 fi
 
 # If system is Darwin (Mac), add the super alias to properly
 # become root with bash and environment settings
-if [ "$OS" == "Darwin" ]
-then
+if [ "$OS" == "Darwin" ]; then
 	alias super="sudo -s -H"
 fi
