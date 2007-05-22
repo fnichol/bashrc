@@ -91,7 +91,6 @@ OpenBSD)	# OpenBSD
 		PATH="$PATH:/usr/X11R6/bin"
 	fi
 	;;
-
 esac # uname -s
 
 # If a $HOME/bin directory exists, add it to the PATH
@@ -142,7 +141,6 @@ xbold()
 
 	*)
 		;;
-
 	esac # TERM
 }
 
@@ -159,7 +157,6 @@ xtitle()
 
 	*)
 		;;
-
 	esac # TERM
 }
 
@@ -193,7 +190,6 @@ prompthost()
 	*)
 		local color=$brown
 		;;
-
 	esac
 
 	echo -n "$color"
@@ -208,6 +204,7 @@ psg()
 	Darwin|OpenBSD)
 		ps wwwaux | egrep $@
 		;;
+
 	SunOS)
 		ps -ef | egrep $@
 		;;
@@ -311,6 +308,6 @@ fi
 
 # If system is Darwin (Mac), add the super alias to properly
 # become root with bash and environment settings
-if [ "$OS" == "Darwin" ]; then
+if [ "$OS" = "Darwin" ]; then
 	alias super="sudo -s -H"
 fi
