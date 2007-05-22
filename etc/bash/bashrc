@@ -3,14 +3,11 @@
 # $Id$
 #---------------------------------------------------------------
 
-if [ "`basename \`echo $SHELL\``" == "bash" ]
-then
- 
-#
-# CVS Host and Path
-#
-CVS_HOSTPATH=cvs.talonline.ca:/var/cvs
-
+# Ensure that we are in a bash shell, otherwise don't source
+# this file
+if [ ! -n "${BASH_VERSION}" ]; then
+    return
+fi 
 
 # Gets the cvs version of the bashrc file
 BASHRCVERSION="`echo '$Revision$' | awk '{ print $2 }'`"
@@ -18,16 +15,10 @@ export BASHRCVERSION
 
 
 #---------------------------------------------------------------
-# Determine Machine Hostname
+# Determine Machine Hostname and Operating System Tag
 #---------------------------------------------------------------
 
 HOSTNAME="`hostname | awk -F'.' '{ print $1 }'`"
-
-
-#---------------------------------------------------------------
-# Determine Machine Operating System Tag
-#---------------------------------------------------------------
-
 OS="`uname -s`"
 
 
@@ -35,19 +26,19 @@ OS="`uname -s`"
 # Define Default System Paths
 #---------------------------------------------------------------
 
-# Determines the machine OS to perform OS-dependant stuff
+# Determines the machine OS to set PATH, MANPATH and ID
 case "$OS" in
-SunOS)		# Solaris dependant stuff
+SunOS)		# Solaris
 	case "`uname -r`" in
-	"5.10")
+	"5.10")	# Solaris 10
 		ADMINPATH=""
-		if [ -d "/usr/gnu/sbin" ] ; then
+		if [ -d "/usr/gnu/sbin" ]; then
 			ADMINPATH="$ADMINPATH:/usr/gnu/sbin"
 		fi
-		if [ -d "/usr/local/sbin" ] ; then
+		if [ -d "/usr/local/sbin" ]; then
 			ADMINPATH="$ADMINPATH:/usr/local/sbin"
 		fi
-		if [ -d "/usr/platform/`uname -i`/sbin" ] ; then
+		if [ -d "/usr/platform/`uname -i`/sbin" ]; then
 			ADMINPATH=$ADMINPATH:/usr/platform/`uname -i`/sbin
 		fi
 		ADMINPATH="$ADMINPATH:/sbin:/usr/sbin"
@@ -55,10 +46,10 @@ SunOS)		# Solaris dependant stuff
 		PATH="$ADMINPATH"
 		PATH="$PATH:/usr/gnu/bin:/usr/local/bin:/bin:/usr/bin"
 		PATH="$PATH:/usr/ccs/bin:/usr/openwin/bin/usr/dt/bin"
-		if [ -d "/opt/sun/bin" ] ; then
+		if [ -d "/opt/sun/bin" ]; then
 			PATH="$PATH:/opt/sun/bin"
 		fi
-		if [ -d "/opt/SUNWspro/bin" ] ; then
+		if [ -d "/opt/SUNWspro/bin" ]; then
 			PATH="$PATH:/opt/SUNWspro/bin"
 		fi
 		PATH="$PATH:/opt/SUNWvts/bin"
@@ -66,7 +57,7 @@ SunOS)		# Solaris dependant stuff
 		MANPATH="$MANPATH"
 		MANPATH="$MANPATH:/usr/gnu/man:/usr/local/man"
 		MANPATH="$MANPATH:/usr/man:/usr/share/man"
-		if [ -d "/opt/SUNWspro/man" ] ; then
+		if [ -d "/opt/SUNWspro/man" ]; then
 			MANPATH="$MANPATH:/opt/SUNWspro/man"
 		fi
 		MANPATH="$MANPATH:/opt/SUNWvts/man"
@@ -81,7 +72,7 @@ SunOS)		# Solaris dependant stuff
 		;;
 	esac
 	;;
-Darwin)		# Mac OS X dependant stuff
+Darwin)		# Mac OS X
 	# Set the PATH based on original /etc/profile from 
 	# 10.3.6 on 2004/11/22.
 	PATH="/bin:/sbin:/usr/local/bin:/usr/bin:/usr/sbin"
@@ -89,15 +80,14 @@ Darwin)		# Mac OS X dependant stuff
 	ID=/usr/bin/id
 	;;
 
-OpenBSD)	# OpenBSD dependant stuff
+OpenBSD)	# OpenBSD
 	# Set a base PATH for all users
 	PATH="/sbin:/usr/sbin:/bin:/usr/bin:/usr/local/sbin:/usr/local/bin"
 	MANPATH="$MANPATH"
 	ID=/usr/bin/id
 
 	# If user is not root (uid=0), then expand the PATH
-	if [ "`$ID -ur`" -ne "0" -a -d "/usr/X11R6/bin" ]
-	then
+	if [ "`$ID -ur`" -ne "0" -a -d "/usr/X11R6/bin" ]; then
 		PATH="$PATH:/usr/X11R6/bin"
 	fi
 	;;
@@ -105,14 +95,12 @@ OpenBSD)	# OpenBSD dependant stuff
 esac # uname -s
 
 # If a $HOME/bin directory exists, add it to the PATH
-if [ -d "$HOME/bin" ]
-then
+if [ -d "$HOME/bin" ]; then
 	PATH="$PATH:$HOME/bin"
 fi
 
 # If a $HOME/man directory exists, add it to the MANPATH
-if [ -d "$HOME/man" ]
-then
+if [ -d "$HOME/man" ]; then
 	MANPATH="$MANPATH:$HOME/man"
 fi
 
@@ -124,8 +112,10 @@ export PATH MANPATH
 #---------------------------------------------------------------
 
 # Set CVS variables
-export CVS_RSH=`which ssh`
-export CVSROOT=":ext:${LOGNAME}@${CVS_HOSTPATH}"
+CVS_HOSTPATH=cvs.talonline.ca:/var/cvs
+CVS_RSH=`which ssh`
+CVSROOT=":ext:${LOGNAME}@${CVS_HOSTPATH}"
+export CVS_RSH CVSROOT
 
 # Set the default editor
 export EDITOR=/usr/bin/vi
@@ -326,5 +316,3 @@ if [ "$OS" == "Darwin" ]
 then
 	alias super="sudo -s -H"
 fi
-
-fi # $SHELL == bash
