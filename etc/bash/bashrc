@@ -290,9 +290,9 @@ shopt -s histappend
 
 # Echo the version and date of the profile
 echo "bashrc v${BASHRCVERSION} (`
-     echo '$Date$' | \
-     awk '{ print $2" "$3 }'
-     `)"
+	echo '$Date$' | \
+	awk '{ print $2" "$3 }'
+	`)"
 echo
 
 
