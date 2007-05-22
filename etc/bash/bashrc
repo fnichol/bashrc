@@ -158,22 +158,6 @@ xbold()
 }
 
 #
-# xtitle: Puts all of the positional parameters, seen as a 
-# single word into the xterm title bar.
-#
-xtitle()
-{
-	case "$TERM" in
-	*term | rxvt)
-		echo -n -e "\033]0;$*\007"
-		;;
-
-	*)
-		;;
-	esac # TERM
-}
-
-#
 # prompthost: 
 #
 prompthost()
@@ -191,20 +175,20 @@ prompthost()
 		purple)      local color="0;35m" ;;
 		cyan)        local color="0;36m" ;;
 		lightgray)   local color="0;37m" ;;
-		b_black)     local color="1;30m" ;;
-		b_red)       local color="1;31m" ;;
-		b_green)     local color="1;32m" ;;
-		b_brown)     local color="1;33m" ;;
-		b_blue)      local color="1;34m" ;;
-		b_purple)    local color="1;35m" ;;
-		b_cyan)      local color="1;36m" ;;
-		b_lightgray) local color="1;37m" ;;
+		darkgray)    local color="1;30m" ;;
+		lightred)    local color="1;31m" ;;
+		lightgreen)  local color="1;32m" ;;
+		yellow)      local color="1;33m" ;;
+		lightblue)   local color="1;34m" ;;
+		lightpurple) local color="1;35m" ;;
+		lightcyan)   local color="1;36m" ;;
+		white)       local color="1;37m" ;;
 		default)     local color="m" ;;
-		b_default)   local color="1m" ;;
 		*)           local color="m" ;;
 	esac
 
 	echo -n "$color"
+	unset prompthost
 }
 
 #
@@ -247,16 +231,21 @@ export HISTIGNORE="[ ]*:&:bg:fg:ls -l:ls -al:ls -la:ll:la"
 
 # Sets a default prompt. The \[..\] strings are to bold the
 # prompt text.
+PROMPT_STRING="\u@\h:\w"
 if [ "`$ID -ur`" -eq "0" ]; then
 	# If the user is root, display a # in the shell
 	case "$TERM" in
 	*term | rxvt)
-		PS1="\[\033[41;1m\]\u@\h:\w#\[\033[0m\] "
+		# show the prompt in red
+		PS1="\[\033[41;1m\]${PROMPT_STRING}#\[\033[0m\] "
 		PS2="\[\033[41;1m\]#\[\033[0m\] "
+		# if TERM supports it, add info in the titlebar
+		PROMPT_COMMAND='echo -n -e \
+			"\033]0;#${LOGNAME}@${HOSTNAME%%.*}:${PWD//$HOME/~}#\007"'
 		;;
 
 	*)
-		PS1="\u@\h:\w# "
+		PS1="${PROMPT_STRING}# "
 		PS2="# "
 		;;
 	esac # TERM
@@ -264,33 +253,19 @@ else
 	# Display a normal prompt for non-root users
 	case "$TERM" in
 	*term | rxvt)
-		PS1="\[\033[`prompthost`\]\u@\h:\w>\[\033[0m\] "
+		PS1="\[\033[`prompthost`\]${PROMPT_STRING}>\[\033[0m\] "
 		PS2="\[\033[`prompthost`\]>\[\033[0m\] "
+		# if TERM supports it, add info in the titlebar
+		PROMPT_COMMAND='echo -n -e \
+			"\033]0;${LOGNAME}@${HOSTNAME%%.*}:${PWD//$HOME/~}\007"'
 		;;
 
 	*)
-		PS1="\u@\h:\w> "
+		PS1="${PROMPT_STRING}> "
 		PS2="> "
 		;;
 	esac # TERM
 fi
-
-unset prompthost
-
-case $TERM in
-*term | rxvt)		# If TERM is an xterm, then add titlebar info
-	if [ "`$ID -ur`" -eq "0" ]; then
-		# If the user is root, display a # in 
-		# the titlebar
-		PS1="\[\033]0;#\h#\w\007\]${PS1}"
-	else
-		PS1="\[\033]0;\h:\w\007\]${PS1}"
-	fi
-	;;
-
-*)
-	;;
-esac # TERM
 
 export IGNOREEOF=10
 
