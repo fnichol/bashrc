@@ -110,17 +110,30 @@ export PATH MANPATH
 # Set Global Environment Variables
 #---------------------------------------------------------------
 
+if [ -f "/etc/bash/bashrc.local" ]; then
+	. /etc/bash/bashrc.local
+fi
+
 # Set CVS variables
-CVS_HOSTPATH=cvs.talonline.ca:/var/cvs
+if [ -z "${CVS_HOSTPATH} ]; then
+	# If CVS_HOSTPATH was not set, then set a default value
+	CVS_HOSTPATH=/cvs
+	CVSROOT="${CVS_HOSTPATH}"
+else
+	CVSROOT=":ext:${LOGNAME}@${CVS_HOSTPATH}"
+fi
+
 CVS_RSH=`which ssh`
-CVSROOT=":ext:${LOGNAME}@${CVS_HOSTPATH}"
+
 export CVS_RSH CVSROOT
 
 # Set the default editor
 EDITOR=/usr/bin/vi
 VISUAL=/usr/bin/vi
+
 # Set default visual tabstop to 2 characters, rather than 8
 EXINIT="set tabstop=2"
+
 export EDITOR VISUAL EXINIT
 
 
@@ -165,31 +178,30 @@ xtitle()
 #
 prompthost()
 {
-	local default="m"
-	local b_default="1m"
+	if [ -z "${PROMPT_COLOR}" ]; then
+		PROMPT_COLOR="default"
+	fi
 
-	local black="0;30m"
-	local red="0;31m"
-	local green="0;32m"
-	local brown="0;33m"
-	local blue="0;34m"
-	local purple="0;35m"
-	local cyan="0;36m"
-	local lightgray="0;37m"
-
-	local b_black="1;30m"
-	local b_red="1;31m"
-	local b_green="1;32m"
-	local b_brown="1;33m"
-	local b_blue="1;34m"
-	local b_purple="1;35m"
-	local b_cyan="1;36m"
-	local b_lightgray="1;37m"
-
-	case "$HOSTNAME" in
-	*)
-		local color=$brown
-		;;
+	case "${PROMPT_COLOR}" in
+		black)       local color="0;30m" ;;
+		red)         local color="0;31m" ;;
+		green)       local color="0;32m" ;;
+		brown)       local color="0;33m" ;;
+		blue)        local color="0;34m" ;;
+		purple)      local color="0;35m" ;;
+		cyan)        local color="0;36m" ;;
+		lightgray)   local color="0;37m" ;;
+		b_black)     local color="1;30m" ;;
+		b_red)       local color="1;31m" ;;
+		b_green)     local color="1;32m" ;;
+		b_brown)     local color="1;33m" ;;
+		b_blue)      local color="1;34m" ;;
+		b_purple)    local color="1;35m" ;;
+		b_cyan)      local color="1;36m" ;;
+		b_lightgray) local color="1;37m" ;;
+		default)     local color="m" ;;
+		b_default)   local color="1m" ;;
+		*)           local color="m" ;;
 	esac
 
 	echo -n "$color"
