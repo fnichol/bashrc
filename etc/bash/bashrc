@@ -15,18 +15,11 @@ export BASHRCVERSION
 
 
 #---------------------------------------------------------------
-# Determine Machine Hostname and Operating System Tag
-#---------------------------------------------------------------
-
-HOSTNAME="`hostname | awk -F'.' '{ print $1 }'`"
-OS="`uname -s`"
-
-
-#---------------------------------------------------------------
 # Define Default System Paths
 #---------------------------------------------------------------
 
 # Determines the machine OS to set PATH, MANPATH and ID
+OS="`uname -s`"
 case "$OS" in
 SunOS)		# Solaris
 	case "`uname -r`" in
@@ -68,10 +61,15 @@ SunOS)		# Solaris
 		umask 022
 
 		# Make less the default pager
-		export PAGER=/usr/gnu/bin/less
+		which less > /dev/null 2>&1
+		if [ "$?" -eq "0" ]; then
+			PAGER="`which less`"
+			export PAGER
+		fi
 		;;
 	esac
 	;;
+
 Darwin)		# Mac OS X
 	# Set the PATH based on original /etc/profile from 
 	# 10.3.6 on 2004/11/22.
