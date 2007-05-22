@@ -115,7 +115,7 @@ if [ -f "/etc/bash/bashrc.local" ]; then
 fi
 
 # Set CVS variables
-if [ -z "${CVS_HOSTPATH} ]; then
+if [ -z "${CVS_HOSTPATH}" ]; then
 	# If CVS_HOSTPATH was not set, then set a default value
 	CVS_HOSTPATH=/cvs
 	CVSROOT="${CVS_HOSTPATH}"
@@ -278,7 +278,7 @@ fi
 unset prompthost
 
 case $TERM in
-xterm*)		# If TERM is an xterm, then add titlebar info
+*term | rxvt)		# If TERM is an xterm, then add titlebar info
 	if [ "`$ID -ur`" -eq "0" ]; then
 		# If the user is root, display a # in 
 		# the titlebar
@@ -300,7 +300,7 @@ shopt -s histappend
 # Echo the version and date of the profile
 echo "bashrc v${BASHRCVERSION} (`
 	echo '$Date$' | \
-	awk '{ print $2" "$3 }'
+	awk '{ print $2\" \"$3 }'
 	`)"
 echo
 
