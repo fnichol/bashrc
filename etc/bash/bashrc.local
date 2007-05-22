@@ -22,23 +22,8 @@ fi
 #---------------------------------------------------------------
 # The following color keywords are permitted:
 #
-# default = Default color
-# b_default = Default bold color
-# black = Black
-# b_black = Bold black
-# red = Red
-# b_red = Bold red
-# green = Green
-# b_green = Bold green
-# brown = Brown
-# b_brown = Bold brown
-# blue = Blue
-# b_blue = Bold blue
-# purple = Purple
-# b_purple = Bold purple
-# cyan = Cyan
-# b_cyan = Bold cyan
-# lightgray = Light gray
-# b_lightgray = Bold light gray
+# ( black red green brown blue purple cyan lightgray
+#   darkgray lightred lightgreen yellow lightblue
+#   lightpurple lightcyan white default )
 #---------------------------------------------------------------
 #PROMPT_COLOR=
