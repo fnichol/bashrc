@@ -110,7 +110,7 @@ export PATH MANPATH
 # Set Global Environment Variables
 #---------------------------------------------------------------
 
-if [ -f "/etc/bash/bashrc.local" ]; then
+if [ -r "/etc/bash/bashrc.local" ]; then
 	. /etc/bash/bashrc.local
 fi
 
