@@ -184,18 +184,21 @@ prompthost()
 #
 # psg: performs an egrep on the process list
 #
-psg()
-{
-	case "$OS" in
-	Darwin|OpenBSD)
+case "$OS" in
+Darwin|OpenBSD)
+	psg()
+	{
 		ps wwwaux | egrep $@
-		;;
+	}
+	;;
 
-	SunOS)
+SunOS)
+	psg()
+	{
 		ps -ef | egrep $@
-		;;
-	esac
-}
+	}
+	;;
+esac
 
 #---------------------------------------------------------------
 # Interactive shell (prompt,history) settings
