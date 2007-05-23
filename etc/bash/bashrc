@@ -66,6 +66,8 @@ SunOS)		# Solaris
 			PAGER="`which less`"
 			export PAGER
 		fi
+
+		unset ADMINPATH
 		;;
 	esac
 	;;
@@ -121,9 +123,16 @@ else
 	CVSROOT=":ext:${LOGNAME}@${CVS_HOSTPATH}"
 fi
 
-CVS_RSH=`which ssh`
+# Make less the default pager
+which ssh > /dev/null 2>&1
+if [ "$?" -eq "0" ]; then
+	CVS_RSH=`which ssh`
+else
+	CVS_RSH=
+fi
 
 export CVS_RSH CVSROOT
+unset CVS_HOSTPATH
 
 # Set the default editor
 EDITOR=/usr/bin/vi
@@ -138,22 +147,6 @@ export EDITOR VISUAL EXINIT
 #---------------------------------------------------------------
 # Functions
 #---------------------------------------------------------------
-
-#
-# xbold: Puts all of the positional parameters, seen as a 
-# single word in bold.
-#
-xbold()
-{
-	case "$TERM" in
-	*term | rxvt)
-		echo -e "\033[1m$*\033[0m"
-		;;
-
-	*)
-		;;
-	esac # TERM
-}
 
 #
 # prompthost: 
@@ -186,7 +179,6 @@ prompthost()
 	esac
 
 	echo -n "$color"
-	unset prompthost
 }
 
 #
@@ -265,6 +257,9 @@ else
 	esac # TERM
 fi
 
+unset PROMPT_STRING PROMPT_COLOR
+unset prompthost
+
 export IGNOREEOF=10
 
 shopt -s checkwinsize
@@ -296,3 +291,5 @@ fi
 if [ "$OS" = "Darwin" ]; then
 	alias super="sudo -s -H"
 fi
+
+unset OS ID
