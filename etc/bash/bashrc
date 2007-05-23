@@ -91,6 +91,10 @@ OpenBSD)	# OpenBSD
 		PATH="$PATH:/usr/X11R6/bin"
 	fi
 	;;
+
+CYGWIN_*)
+	ID=/usr/bin/id
+	;;
 esac # uname -s
 
 # If a $HOME/bin directory exists, add it to the PATH
