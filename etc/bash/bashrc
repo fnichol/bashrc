@@ -204,6 +204,26 @@ SunOS)
 	;;
 esac
 
+#
+# zoneinfo: displays a list of zones and their comments. For Solaris 10 only.
+#
+case "$OS" in
+SunOS)
+	zoneinfo()
+	{
+		echo "NAME		STATUS		COMMENT"
+		for zoneline in `zoneadm list -p | grep -v ':global:' | sort`; do
+			zone="`echo $zoneline | nawk -F':' '{ print $2 }'`"
+			zonestatus="`echo $zoneline | nawk -F':' '{ print $3 }'`"
+			zonecfg -z $zone info attr name=comment | egrep 'value: ' | \
+				nawk 'BEGIN { FS = ": " } \
+				{ printf "%s\t%s\t%s\n", zone, zonestatus, $2 }' \
+				zone=$zone zonestatus=$zonestatus
+		done
+	}
+	;;
+esac
+
 #---------------------------------------------------------------
 # Interactive shell (prompt,history) settings
 #---------------------------------------------------------------
