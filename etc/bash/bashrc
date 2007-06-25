@@ -38,7 +38,7 @@ SunOS)		# Solaris
 
 		PATH="$ADMINPATH"
 		PATH="$PATH:/usr/gnu/bin:/usr/local/bin:/bin:/usr/bin"
-		PATH="$PATH:/usr/ccs/bin:/usr/openwin/bin/usr/dt/bin"
+		PATH="$PATH:/usr/ccs/bin:/usr/openwin/bin:/usr/dt/bin"
 		if [ -d "/opt/sun/bin" ]; then
 			PATH="$PATH:/opt/sun/bin"
 		fi
@@ -83,7 +83,6 @@ Darwin)		# Mac OS X
 OpenBSD)	# OpenBSD
 	# Set a base PATH for all users
 	PATH="/sbin:/usr/sbin:/bin:/usr/bin:/usr/local/sbin:/usr/local/bin"
-	MANPATH="$MANPATH"
 	ID=/usr/bin/id
 
 	# If user is not root (uid=0), then expand the PATH
@@ -107,7 +106,17 @@ if [ -d "$HOME/man" ]; then
 	MANPATH="$MANPATH:$HOME/man"
 fi
 
-export PATH MANPATH
+case "$OS" in 
+OpenBSD)
+	# make sure MANPATH isn't set
+	unset MANPATH
+	;;
+*)
+	export MANPATH
+	;;
+esac # uname -s
+
+export PATH
 
 
 #---------------------------------------------------------------
