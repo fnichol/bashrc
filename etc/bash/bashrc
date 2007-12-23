@@ -152,7 +152,7 @@ EDITOR=/usr/bin/vi
 VISUAL=/usr/bin/vi
 
 # Set default visual tabstop to 2 characters, rather than 8
-EXINIT="set tabstop=2"
+EXINIT="set tabstop=4"
 
 export EDITOR VISUAL EXINIT
 
@@ -209,6 +209,12 @@ SunOS)
 	psg()
 	{
 		ps -ef | egrep $@
+	}
+	;;
+CYGWIN_*)
+	psg()
+	{
+		ps -efW | egrep $@
 	}
 	;;
 esac
