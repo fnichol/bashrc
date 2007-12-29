@@ -91,7 +91,8 @@ OpenBSD)	# OpenBSD
 	fi
 	;;
 
-CYGWIN_*)
+
+CYGWIN_*|Linux)	# Linux or Windows running Cygwin
 	ID=/usr/bin/id
 	;;
 esac # uname -s
@@ -205,7 +206,7 @@ Darwin|OpenBSD)
 	}
 	;;
 
-SunOS)
+SunOS|Linux)
 	psg()
 	{
 		ps -ef | egrep $@
