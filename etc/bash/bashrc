@@ -76,7 +76,16 @@ Darwin)		# Mac OS X
 	# Set the PATH based on original /etc/profile from 
 	# 10.3.6 on 2004/11/22.
 	PATH="/bin:/sbin:/usr/local/bin:/usr/bin:/usr/sbin"
+	if [ -d "/opt/local/sbin" ]; then
+			PATH="/opt/local/sbin:$PATH"
+	fi
+	if [ -d "/opt/local/bin" ]; then
+			PATH="/opt/local/bin:$PATH"
+	fi
 	MANPATH="$MANPATH"
+	if [ -d "/opt/local/man" ]; then
+		MANPATH="$MANPATH:/opt/local/man"
+	fi
 	ID=/usr/bin/id
 	;;
 
