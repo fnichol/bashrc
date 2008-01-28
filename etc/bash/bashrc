@@ -157,24 +157,28 @@ fi
 export CVS_RSH CVSROOT
 unset CVS_HOSTPATH
 
-# Set the default editor
-EDITOR=/usr/bin/vi
-VISUAL=/usr/bin/vi
-
-# Set default visual tabstop to 2 characters, rather than 8
-EXINIT="set tabstop=4"
-
-export EDITOR VISUAL EXINIT
-
-# Skip the rest if this is not an interactive shell
-if [ -z "${PS1}" -a "$-" != "*i*" ]; then
-	return
-fi
-
 
 #---------------------------------------------------------------
 # Functions
 #---------------------------------------------------------------
+
+#
+# cleanup: unsets any outstanding environment variables and
+#     unsets itself
+#
+cleanup()
+{
+	unset PROMPT_STRING PROMPT_COLOR OS ID
+	unset prompthost
+	unset cleanup
+}
+
+
+# Skip the rest if this is not an interactive shell
+if [ -z "${PS1}" -a "$-" != "*i*" ]; then
+	cleanup; return
+fi
+
 
 #
 # prompthost: 
@@ -209,6 +213,7 @@ prompthost()
 	echo -n "$color"
 }
 
+
 #
 # psg: performs an egrep on the process list
 #
@@ -234,6 +239,7 @@ CYGWIN_*)
 	;;
 esac
 
+
 #
 # zoneinfo: displays a list of zones and their comments. For Solaris 10 only.
 #
@@ -257,6 +263,15 @@ esac
 #---------------------------------------------------------------
 # Interactive shell (prompt,history) settings
 #---------------------------------------------------------------
+
+# Set the default editor
+EDITOR=/usr/bin/vi
+VISUAL=/usr/bin/vi
+
+# Set default visual tabstop to 2 characters, rather than 8
+EXINIT="set tabstop=4"
+
+export EDITOR VISUAL EXINIT
 
 # Number of commands to remember in the command history
 export HISTSIZE=100000
@@ -309,9 +324,6 @@ else
 	esac # TERM
 fi
 
-unset PROMPT_STRING PROMPT_COLOR
-unset prompthost
-
 export IGNOREEOF=10
 
 shopt -s checkwinsize
@@ -344,4 +356,4 @@ if [ "$OS" = "Darwin" ]; then
 	alias super="sudo -s -H"
 fi
 
-unset OS ID
+cleanup
