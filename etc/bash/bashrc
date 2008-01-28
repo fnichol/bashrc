@@ -166,6 +166,11 @@ EXINIT="set tabstop=4"
 
 export EDITOR VISUAL EXINIT
 
+# Skip the rest if this is not an interactive shell
+if [ -z "${PS1}" -a "$-" != "*i*" ]; then
+	return
+fi
+
 
 #---------------------------------------------------------------
 # Functions
@@ -252,11 +257,6 @@ esac
 #---------------------------------------------------------------
 # Interactive shell (prompt,history) settings
 #---------------------------------------------------------------
-
-# Skip the rest if this is not an interactive shell
-if [ -z "${PS1}" -a "$-" != "*i*" ]; then
-	return
-fi
 
 # Number of commands to remember in the command history
 export HISTSIZE=100000
