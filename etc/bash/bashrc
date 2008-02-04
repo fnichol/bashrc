@@ -57,6 +57,14 @@ SunOS)		# Solaris
 
 		ID=/usr/xpg4/bin/id
 
+		if [ -d "/usr/local/lib/python2.4/site-packages" ]; then
+			export PYTHONPATH="$PYTHONPATH:/usr/local/lib/python2.4/site-packages"
+		fi
+
+		if [ -d "/usr/local/lib/python2.5/site-packages" ]; then
+			export PYTHONPATH="$PYTHONPATH:/usr/local/lib/python2.5/site-packages"
+		fi
+
 		# Files you make look like rw-r--r--
 		umask 022
 
