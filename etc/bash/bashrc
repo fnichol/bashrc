@@ -256,7 +256,7 @@ SunOS)
 	zoneinfo()
 	{
 		echo "NAME		STATUS		COMMENT"
-		for zoneline in `zoneadm list -p | grep -v ':global:' | sort`; do
+		for zoneline in `zoneadm list -pi | grep -v ':global:' | sort`; do
 			zone="`echo $zoneline | nawk -F':' '{ print $2 }'`"
 			zonestatus="`echo $zoneline | nawk -F':' '{ print $3 }'`"
 			zonecfg -z $zone info attr name=comment | egrep 'value: ' | \
