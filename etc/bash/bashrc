@@ -189,6 +189,18 @@ fi
 
 
 #
+# hostfromdomain:
+#
+hostfromdomain()
+{
+	if [ -z "$1" ]; then
+		return 10
+	fi
+	dig -x `dig $1 +short` +short
+}
+
+
+#
 # prompthost: 
 #
 prompthost()
