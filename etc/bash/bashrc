@@ -23,7 +23,7 @@ OS="`uname -s`"
 case "$OS" in
 SunOS)		# Solaris
 	case "`uname -r`" in
-	"5.10")	# Solaris 10
+	"5.10"|"5.11")	# Solaris 10 and Nevada (11)
 		ADMINPATH=""
 		if [ -d "/usr/gnu/sbin" ]; then
 			ADMINPATH="$ADMINPATH:/usr/gnu/sbin"
@@ -112,8 +112,17 @@ OpenBSD)	# OpenBSD
 	fi
 	;;
 
+Linux)		# Linux
+	ID=/usr/bin/id
+	if [ -f "/etc/redhat-release" ]; then
+		LINUX_FLAVOR="`awk '{print $1}' /etc/redhat-release`"
+	fi
+	if [ -f "/etc/lsb-release" ]; then
+		LINUX_FLAVOR="`head -n 1 /etc/lsb-release | awk -F= '{print $2}'`"
+	fi
+	;;
 
-CYGWIN_*|Linux)	# Linux or Windows running Cygwin
+CYGWIN_*)	# Windows running Cygwin
 	ID=/usr/bin/id
 	;;
 esac # uname -s
@@ -289,8 +298,13 @@ esac
 #---------------------------------------------------------------
 
 # Set the default editor
-EDITOR=/usr/bin/vi
-VISUAL=/usr/bin/vi
+if [ "$OS" == "Linux" -a "$LINUX_FLAVOR" == "CentOS" ]; then
+	EDITOR=/bin/vi
+	VISUAL=/bin/vi
+else
+	EDITOR=/usr/bin/vi
+	VISUAL=/usr/bin/vi
+fi
 
 # Set default visual tabstop to 2 characters, rather than 8
 EXINIT="set tabstop=4"
@@ -298,10 +312,10 @@ EXINIT="set tabstop=4"
 export EDITOR VISUAL EXINIT
 
 # Number of commands to remember in the command history
-export HISTSIZE=100000
+export HISTSIZE=10000
 
 # The number of lines contained in the history file
-export HISTFILESIZE=100000000
+export HISTFILESIZE=999999
 
 # Prepend a timestamp on each history event
 export HISTTIMEFORMAT="%Y-%m-%dT%H:%M:%S "
