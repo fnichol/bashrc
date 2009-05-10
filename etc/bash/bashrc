@@ -24,49 +24,64 @@ case "$OS" in
 SunOS)		# Solaris
 	case "`uname -r`" in
 	"5.10"|"5.11")	# Solaris 10 and Nevada (11)
+		_append_adminpath()
+		{
+			if [ -d "$1" ]; then
+				ADMINPATH="$ADMINPATH:$1"
+			fi
+		}
+		_append_path()
+		{
+			if [ -d "$1" ]; then
+				PATH="$PATH:$1"
+			fi
+		}
+		_append_manpath()
+		{
+			if [ -d "$1" ]; then
+				MANPATH="$MANPATH:$1"
+			fi
+		}
+
 		ADMINPATH=""
-		if [ -d "/usr/gnu/sbin" ]; then
-			ADMINPATH="$ADMINPATH:/usr/gnu/sbin"
-		fi
-		if [ -d "/usr/local/sbin" ]; then
-			ADMINPATH="$ADMINPATH:/usr/local/sbin"
-		fi
-		if [ -d "/usr/platform/`uname -i`/sbin" ]; then
-			ADMINPATH=$ADMINPATH:/usr/platform/`uname -i`/sbin
-		fi
+		_append_adminpath /opt/local/sbin
+		_append_adminpath /usr/gnu/sbin
+		_append_adminpath /usr/local/sbin
+		_append_adminpath /usr/platform/`uname -i`/sbin
 		ADMINPATH="$ADMINPATH:/sbin:/usr/sbin"
 
 		PATH="$ADMINPATH"
-		PATH="$PATH:/usr/gnu/bin:/usr/local/bin:/bin:/usr/bin"
-		PATH="$PATH:/usr/ccs/bin:/usr/openwin/bin:/usr/dt/bin"
-		if [ -d "/opt/sun/bin" ]; then
-			PATH="$PATH:/opt/sun/bin"
-		fi
-		if [ -d "/opt/SUNWspro/bin" ]; then
-			PATH="$PATH:/opt/SUNWspro/bin"
-		fi
-		PATH="$PATH:/opt/SUNWvts/bin"
+		_append_path /opt/local/bin
+		_append_path /usr/gnu/bin
+		_append_path /usr/local/bin
+		PATH="$PATH:/bin:/usr/bin:/usr/ccs/bin"
+		_append_path /usr/openwin/bin
+		_append_path /usr/dt/bin
+		_append_path /opt/sun/bin
+		_append_path /opt/SUNWspro/bin
+		_append_path /opt/SUNWvts/bin
 
 		MANPATH="$MANPATH"
-		MANPATH="$MANPATH:/usr/gnu/man:/usr/local/man"
+		_append_manpath /opt/local/share/man
+		_append_manpath /usr/gnu/man
+		_append_manpath /usr/local/man
 		MANPATH="$MANPATH:/usr/man:/usr/share/man"
-		if [ -d "/opt/SUNWspro/man" ]; then
-			MANPATH="$MANPATH:/opt/SUNWspro/man"
-		fi
-		MANPATH="$MANPATH:/opt/SUNWvts/man"
+		_append_manpath /opt/SUNWspro/man
+		_append_manpath /opt/SUNWvts/man
 
 		ID=/usr/xpg4/bin/id
 
 		if [ -d "/usr/local/lib/python2.6/site-packages" ]; then
-			export PYTHONPATH="$PYTHONPATH:/usr/local/lib/python2.6/site-packages"
+			PYTHONPATH="$PYTHONPATH:/usr/local/lib/python2.6/site-packages"
 		fi
-
 		if [ -d "/usr/local/lib/python2.5/site-packages" ]; then
-			export PYTHONPATH="$PYTHONPATH:/usr/local/lib/python2.5/site-packages"
+			PYTHONPATH="$PYTHONPATH:/usr/local/lib/python2.5/site-packages"
 		fi
-
 		if [ -d "/usr/local/lib/python2.4/site-packages" ]; then
-			export PYTHONPATH="$PYTHONPATH:/usr/local/lib/python2.4/site-packages"
+			PYTHONPATH="$PYTHONPATH:/usr/local/lib/python2.4/site-packages"
+		fi
+		if [ -n "$PYTHONPATH" ]; then
+			export PYTHONPATH
 		fi
 
 		# Files you make look like rw-r--r--
@@ -79,7 +94,7 @@ SunOS)		# Solaris
 			export PAGER
 		fi
 
-		unset ADMINPATH
+		unset ADMINPATH _append_adminpath _append_path _append_manpath
 		;;
 	esac
 	;;
