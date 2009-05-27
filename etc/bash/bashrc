@@ -135,6 +135,9 @@ Linux)		# Linux
 	if [ -f "/etc/lsb-release" ]; then
 		LINUX_FLAVOR="`head -n 1 /etc/lsb-release | awk -F= '{print $2}'`"
 	fi
+
+	# check for ls --color alias and toast it
+	alias | grep -q '^alias ls=' && unalias ls
 	;;
 
 CYGWIN_*)	# Windows running Cygwin
