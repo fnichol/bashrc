@@ -412,4 +412,10 @@ if [ "$OS" = "Darwin" ]; then
 	alias super="sudo -s -H"
 fi
 
+# If mysql is installed via macports, then provide a startup and shutdown alias
+if [ "$OS" = "Darwin" -a -f "/opt/local/share/mysql5/mysql/mysql.server" ]; then
+	alias mysqld_start='sudo /opt/local/share/mysql5/mysql/mysql.server start'
+	alias mysqld_stop='sudo /opt/local/share/mysql5/mysql/mysql.server stop'
+fi
+
 cleanup
