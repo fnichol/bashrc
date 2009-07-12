@@ -113,6 +113,13 @@ Darwin)		# Mac OS X
 	if [ -d "/opt/local/man" ]; then
 		MANPATH="$MANPATH:/opt/local/man"
 	fi
+
+	# if grails is installed via macports, then export GRAILS_HOME
+	if [ -f "/opt/local/bin/grails" -a -d "/opt/local/share/java/grails" ]; then
+		GRAILS_HOME=/opt/local/share/java/grails
+		export GRAILS_HOME
+	fi
+
 	ID=/usr/bin/id
 	;;
 
