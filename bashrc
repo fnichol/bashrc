@@ -299,7 +299,7 @@ esac
 
 
 #
-# zoneinfo: displays a list of zones and their comments. For Solaris 10 only.
+# zoneinfo: displays a list of zones and their comments. For Solaris 10/11 only.
 #
 case "$OS" in
 SunOS)
@@ -317,6 +317,49 @@ SunOS)
 	}
 	;;
 esac
+
+
+#
+# update_bashrc: pulls down new changes to the bashrc via mercurial.
+#
+which hg > /dev/null
+if [ "$?" -eq 0 -a -d "/etc/bash/.hg" ]; then
+	case "$OS" in
+	SunOS)
+		update_bashrc()
+		{
+			(cd /etc/bash && pfexec hg pull -u)
+			if [ "$?" -eq 0 ]; then
+				echo "bashrc has been updated to current."
+			else
+				echo "bashrc could not find an update or has failed."
+			fi
+		}
+		;;
+	CYGWIN_*)
+		update_bashrc()
+		{
+			(cd /etc/bash && hg pull -u)
+			if [ "$?" -eq 0 ]; then
+				echo "bashrc has been updated to current."
+			else
+				echo "bashrc could not find an update or has failed."
+			fi
+		}
+		;;
+	*)
+		update_bashrc()
+		{
+			(cd /etc/bash && sudo hg pull -u)
+			if [ "$?" -eq 0 ]; then
+				echo "bashrc has been updated to current."
+			else
+				echo "bashrc could not find an update or has failed."
+			fi
+		}
+		;;
+	esac
+fi
 
 #---------------------------------------------------------------
 # Interactive shell (prompt,history) settings
