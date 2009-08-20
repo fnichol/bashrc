@@ -114,6 +114,13 @@ Darwin)		# Mac OS X
 		MANPATH="$MANPATH:/opt/local/man"
 	fi
 
+	# if we can determine the version of java as set in java prefs, then export
+	# JAVA_HOME to match this
+	if [ -f "/usr/libexec/java_home" ]; then
+		JAVA_HOME=`/usr/libexec/java_home`
+		export JAVA_HOME
+	fi
+
 	# if grails is installed via macports, then export GRAILS_HOME
 	if [ -f "/opt/local/bin/grails" -a -d "/opt/local/share/java/grails" ]; then
 		GRAILS_HOME=/opt/local/share/java/grails
