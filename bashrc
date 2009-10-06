@@ -244,6 +244,32 @@ hostfromdomain()
 	dig -x `dig $1 +short` +short
 }
 
+#
+# authme:
+#
+authme()
+{
+	local _usage="Usage: authme <ssh_host> [<pub_key>]"
+	if [ -z "$1" ]; then
+		echo $_usage
+		return 10
+	fi
+
+	local _host="$1"
+	local _key="${HOME}/.ssh/id_dsa.pub"
+
+	if [ -n "$2" ]; then
+		_key="$2"
+	fi
+
+	if [ ! -f "$_key" ]; then
+		echo "SSH key: $_key does not exist."
+		return 11
+	fi
+
+	ssh $_host '(cat - >> .ssh/authorized_keys)' < $_key
+}
+
 
 #
 # prompthost: 
