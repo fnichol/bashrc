@@ -244,6 +244,7 @@ hostfromdomain()
 	dig -x `dig $1 +short` +short
 }
 
+
 #
 # authme:
 #
@@ -262,12 +263,47 @@ authme()
 		_key="$2"
 	fi
 
+	local _ssh_cmd="ssh $_host"
+	echo "$_host" | grep -q ':'
+	if [ "$?" -eq "0" ]; then
+		_ssh_cmd="`echo $_host | awk -F':' '{print \"ssh -p \" $2 \" \" $1}'`"
+	fi
+
 	if [ ! -f "$_key" ]; then
 		echo "SSH key: $_key does not exist."
 		return 11
 	fi
 
-	ssh $_host '(cat - >> .ssh/authorized_keys)' < $_key
+	$_ssh_cmd $_host '(cat - >> .ssh/authorized_keys)' < $_key
+}
+
+
+#
+# maven_set_settings:
+#
+maven_set_settings()
+{
+	if [ ! -h "${HOME}/.m2/settings.xml" ]; then
+		if [ ! -f "${HOME}/.m2/settings.xml.default" ]; then
+			echo ">> Moving existing settings.xml to settings.xml.default..."
+			mv ${HOME}/.m2/settings.xml ${HOME}/.m2/settings.xml.default
+		fi
+	fi
+
+	local _ext="default"
+	if [ -n "$1" ]; then
+		_ext="$1"
+	else
+		echo ">> No settings explictly asked for, so using "default"."
+	fi
+
+	if [ ! -f "${HOME}/.m2/settings.xml.$_ext" ]; then
+		echo "Maven settings $_ext (at: ${HOME}/.m2/settings.xml.$_ext) does not exist"
+		return 1
+	fi
+
+	(cd ${HOME}/.m2 && ln -sf ./settings.xml.$_ext settings.xml)
+	echo "===> Activating maven settings file: ${HOME}/.m2/settings.xml.$_ext"
 }
 
 
