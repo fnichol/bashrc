@@ -274,7 +274,9 @@ authme()
 		return 11
 	fi
 
-	$_ssh_cmd $_host '(cat - >> .ssh/authorized_keys)' < $_key
+	$_ssh_cmd '(if [ ! -d "${HOME}/.ssh" ]; then \
+		mkdir -m 0700 -p ${HOME}/.ssh; fi; \
+		cat - >> .ssh/authorized_keys)' < $_key
 }
 
 
