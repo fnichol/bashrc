@@ -18,31 +18,47 @@ export BASHRCVERSION
 # Define Default System Paths
 #---------------------------------------------------------------
 
+_append_adminpath()
+{
+	if [ -d "$1" ]; then
+		ADMINPATH="$ADMINPATH:$1"
+	fi
+}
+
+_append_path()
+{
+	if [ -d "$1" ]; then
+		PATH="$PATH:$1"
+	fi
+}
+
+_prepend_path()
+{
+	if [ -d "$1" ]; then
+		PATH="$1:$PATH"
+	fi
+}
+
+_append_manpath()
+{
+	if [ -d "$1" ]; then
+		MANPATH="$MANPATH:$1"
+	fi
+}
+
+_prepend_manpath()
+{
+	if [ -d "$1" ]; then
+		MANPATH="$1:$MANPATH"
+	fi
+}
+
 # Determines the machine OS to set PATH, MANPATH and ID
 OS="`uname -s`"
 case "$OS" in
 SunOS)		# Solaris
 	case "`uname -r`" in
 	"5.10"|"5.11")	# Solaris 10 and Nevada (11)
-		_append_adminpath()
-		{
-			if [ -d "$1" ]; then
-				ADMINPATH="$ADMINPATH:$1"
-			fi
-		}
-		_append_path()
-		{
-			if [ -d "$1" ]; then
-				PATH="$PATH:$1"
-			fi
-		}
-		_append_manpath()
-		{
-			if [ -d "$1" ]; then
-				MANPATH="$MANPATH:$1"
-			fi
-		}
-
 		ADMINPATH=""
 		_append_adminpath /opt/local/sbin
 		_append_adminpath /usr/gnu/sbin
@@ -94,7 +110,7 @@ SunOS)		# Solaris
 			export PAGER
 		fi
 
-		unset ADMINPATH _append_adminpath _append_path _append_manpath
+		unset ADMINPATH
 		;;
 	esac
 	;;
@@ -103,16 +119,14 @@ Darwin)		# Mac OS X
 	# Set the PATH based on original /etc/profile from 
 	# 10.3.6 on 2004/11/22.
 	PATH="/bin:/sbin:/usr/local/bin:/usr/bin:/usr/sbin"
-	if [ -d "/opt/local/sbin" ]; then
-			PATH="/opt/local/sbin:$PATH"
-	fi
-	if [ -d "/opt/local/bin" ]; then
-			PATH="/opt/local/bin:$PATH"
-	fi
+	_prepend_path /opt/local/sbin
+	_prepend_path /opt/local/bin
+	_prepend_path /opt/maven/current/bin
+	_prepend_path /opt/ant/current/bin
+	_prepend_path /opt/grails/current/bin
+
 	MANPATH="$MANPATH"
-	if [ -d "/opt/local/man" ]; then
-		MANPATH="$MANPATH:/opt/local/man"
-	fi
+	_prepend_manpath /opt/local/man
 
 	# if we can determine the version of java as set in java prefs, then export
 	# JAVA_HOME to match this
@@ -121,8 +135,14 @@ Darwin)		# Mac OS X
 		export JAVA_HOME
 	fi
 
+	# if grails is installed manually, then export GRAILS_HOME preferentially
+	if [ -f "/opt/grails/current/bin/grails" -a -d "/opt/grails/current" ]
+	then
+		GRAILS_HOME=/opt/grails/current
+		export GRAILS_HOME
 	# if grails is installed via macports, then export GRAILS_HOME
-	if [ -f "/opt/local/bin/grails" -a -d "/opt/local/share/java/grails" ]; then
+	elif [ -f "/opt/local/bin/grails" -a -d "/opt/local/share/java/grails" ]
+	then
 		GRAILS_HOME=/opt/local/share/java/grails
 		export GRAILS_HOME
 	fi
@@ -159,15 +179,12 @@ CYGWIN_*)	# Windows running Cygwin
 	;;
 esac # uname -s
 
+
 # If a $HOME/bin directory exists, add it to the PATH
-if [ -d "$HOME/bin" ]; then
-	PATH="$PATH:$HOME/bin"
-fi
+_append_path $HOME/bin
 
 # If a $HOME/man directory exists, add it to the MANPATH
-if [ -d "$HOME/man" ]; then
-	MANPATH="$MANPATH:$HOME/man"
-fi
+_append_manpath $HOME/man
 
 case "$OS" in 
 OpenBSD)
@@ -181,6 +198,7 @@ esac # uname -s
 
 export PATH
 
+unset _append_adminpath _append_path _prepend_path _append_manpath _prepend_manpath
 
 #---------------------------------------------------------------
 # Set Global Environment Variables
