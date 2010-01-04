@@ -66,6 +66,7 @@ SunOS)		# Solaris
 		_append_manpath /usr/X11/share/man
 
 		ID=/usr/bin/id
+		SUPER_CMD=/usr/bin/pfexec
 
 		# Files you make look like rw-r--r--
 		umask 022
@@ -102,6 +103,7 @@ SunOS)		# Solaris
 		_append_manpath /opt/SUNWvts/man
 
 		ID=/usr/xpg4/bin/id
+		SUPER_CMD=/usr/bin/pfexec
 
 		if [ -d "/usr/local/lib/python2.6/site-packages" ]; then
 			PYTHONPATH="$PYTHONPATH:/usr/local/lib/python2.6/site-packages"
@@ -164,6 +166,7 @@ Darwin)		# Mac OS X
 	fi
 
 	ID=/usr/bin/id
+	SUPER_CMD=/usr/bin/sudo
 	;;
 
 OpenBSD)	# OpenBSD
@@ -178,10 +181,12 @@ OpenBSD)	# OpenBSD
 	_append_path /usr/local/bin
 
 	ID=/usr/bin/id
+	SUPER_CMD=/usr/bin/sudo
 	;;
 
 Linux)		# Linux
 	ID=/usr/bin/id
+	SUPER_CMD=/usr/bin/sudo
 	if [ -f "/etc/redhat-release" ]; then
 		LINUX_FLAVOR="`awk '{print $1}' /etc/redhat-release`"
 	fi
@@ -195,6 +200,7 @@ Linux)		# Linux
 
 CYGWIN_*)	# Windows running Cygwin
 	ID=/usr/bin/id
+	SUPER_CMD=
 	;;
 esac # uname -s
 
@@ -215,7 +221,7 @@ OpenBSD)
 	;;
 esac # uname -s
 
-export PATH
+export PATH SUPER_CMD
 
 unset _append_adminpath _append_path _prepend_path _append_manpath _prepend_manpath
 
@@ -431,53 +437,19 @@ esac
 #
 which hg > /dev/null
 if [ "$?" -eq 0 -a -d "/etc/bash/.hg" ]; then
-	case "$OS" in
-	SunOS)
-		update_bashrc()
-		{
-			(cd /etc/bash && pfexec hg pull -u)
-			if [ "$?" -eq 0 ]; then
-				echo "===> bashrc has been updated to current."
-				rm -f /etc/bash/tip.date
-				(cd /etc/bash && hg tip \
-					--template '{date|isodate}\n' 2> \
-					/etc/bash/tip.date)
-			else
-				echo "===> bashrc could not find an update or has failed."
-			fi
-		}
-		;;
-	CYGWIN_*)
-		update_bashrc()
-		{
-			(cd /etc/bash && hg pull -u)
-			if [ "$?" -eq 0 ]; then
-				echo "===> bashrc has been updated to current."
-				rm -f /etc/bash/tip.date
-				(cd /etc/bash && hg tip \
-					--template '{date|isodate}\n' 2> \
-					/etc/bash/tip.date)
-			else
-				echo "===> bashrc could not find an update or has failed."
-			fi
-		}
-		;;
-	*)
-		update_bashrc()
-		{
-			(cd /etc/bash && sudo hg pull -u)
-			if [ "$?" -eq 0 ]; then
-				echo "===> bashrc has been updated to current."
-				rm -f /etc/bash/tip.date
-				(cd /etc/bash && hg tip \
-					--template '{date|isodate}\n' 2> \
-					/etc/bash/tip.date)
-			else
-				echo "===> bashrc could not find an update or has failed."
-			fi
-		}
-		;;
-	esac
+	update_bashrc()
+	{
+		(cd /etc/bash && ${SUPER_CMD} hg pull -u)
+		if [ "$?" -eq 0 ]; then
+			echo "===> bashrc has been updated to current."
+			${SUPER_CMD} rm -f /etc/bash/tip.date
+			${SUPER_CMD} bash -c "(cd /etc/bash; hg tip \
+				--template '{date|isodate}\n' > \
+				/etc/bash/tip.date)"
+		else
+			echo ">>>> bashrc could not find an update or has failed."
+		fi
+	}
 fi
 
 #---------------------------------------------------------------
