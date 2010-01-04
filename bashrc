@@ -9,14 +9,6 @@ if [ ! -n "${BASH_VERSION}" ]; then
 	return
 fi 
 
-# Gets the cvs version of the bashrc file
-if [ -f "/etc/bash/tip.date" ]; then
-	BASHRCVERSION="`cat /etc/bash/tip.date`"
-else
-	BASHRCVERSION="`(cd /etc/bash && hg tip --template '{date|isodate}\n' 2> /dev/null)`"
-fi
-export BASHRCVERSION
-
 
 #---------------------------------------------------------------
 # Define Default System Paths
@@ -248,6 +240,7 @@ cleanup()
 {
 	unset PROMPT_STRING PROMPT_COLOR OS ID
 	unset prompthost
+	unset get_color_code
 	unset cleanup
 }
 
@@ -337,15 +330,18 @@ maven_set_settings()
 
 
 #
-# prompthost: 
+# get_color_code: 
 #
-prompthost()
+get_color_code()
 {
-	if [ -z "${PROMPT_COLOR}" ]; then
-		PROMPT_COLOR="default"
+	local choice
+	if [ -z "${1}" ]; then
+		choice="default"
+	else
+		choice="$1"
 	fi
 
-	case "${PROMPT_COLOR}" in
+	case "$choice" in
 		black)       local color="0;30m" ;;
 		red)         local color="0;31m" ;;
 		green)       local color="0;32m" ;;
@@ -367,6 +363,19 @@ prompthost()
 	esac
 
 	echo -n "$color"
+}
+
+
+#
+# prompthost()
+#
+prompthost()
+{
+	if [ -z "${PROMPT_COLOR}" ]; then
+		PROMPT_COLOR="default"
+	fi
+
+	get_color_code $PROMPT_COLOR
 }
 
 
@@ -428,13 +437,13 @@ if [ "$?" -eq 0 -a -d "/etc/bash/.hg" ]; then
 		{
 			(cd /etc/bash && pfexec hg pull -u)
 			if [ "$?" -eq 0 ]; then
-				echo "bashrc has been updated to current."
+				echo "===> bashrc has been updated to current."
 				rm -f /etc/bash/tip.date
 				(cd /etc/bash && hg tip \
 					--template '{date|isodate}\n' 2> \
 					/etc/bash/tip.date)
 			else
-				echo "bashrc could not find an update or has failed."
+				echo "===> bashrc could not find an update or has failed."
 			fi
 		}
 		;;
@@ -443,13 +452,13 @@ if [ "$?" -eq 0 -a -d "/etc/bash/.hg" ]; then
 		{
 			(cd /etc/bash && hg pull -u)
 			if [ "$?" -eq 0 ]; then
-				echo "bashrc has been updated to current."
+				echo "===> bashrc has been updated to current."
 				rm -f /etc/bash/tip.date
 				(cd /etc/bash && hg tip \
 					--template '{date|isodate}\n' 2> \
 					/etc/bash/tip.date)
 			else
-				echo "bashrc could not find an update or has failed."
+				echo "===> bashrc could not find an update or has failed."
 			fi
 		}
 		;;
@@ -458,13 +467,13 @@ if [ "$?" -eq 0 -a -d "/etc/bash/.hg" ]; then
 		{
 			(cd /etc/bash && sudo hg pull -u)
 			if [ "$?" -eq 0 ]; then
-				echo "bashrc has been updated to current."
+				echo "===> bashrc has been updated to current."
 				rm -f /etc/bash/tip.date
 				(cd /etc/bash && hg tip \
 					--template '{date|isodate}\n' 2> \
 					/etc/bash/tip.date)
 			else
-				echo "bashrc could not find an update or has failed."
+				echo "===> bashrc could not find an update or has failed."
 			fi
 		}
 		;;
@@ -546,8 +555,15 @@ shopt -s checkwinsize
 shopt -s histappend
 
 # Echo the version and date of the profile
+if [ -f "/etc/bash/tip.date" ]; then
+	BASHRCVERSION="`cat /etc/bash/tip.date`"
+else
+	BASHRCVERSION="`(cd /etc/bash && hg tip \
+		--template '{date|isodate}\n' 2> /dev/null)`"
+fi
 echo "bashrc ($BASHRCVERSION)"
 echo
+unset BASHRCVERSION
 
 
 #---------------------------------------------------------------
@@ -557,6 +573,25 @@ echo
 alias ll='ls -l'
 alias la='ls -al'
 alias lm='ll | less'
+
+# Colorize maven output, courtesy of:
+# http://blog.blindgaenger.net/colorize_maven_output.html
+if which mvn > /dev/null; then
+	color_maven()
+	{
+		local e=$(echo -e "\x1b")[
+		local highlight="1;32m"
+		local info="0;36m"
+		local warn="1;33m"
+		local error="1;31m"
+
+		`which mvn` $* | sed -e "s/Tests run: \([^,]*\), Failures: \([^,]*\), Errors: \([^,]*\), Skipped: \([^,]*\)/${e}${highlight}Tests run: \1${e}0m, Failures: ${e}${error}\2${e}0m, Errors: ${e}${warn}\3${e}0m, Skipped: ${e}${info}\4${e}0m/g" \
+			-e "s/\(\[WARN\].*\)/${e}${warn}\1${e}0m/g" \
+			-e "s/\(\[INFO\].*\)/${e}${info}\1${e}0m/g" \
+			-e "s/\(\[ERROR\].*\)/${e}${error}\1${e}0m/g"
+	}
+	alias mvn=color_maven
+fi
 
 # If pine is installed, eliminated the .pine-debugX files
 if [ -e "/usr/local/bin/pine" ]; then
