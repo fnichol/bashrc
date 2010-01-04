@@ -13,7 +13,7 @@ fi
 if [ -f "/etc/bash/tip.date" ]; then
 	BASHRCVERSION="`cat /etc/bash/tip.date`"
 else
-	BASHRCVERSION="`hg tip --template '{date|isodate}\n' 2> /dev/null`"
+	BASHRCVERSION="`(cd /etc/bash && hg tip --template '{date|isodate}\n' 2> /dev/null)`"
 fi
 export BASHRCVERSION
 
@@ -84,8 +84,7 @@ SunOS)		# Solaris
 		;;
 
 	"5.10")	# Solaris 10
-		ADMINPATH=""
-		_append_adminpath /opt/local/sbin
+		ADMINPATH=/opt/local/sbin
 		_append_adminpath /usr/gnu/sbin
 		_append_adminpath /usr/local/sbin
 		_append_adminpath /usr/platform/`uname -i`/sbin
@@ -176,14 +175,17 @@ Darwin)		# Mac OS X
 	;;
 
 OpenBSD)	# OpenBSD
-	# Set a base PATH for all users
-	PATH="/sbin:/usr/sbin:/bin:/usr/bin:/usr/local/sbin:/usr/local/bin"
-	ID=/usr/bin/id
+	# Set a base PATH based on original /etc/skel/.profile and /root/.profile
+	# from 4.6 on 2010-01-01
+	PATH=/sbin
+	_append_path /usr/sbin
+	_append_path /bin
+	_append_path /usr/bin
+	_append_path /usr/X11R6/bin
+	_append_path /usr/local/sbin
+	_append_path /usr/local/bin
 
-	# If user is not root (uid=0), then expand the PATH
-	if [ "`$ID -ur`" -ne "0" -a -d "/usr/X11R6/bin" ]; then
-		PATH="$PATH:/usr/X11R6/bin"
-	fi
+	ID=/usr/bin/id
 	;;
 
 Linux)		# Linux
@@ -259,13 +261,15 @@ fi
 #
 # hostfromdomain:
 #
-hostfromdomain()
-{
-	if [ -z "$1" ]; then
-		return 10
-	fi
-	dig -x `dig $1 +short` +short
-}
+if which dig > /dev/null; then
+	hostfromdomain()
+	{
+		if [ -z "$1" ]; then
+			return 10
+		fi
+		dig -x `dig $1 +short` +short
+	}
+fi # which dig
 
 
 #
@@ -457,7 +461,7 @@ if [ "$?" -eq 0 -a -d "/etc/bash/.hg" ]; then
 				echo "bashrc has been updated to current."
 				rm -f /etc/bash/tip.date
 				(cd /etc/bash && hg tip \
-					--template '{date|isodate}\n' > \
+					--template '{date|isodate}\n' 2> \
 					/etc/bash/tip.date)
 			else
 				echo "bashrc could not find an update or has failed."
