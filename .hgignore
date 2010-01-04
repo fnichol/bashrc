@@ -1,2 +1,3 @@
 syntax: regexp
 ^bashrc\.local$
+^tip\.date$
