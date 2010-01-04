@@ -10,7 +10,11 @@ if [ ! -n "${BASH_VERSION}" ]; then
 fi 
 
 # Gets the cvs version of the bashrc file
-BASHRCVERSION="`echo '$Revision$' | awk '{ print $2 }'`"
+if [ -f "/etc/bash/tip.date" ]; then
+	BASHRCVERSION="`cat /etc/bash/tip.date`"
+else
+	BASHRCVERSION="`hg tip --template '{date|isodate}\n' 2> /dev/null`"
+fi
 export BASHRCVERSION
 
 
@@ -58,7 +62,28 @@ OS="`uname -s`"
 case "$OS" in
 SunOS)		# Solaris
 	case "`uname -r`" in
-	"5.10"|"5.11")	# Solaris 10 and Nevada (11)
+	"5.11")	# OpenSolaris
+		PATH=/usr/gnu/bin
+		_append_path /usr/bin
+		_append_path /usr/X11/bin
+		_append_path /usr/sbin
+		_append_path /sbin
+
+		MANPATH=/usr/gnu/share/man
+		_append_manpath /usr/share/man
+		_append_manpath /usr/X11/share/man
+
+		ID=/usr/bin/id
+
+		# Files you make look like rw-r--r--
+		umask 022
+
+		# Make less the default pager
+		PAGER="/usr/bin/less -ins"
+		export PAGER
+		;;
+
+	"5.10")	# Solaris 10
 		ADMINPATH=""
 		_append_adminpath /opt/local/sbin
 		_append_adminpath /usr/gnu/sbin
@@ -207,26 +232,6 @@ unset _append_adminpath _append_path _prepend_path _append_manpath _prepend_manp
 if [ -r "/etc/bash/bashrc.local" ]; then
 	. /etc/bash/bashrc.local
 fi
-
-# Set CVS variables
-if [ -z "${CVS_HOSTPATH}" ]; then
-	# If CVS_HOSTPATH was not set, then set a default value
-	CVS_HOSTPATH=/cvs
-	CVSROOT="${CVS_HOSTPATH}"
-else
-	CVSROOT=":ext:${LOGNAME}@${CVS_HOSTPATH}"
-fi
-
-# Make less the default pager
-which ssh > /dev/null 2>&1
-if [ "$?" -eq "0" ]; then
-	CVS_RSH=`which ssh`
-else
-	CVS_RSH=
-fi
-
-export CVS_RSH CVSROOT
-unset CVS_HOSTPATH
 
 
 #---------------------------------------------------------------
@@ -420,6 +425,10 @@ if [ "$?" -eq 0 -a -d "/etc/bash/.hg" ]; then
 			(cd /etc/bash && pfexec hg pull -u)
 			if [ "$?" -eq 0 ]; then
 				echo "bashrc has been updated to current."
+				rm -f /etc/bash/tip.date
+				(cd /etc/bash && hg tip \
+					--template '{date|isodate}\n' 2> \
+					/etc/bash/tip.date)
 			else
 				echo "bashrc could not find an update or has failed."
 			fi
@@ -431,6 +440,10 @@ if [ "$?" -eq 0 -a -d "/etc/bash/.hg" ]; then
 			(cd /etc/bash && hg pull -u)
 			if [ "$?" -eq 0 ]; then
 				echo "bashrc has been updated to current."
+				rm -f /etc/bash/tip.date
+				(cd /etc/bash && hg tip \
+					--template '{date|isodate}\n' 2> \
+					/etc/bash/tip.date)
 			else
 				echo "bashrc could not find an update or has failed."
 			fi
@@ -442,6 +455,10 @@ if [ "$?" -eq 0 -a -d "/etc/bash/.hg" ]; then
 			(cd /etc/bash && sudo hg pull -u)
 			if [ "$?" -eq 0 ]; then
 				echo "bashrc has been updated to current."
+				rm -f /etc/bash/tip.date
+				(cd /etc/bash && hg tip \
+					--template '{date|isodate}\n' > \
+					/etc/bash/tip.date)
 			else
 				echo "bashrc could not find an update or has failed."
 			fi
@@ -525,10 +542,7 @@ shopt -s checkwinsize
 shopt -s histappend
 
 # Echo the version and date of the profile
-echo "bashrc v${BASHRCVERSION} (`
-	echo '$Date$' | \
-	awk '{ print $2\" \"$3 }'
-	`)"
+echo "bashrc ($BASHRCVERSION)"
 echo
 
 
