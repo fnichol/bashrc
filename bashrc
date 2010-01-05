@@ -260,7 +260,7 @@ fi
 #
 # hostfromdomain:
 #
-if which dig > /dev/null; then
+if which dig &> /dev/null; then
 	hostfromdomain()
 	{
 		if [ -z "$1" ]; then
@@ -435,7 +435,7 @@ esac
 #
 # update_bashrc: pulls down new changes to the bashrc via mercurial.
 #
-which hg > /dev/null
+which hg &> /dev/null
 if [ "$?" -eq 0 -a -d "/etc/bash/.hg" ]; then
 	update_bashrc()
 	{
@@ -548,7 +548,7 @@ alias lm='ll | less'
 
 # Colorize maven output, courtesy of:
 # http://blog.blindgaenger.net/colorize_maven_output.html
-if which mvn > /dev/null; then
+if which mvn &> /dev/null; then
 	color_maven()
 	{
 		local e=$(echo -e "\x1b")[
