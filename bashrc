@@ -418,15 +418,27 @@ case "$OS" in
 SunOS)
 	zoneinfo()
 	{
-		echo "NAME		STATUS		COMMENT"
+		printf "%-5s  %-10s  %-16s  %-8s  %s\n" \
+			"ISC" "DOMAIN" "NAME" "STATUS" "COMMENT"
 		for zoneline in `zoneadm list -pi | grep -v ':global:' | sort`; do
-			zone="`echo $zoneline | nawk -F':' '{ print $2 }'`"
-			zonestatus="`echo $zoneline | nawk -F':' '{ print $3 }'`"
-			zonecfg -z $zone info attr name=comment | egrep 'value: ' | \
-				nawk 'BEGIN { FS = ": " } \
-				{ printf "%s\t%s\t%s\n", zone, zonestatus, $2 }' \
-				zone=$zone zonestatus=$zonestatus
-		done
+			local zone="`echo $zoneline | nawk -F':' '{ print $2 }'`"
+			local status="`echo $zoneline | nawk -F':' '{ print $3 }'`"
+
+			local isc_num="`zonecfg -z $zone info zonepath | \
+				nawk '{print $2}' | sed 's|^.*/\(isc[0-9][0-9]*\)/.*$|\1|'`"
+			if [ "$isc_num" == "" ]; then domain="N/A"; fi
+
+			local domain="`zonecfg -z $zone info attr name=domain | \
+				egrep 'value: ' |  nawk '{print $2}'`"
+			if [ "$domain" == "" ]; then domain="NOT SET"; fi
+
+			local comment="`zonecfg -z $zone info attr name=comment | \
+				egrep 'value: ' |  sed 's|^[^\"]*\"\([^\"]*\)\".*$|\1|'`"
+			if [ "$comment" == "" ]; then comment="NOT SET"; fi
+
+			printf "%-5s  %-10s  %-16s  %-8s  %s\n" \
+				"$isc_num" "$domain" "$zone" "$status" "$comment"
+		done | sort
 	}
 	;;
 esac
