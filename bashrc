@@ -418,7 +418,7 @@ case "$OS" in
 SunOS)
 	zoneinfo()
 	{
-		printf "%-5s  %-10s  %-16s  %-8s  %s\n" \
+		printf "%-5s  %-10s  %-16s  %-10s  %s\n" \
 			"ISC" "DOMAIN" "NAME" "STATUS" "COMMENT"
 		for zoneline in `zoneadm list -pi | grep -v ':global:' | sort`; do
 			local zone="`echo $zoneline | nawk -F':' '{ print $2 }'`"
@@ -436,7 +436,7 @@ SunOS)
 				egrep 'value: ' |  sed 's|^[^\"]*\"\([^\"]*\)\".*$|\1|'`"
 			if [ "$comment" == "" ]; then comment="NOT SET"; fi
 
-			printf "%-5s  %-10s  %-16s  %-8s  %s\n" \
+			printf "%-5s  %-10s  %-16s  %-10s  %s\n" \
 				"$isc_num" "$domain" "$zone" "$status" "$comment"
 		done | sort
 	}
