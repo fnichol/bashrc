@@ -472,7 +472,8 @@ case "$OS" in
 Darwin)
 	whatsmy_primary_ip()
 	{
-		local _if="`netstat -nr | grep ^default | awk '{print $6}'`"
+		local _if="`netstat -nr | grep ^default | \
+			grep -v 'link#' | awk '{print $6}'`"
 		local _ip="`ifconfig $_if | \
 			grep '^[[:space:]]*inet ' | awk '{print $2}'`"
 
