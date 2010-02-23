@@ -521,7 +521,7 @@ SunOS)
 			local _def_gateway="`netstat -nr | grep ^default | \
 				awk '{print $2}'`"
 			local _if="`route get $_def_gateway | \
-				grep '^[[:space:]]*interface:' | awk '{print $2}'`"
+				grep '^[ ]*interface:' | awk '{print $2}'`"
 			local _ip="`ifconfig $_if | \
 				grep '^[ ]*inet ' | awk '{print $2}'`"
 
