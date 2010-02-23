@@ -464,6 +464,78 @@ if [ "$?" -eq 0 -a -d "/etc/bash/.hg" ]; then
 	}
 fi
 
+
+#
+# whatsmy_primary_ip: returns the primary IP address of the system
+#
+case "$OS" in
+Darwin)
+	whatsmy_primary_ip()
+	{
+		local _if="`netstat -nr | grep ^default | awk '{print $6}'`"
+		local _ip="`ifconfig $_if | \
+			grep '^[[:space:]]*inet ' | awk '{print $2}'`"
+
+		if [ -z "$_ip" -o "$_ip" == "" ]; then
+			echo "Could not determine primary IP address"
+			return 10
+		else
+			echo $_ip
+		fi
+	}
+	;;
+OpenBSD)
+	whatsmy_primary_ip()
+	{
+		local _if="`netstat -nr | grep ^default | awk '{print $8}'`"
+		local _ip="`ifconfig $_if | \
+			grep '^[[:space:]]*inet ' | awk '{print $2}'`"
+
+		if [ -z "$_ip" -o "$_ip" == "" ]; then
+			echo "Could not determine primary IP address"
+			return 10
+		else
+			echo $_ip
+		fi
+	}
+	;;
+Linux)
+	whatsmy_primary_ip()
+	{
+		local _if="`netstat -nr | grep ^0\.0\.0\.0 | awk '{print $8}'`"
+		local _ip="`/sbin/ifconfig $_if | \
+			grep '^[[:space:]]*inet ' | awk '{print $2}' | \
+			awk -F':' '{print $2}'`"
+
+		if [ -z "$_ip" -o "$_ip" == "" ]; then
+			echo "Could not determine primary IP address"
+			return 10
+		else
+			echo $_ip
+		fi
+	}
+	;;
+SunOS)
+		whatsmy_primary_ip()
+		{
+			local _def_gateway="`netstat -nr | grep ^default | \
+				awk '{print $2}'`"
+			local _if="`route get $_def_gateway | \
+				grep '^[[:space:]]*interface:' | awk '{print $2}'`"
+			local _ip="`ifconfig $_if | \
+				grep '^[[:space:]]*inet ' | awk '{print $2}'`"
+
+			if [ -z "$_ip" -o "$_ip" == "" ]; then
+				echo "Could not determine primary IP address"
+				return 10
+			else
+				echo $_ip
+			fi
+		}
+		;;
+esac # case $OS
+
+
 #---------------------------------------------------------------
 # Interactive shell (prompt,history) settings
 #---------------------------------------------------------------
