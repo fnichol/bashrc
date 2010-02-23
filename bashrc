@@ -523,7 +523,7 @@ SunOS)
 			local _if="`route get $_def_gateway | \
 				grep '^[ ]*interface:' | awk '{print $2}'`"
 			local _ip="`ifconfig $_if | \
-				grep '^[ ]*inet ' | awk '{print $2}'`"
+				grep '^	*inet ' | awk '{print $2}'`"
 
 			if [ -z "$_ip" -o "$_ip" == "" ]; then
 				echo "Could not determine primary IP address"
