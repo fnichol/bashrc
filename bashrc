@@ -193,9 +193,6 @@ Linux)		# Linux
 	if [ -f "/etc/lsb-release" ]; then
 		LINUX_FLAVOR="`head -n 1 /etc/lsb-release | awk -F= '{print $2}'`"
 	fi
-
-	# check for ls --color alias and toast it
-	alias | grep -q '^alias ls=' && unalias ls
 	;;
 
 CYGWIN_*)	# Windows running Cygwin
@@ -373,7 +370,7 @@ get_color_code()
 
 
 #
-# prompthost()
+# prompthost:
 #
 prompthost()
 {
@@ -665,6 +662,12 @@ fi
 if [ "$OS" = "Darwin" -a -f "/opt/local/share/mysql5/mysql/mysql.server" ]; then
 	alias mysqld_start='sudo /opt/local/share/mysql5/mysql/mysql.server start'
 	alias mysqld_stop='sudo /opt/local/share/mysql5/mysql/mysql.server stop'
+fi
+
+# If colors are declared for ls, etc. change blue directories into yellow
+if [ -n "${LS_COLORS}" ]; then
+	LS_COLORS="`echo $LS_COLORS | sed 's|di=01;34|di=01;33|'`"
+	export LS_COLORS
 fi
 
 cleanup
