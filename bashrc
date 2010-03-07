@@ -700,6 +700,10 @@ SunOS)
 
 Linux)
 	# Colorize ls by default
+	if which dircolors &> /dev/null; then
+		test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || \
+			eval "$(dircolors -b)"
+	fi
 	alias ls='ls --color=auto'
 
 	# Colorize grep/egrep/fgrep by default
