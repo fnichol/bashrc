@@ -652,17 +652,62 @@ if [ -e "/usr/local/bin/pine" ]; then
 	alias pine="pine -d 0"
 fi
 
-# If system is Darwin (Mac), add the super alias to properly
-# become root with bash and environment settings
-if [ "$OS" = "Darwin" ]; then
+# OS-specific aliases
+case "$OS" in
+Darwin)
+	# Add the super alias to properly become root with bash and
+	# environment settings
 	alias super="sudo -s -H"
-fi
 
-# If mysql is installed via macports, then provide a startup and shutdown alias
-if [ "$OS" = "Darwin" -a -f "/opt/local/share/mysql5/mysql/mysql.server" ]; then
-	alias mysqld_start='sudo /opt/local/share/mysql5/mysql/mysql.server start'
-	alias mysqld_stop='sudo /opt/local/share/mysql5/mysql/mysql.server stop'
-fi
+	# Default color scheme except directories are yellow
+	LSCOLORS="Dxfxcxdxbxegedabagacad"
+	export LSCOLORS
+
+	# Colorize ls by default
+	alias ls="ls -G"
+
+	# Colorize grep/egrep/fgrep by default
+	alias grep='grep --color=auto'
+	alias egrep='egrep --color=auto'
+	alias fgrep='fgrep --color=auto'
+
+	# If mysql is installed via macports, then provide a startup and shutdown alias
+	if [ -f "/opt/local/share/mysql5/mysql/mysql.server" ]; then
+		alias mysqld_start='sudo /opt/local/share/mysql5/mysql/mysql.server start'
+		alias mysqld_stop='sudo /opt/local/share/mysql5/mysql/mysql.server stop'
+	fi
+	;;
+
+SunOS)
+	# Colorize ls by default, courtesy of:
+	# http://blogs.sun.com/observatory/entry/ls_colors
+	if [ "`which ls`" == "/usr/gnu/bin/ls" -a -x "/usr/bin/dircolors" ]; then
+		eval "`/usr/bin/dircolors -b`"
+		alias ls='ls --color=auto'
+	fi
+
+	# Colorize grep/egrep/fgrep by default
+	if [ "`which grep`" == "/usr/gnu/bin/grep" ]; then
+		alias grep='grep --color=auto'
+	fi
+	if [ "`which egrep`" == "/usr/gnu/bin/egrep" ]; then
+		alias egrep='egrep --color=auto'
+	fi
+	if [ "`which fgrep`" == "/usr/gnu/bin/fgrep" ]; then
+		alias fgrep='fgrep --color=auto'
+	fi
+	;;
+
+Linux)
+	# Colorize ls by default
+	alias ls='ls --color=auto'
+
+	# Colorize grep/egrep/fgrep by default
+	alias grep='grep --color=auto'
+	alias egrep='egrep --color=auto'
+	alias fgrep='fgrep --color=auto'
+	;;
+esac
 
 # If colors are declared for ls, etc. change blue directories into yellow
 if [ -n "${LS_COLORS}" ]; then
