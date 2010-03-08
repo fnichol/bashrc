@@ -309,9 +309,9 @@ authme()
 maven_set_settings()
 {
 	if [ ! -h "${HOME}/.m2/settings.xml" ]; then
-		if [ ! -f "${HOME}/.m2/settings.xml.default" ]; then
-			echo ">> Moving existing settings.xml to settings.xml.default..."
-			mv ${HOME}/.m2/settings.xml ${HOME}/.m2/settings.xml.default
+		if [ ! -f "${HOME}/.m2/settings-default.xml" ]; then
+			echo ">> Moving existing settings.xml to settings-default.xml..."
+			mv ${HOME}/.m2/settings.xml ${HOME}/.m2/settings-default.xml
 		fi
 	fi
 
@@ -319,16 +319,16 @@ maven_set_settings()
 	if [ -n "$1" ]; then
 		_ext="$1"
 	else
-		echo ">> No settings explictly asked for, so using "default"."
+		echo '>> No settings explictly asked for, so using "default".'
 	fi
 
-	if [ ! -f "${HOME}/.m2/settings.xml.$_ext" ]; then
-		echo "Maven settings $_ext (at: ${HOME}/.m2/settings.xml.$_ext) does not exist"
+	if [ ! -f "${HOME}/.m2/settings-${_ext}.xml" ]; then
+		echo "Maven settings $_ext (at: ${HOME}/.m2/settings-${_ext}.xml) does not exist"
 		return 1
 	fi
 
-	(cd ${HOME}/.m2 && ln -sf ./settings.xml.$_ext settings.xml)
-	echo "===> Activating maven settings file: ${HOME}/.m2/settings.xml.$_ext"
+	(cd ${HOME}/.m2 && ln -sf ./settings-${_ext}.xml settings.xml)
+	echo "===> Activating maven settings file: ${HOME}/.m2/settings-${_ext}.xml"
 }
 
 
