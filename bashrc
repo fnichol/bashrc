@@ -555,6 +555,11 @@ EXINIT="set tabstop=4"
 
 export EDITOR VISUAL EXINIT
 
+# Conditional support for Ruby Version Manager (RVM)
+if [[ -s "${HOME}/.rvm/scripts/rvm" ]]; then
+	source "${HOME}/.rvm/scripts/rvm"
+fi
+
 # Number of commands to remember in the command history
 export HISTSIZE=10000
 
