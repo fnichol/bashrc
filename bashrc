@@ -550,8 +550,8 @@ else
 	VISUAL=/usr/bin/vi
 fi
 
-# Set default visual tabstop to 2 characters, rather than 8
-EXINIT="set tabstop=4"
+# Set default visual tabstop to 4 characters, rather than 8
+EXINIT="set tabstop=4 bg=dark"
 
 export EDITOR VISUAL EXINIT
 
