@@ -558,6 +558,10 @@ export EDITOR VISUAL EXINIT
 # Conditional support for Ruby Version Manager (RVM)
 if [[ -s "${HOME}/.rvm/scripts/rvm" ]]; then
 	source "${HOME}/.rvm/scripts/rvm"
+elif [[ -s "/opt/rvm/scripts/rvm" ]]; then
+	source "/opt/rvm/scripts/rvm"
+elif [[ -s "/usr/local/rvm/scripts/rvm" ]]; then
+	source "/usr/local/rvm/scripts/rvm"
 fi
 
 # Number of commands to remember in the command history
