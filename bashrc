@@ -60,6 +60,7 @@ SunOS)		# Solaris
 		_append_path /usr/X11/bin
 		_append_path /usr/sbin
 		_append_path /sbin
+		_append_path /opt/rvm/bin
 
 		MANPATH=/usr/gnu/share/man
 		_append_manpath /usr/share/man
@@ -84,6 +85,7 @@ SunOS)		# Solaris
 		ADMINPATH="$ADMINPATH:/sbin:/usr/sbin"
 
 		PATH="$ADMINPATH"
+		_append_path /opt/rvm/bin
 		_append_path /opt/local/bin
 		_append_path /usr/gnu/bin
 		_append_path /usr/local/bin
@@ -142,6 +144,7 @@ Darwin)		# Mac OS X
 	_prepend_path /opt/maven/current/bin
 	_prepend_path /opt/ant/current/bin
 	_prepend_path /opt/grails/current/bin
+	_prepend_path /opt/rvm/bin
 
 	MANPATH="$MANPATH"
 	_prepend_manpath /opt/local/man
@@ -177,6 +180,7 @@ OpenBSD)	# OpenBSD
 	_append_path /bin
 	_append_path /usr/bin
 	_append_path /usr/X11R6/bin
+	_append_path /opt/rvm/bin
 	_append_path /usr/local/sbin
 	_append_path /usr/local/bin
 
@@ -185,6 +189,9 @@ OpenBSD)	# OpenBSD
 	;;
 
 Linux)		# Linux
+	PATH="$PATH"
+	_prepend_path /opt/rvm/bin
+	
 	ID=/usr/bin/id
 	SUPER_CMD=/usr/bin/sudo
 	if [ -f "/etc/redhat-release" ]; then
