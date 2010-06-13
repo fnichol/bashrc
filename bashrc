@@ -16,37 +16,47 @@ fi
 
 _append_adminpath()
 {
-	if [ -d "$1" ]; then
-		ADMINPATH="$ADMINPATH:$1"
-	fi
+	for p in $@; do
+		if [ -d "$p" ]; then
+			ADMINPATH="$ADMINPATH:$p"
+		fi
+	done
 }
 
 _append_path()
 {
-	if [ -d "$1" ]; then
-		PATH="$PATH:$1"
-	fi
+	for p in $@; do
+		if [ -d "$p" ]; then
+			PATH="$PATH:$p"
+		fi
+	done
 }
 
 _prepend_path()
 {
-	if [ -d "$1" ]; then
-		PATH="$1:$PATH"
-	fi
+	for p in $@; do
+		if [ -d "$p" ]; then
+			PATH="$p:$PATH"
+		fi
+	done
 }
 
 _append_manpath()
 {
-	if [ -d "$1" ]; then
-		MANPATH="$MANPATH:$1"
-	fi
+	for p in $@; do
+		if [ -d "$p" ]; then
+			MANPATH="$MANPATH:$p"
+		fi
+	done
 }
 
 _prepend_manpath()
 {
-	if [ -d "$1" ]; then
-		MANPATH="$1:$MANPATH"
-	fi
+	for p in $@; do
+		if [ -d "$p" ]; then
+			MANPATH="$p:$MANPATH"
+		fi
+	done
 }
 
 # Determines the machine OS to set PATH, MANPATH and ID
@@ -60,7 +70,8 @@ SunOS)		# Solaris
 		_append_path /usr/X11/bin
 		_append_path /usr/sbin
 		_append_path /sbin
-		_append_path /opt/rvm/bin
+		_prepend_path /opt/rvm/bin
+		_prepend_path /opt/*/current/bin
 
 		MANPATH=/usr/gnu/share/man
 		_append_manpath /usr/share/man
@@ -141,9 +152,7 @@ Darwin)		# Mac OS X
 	PATH="/bin:/sbin:/usr/local/bin:/usr/bin:/usr/sbin"
 	_prepend_path /opt/local/sbin
 	_prepend_path /opt/local/bin
-	_prepend_path /opt/maven/current/bin
-	_prepend_path /opt/ant/current/bin
-	_prepend_path /opt/grails/current/bin
+	_prepend_path /opt/*/current/bin
 	_prepend_path /opt/rvm/bin
 
 	MANPATH="$MANPATH"
@@ -168,6 +177,18 @@ Darwin)		# Mac OS X
 		export GRAILS_HOME
 	fi
 
+	# if groovy is installed manually, then export GROOVY_HOME preferentially
+	if [ -f "/opt/groovy/current/bin/groovy" -a -d "/opt/groovy/current" ]
+	then
+		GROOVY_HOME=/opt/groovy/current
+		export GROOVY_HOME
+	# if groovy is installed via macports, then export GROOVY_HOME
+	elif [ -f "/opt/local/bin/groovy" -a -d "/opt/local/share/java/groovy" ]
+	then
+		GROOVY_HOME=/opt/local/share/java/groovy
+		export GROOVY_HOME
+	fi
+
 	ID=/usr/bin/id
 	SUPER_CMD=/usr/bin/sudo
 	;;
@@ -190,8 +211,23 @@ OpenBSD)	# OpenBSD
 
 Linux)		# Linux
 	PATH="$PATH"
+	_prepend_path /opt/*/current/bin
 	_prepend_path /opt/rvm/bin
 	
+	# if grails is installed manually, then export GRAILS_HOME preferentially
+	if [ -f "/opt/grails/current/bin/grails" -a -d "/opt/grails/current" ]
+	then
+		GRAILS_HOME=/opt/grails/current
+		export GRAILS_HOME
+	fi
+
+	# if groovy is installed manually, then export GROOVY_HOME preferentially
+	if [ -f "/opt/groovy/current/bin/groovy" -a -d "/opt/groovy/current" ]
+	then
+		GROOVY_HOME=/opt/groovy/current
+		export GROOVY_HOME
+	fi
+
 	ID=/usr/bin/id
 	SUPER_CMD=/usr/bin/sudo
 	if [ -f "/etc/redhat-release" ]; then
