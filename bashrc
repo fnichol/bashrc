@@ -70,7 +70,6 @@ SunOS)		# Solaris
 		_append_path /usr/X11/bin
 		_append_path /usr/sbin
 		_append_path /sbin
-		_prepend_path /opt/rvm/bin
 		_prepend_path /opt/*/current/bin
 
 		MANPATH=/usr/gnu/share/man
@@ -96,7 +95,6 @@ SunOS)		# Solaris
 		ADMINPATH="$ADMINPATH:/sbin:/usr/sbin"
 
 		PATH="$ADMINPATH"
-		_append_path /opt/rvm/bin
 		_append_path /opt/local/bin
 		_append_path /usr/gnu/bin
 		_append_path /usr/local/bin
@@ -153,7 +151,6 @@ Darwin)		# Mac OS X
 	_prepend_path /opt/local/sbin
 	_prepend_path /opt/local/bin
 	_prepend_path /opt/*/current/bin
-	_prepend_path /opt/rvm/bin
 
 	MANPATH="$MANPATH"
 	_prepend_manpath /opt/local/man
@@ -201,7 +198,6 @@ OpenBSD)	# OpenBSD
 	_append_path /bin
 	_append_path /usr/bin
 	_append_path /usr/X11R6/bin
-	_append_path /opt/rvm/bin
 	_append_path /usr/local/sbin
 	_append_path /usr/local/bin
 
@@ -212,7 +208,6 @@ OpenBSD)	# OpenBSD
 Linux)		# Linux
 	PATH="$PATH"
 	_prepend_path /opt/*/current/bin
-	_prepend_path /opt/rvm/bin
 	
 	# if grails is installed manually, then export GRAILS_HOME preferentially
 	if [ -f "/opt/grails/current/bin/grails" -a -d "/opt/grails/current" ]
@@ -593,18 +588,16 @@ else
 	VISUAL=/usr/bin/vi
 fi
 
-# Set default visual tabstop to 4 characters, rather than 8
-EXINIT="set tabstop=4 bg=dark"
+# Set default visual tabstop to 2 characters, rather than 8
+EXINIT="set tabstop=2 bg=dark"
 
 export EDITOR VISUAL EXINIT
 
 # Conditional support for Ruby Version Manager (RVM)
 if [[ -s "${HOME}/.rvm/scripts/rvm" ]]; then
 	source "${HOME}/.rvm/scripts/rvm"
-elif [[ -s "/opt/rvm/scripts/rvm" ]]; then
-	source "/opt/rvm/scripts/rvm"
-elif [[ -s "/usr/local/rvm/scripts/rvm" ]]; then
-	source "/usr/local/rvm/scripts/rvm"
+elif [[ -s "/usr/local/lib/rvm" ]]; then
+	source "/usr/local/lib/rvm"
 fi
 
 # Number of commands to remember in the command history
