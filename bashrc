@@ -371,56 +371,6 @@ maven_set_settings()
 
 
 #
-# get_color_code: 
-#
-get_color_code()
-{
-	local choice
-	if [ -z "${1}" ]; then
-		choice="default"
-	else
-		choice="$1"
-	fi
-
-	case "$choice" in
-		black)       local color="0;30m" ;;
-		red)         local color="0;31m" ;;
-		green)       local color="0;32m" ;;
-		brown)       local color="0;33m" ;;
-		blue)        local color="0;34m" ;;
-		purple)      local color="0;35m" ;;
-		cyan)        local color="0;36m" ;;
-		lightgray)   local color="0;37m" ;;
-		darkgray)    local color="1;30m" ;;
-		lightred)    local color="1;31m" ;;
-		lightgreen)  local color="1;32m" ;;
-		yellow)      local color="1;33m" ;;
-		lightblue)   local color="1;34m" ;;
-		lightpurple) local color="1;35m" ;;
-		lightcyan)   local color="1;36m" ;;
-		white)       local color="1;37m" ;;
-		default)     local color="m" ;;
-		*)           local color="m" ;;
-	esac
-
-	echo -n "$color"
-}
-
-
-#
-# prompthost:
-#
-prompthost()
-{
-	if [ -z "${PROMPT_COLOR}" ]; then
-		PROMPT_COLOR="default"
-	fi
-
-	get_color_code $PROMPT_COLOR
-}
-
-
-#
 # psg: performs an egrep on the process list
 #
 case "$OS" in
@@ -613,43 +563,71 @@ export HISTTIMEFORMAT="%Y-%m-%dT%H:%M:%S "
 # and a few others.
 export HISTIGNORE="[ ]*:&:bg:fg:ls -l:ls -al:ls -la:ll:la"
 
-# Sets a default prompt. The \[..\] strings are to bold the
-# prompt text.
-PROMPT_STRING="\u@\h:\w"
-if [ "`$ID -ur`" -eq "0" ]; then
-	# If the user is root, display a # in the shell
-	case "$TERM" in
-	*term | rxvt)
-		# show the prompt in red
-		PS1="\[\033[41;1m\]${PROMPT_STRING}#\[\033[0m\] "
-		PS2="\[\033[41;1m\]#\[\033[0m\] "
-		# if TERM supports it, add info in the titlebar
-		PROMPT_COMMAND='echo -n -e \
-			"\033]0;#${LOGNAME}@${HOSTNAME%%.*}:${PWD//$HOME/~}#\007"'
-		;;
+# Sets a prompt
+bash_prompt()
+{
+  if [ -z "${PROMPT_COLOR}" ]; then PROMPT_COLOR="default"; fi
 
-	*)
-		PS1="${PROMPT_STRING}# "
-		PS2="# "
-		;;
-	esac # TERM
-else
-	# Display a normal prompt for non-root users
-	case "$TERM" in
-	*term | rxvt)
-		PS1="\[\033[`prompthost`\]${PROMPT_STRING}>\[\033[0m\] "
-		PS2="\[\033[`prompthost`\]>\[\033[0m\] "
-		# if TERM supports it, add info in the titlebar
-		PROMPT_COMMAND='echo -n -e \
-			"\033]0;${LOGNAME}@${HOSTNAME%%.*}:${PWD//$HOME/~}\007"'
-		;;
+  local dull=0 ; local bright=1
 
-	*)
-		PS1="${PROMPT_STRING}> "
-		PS2="> "
-		;;
-	esac # TERM
-fi
+  local fg_black=30  ; local fg_red=31   ; local fg_green=32
+  local fg_yellow=33 ; local fg_blue=34  ; local fg_violet=35
+  local fg_cyan=36   ; local fg_white=37 ; local fg_null=00
+
+  local bg_black=40  ; local bg_red=41   ; local bg_green=42
+  local bg_yellow=43 ; local bg_blue=44  ; local bg_violet=45
+  local bg_cyan=46   ; local bg_white=47 ; local bg_null=00
+
+  # ANSI Escape Commands
+  local esc="\033" ; local normal="\[$esc[m\]"
+  local reset="\[$esc[${dull};${fg_white};${bg_null}m\]"
+
+  case "$PROMPT_COLOR" in
+    # Dull Text
+    black)          local color="\[$esc[${dull};${fg_black}m\]" ;;
+    red)            local color="\[$esc[${dull};${fg_red}m\]" ;;
+    green)          local color="\[$esc[${dull};${fg_green}m\]" ;;
+    yellow)         local color="\[$esc[${dull};${fg_yellow}m\]" ;;
+    blue)           local color="\[$esc[${dull};${fg_blue}m\]" ;;
+    violet)         local color="\[$esc[${dull};${fg_violet}m\]" ;;
+    cyan)           local color="\[$esc[${dull};${fg_cyan}m\]" ;;
+    white)          local color="\[$esc[${dull};${fg_white}m\]" ;;
+    # Bright Text
+    bright_black)   local color="\[$esc[${bright};${fg_black}m\]" ;;
+    bright_red)     local color="\[$esc[${bright};${fg_red}m\]" ;;
+    bright_green)   local color="\[$esc[${bright};${fg_green}m\]" ;;
+    bright_yellow)  local color="\[$esc[${bright};${fg_yellow}m\]" ;;
+    bright_blue)    local color="\[$esc[${bright};${fg_blue}m\]" ;;
+    bright_violet)  local color="\[$esc[${bright};${fg_violet}m\]" ;;
+    bright_cyan)    local color="\[$esc[${bright};${fg_cyan}m\]" ;;
+    bright_white)   local color="\[$esc[${bright};${fg_white}m\]" ;;
+    # Catchall
+    *)              local color="\[$esc[m\]" ;;
+  esac
+  
+  # Root Color
+  local root_red="\[$esc[${bg_red};${bright}m\]"
+
+  if [ "`$ID -ur`" -eq "0" ]; then
+    local user_c="#" ; local tb=$user_c ; local color="${root_red}"
+  else
+    local user_c=">" ; local tb=""
+  fi
+  local prompt="\u@\h:\w"
+
+  case "$TERM" in
+  *term | rxvt)
+    local titlebar="\[\033]0;${tb}${prompt}${tb}\007\]"
+    PS1="${titlebar}${color}${prompt}${user_c} ${reset}"
+    PS2="${color}${user_c} ${reset}"
+    ;;
+  *)
+    PS1="${prompt}${user_c} "
+    PS2="${user_c} "
+    ;;
+  esac
+}
+bash_prompt ; unset bash_prompt
 
 export IGNOREEOF=10
 
