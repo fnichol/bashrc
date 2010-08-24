@@ -1,6 +1,5 @@
 #---------------------------------------------------------------
 # Global bashrc File
-# $Id$
 #---------------------------------------------------------------
 
 # Skip this config if we aren't in bash
@@ -11,414 +10,393 @@
 # Define Default System Paths
 #---------------------------------------------------------------
 
-_append_adminpath()
-{
-	for p in $@; do
-		if [ -d "$p" ]; then
-			ADMINPATH="$ADMINPATH:$p"
-		fi
-	done ; unset p
+_append_path() {
+  local path_var="$1"
+  shift
+  for p in $@ ; do
+    [[ -d "$p" ]] && eval $path_var="\$${path_var}:${p}"
+  done ; unset p
 }
 
-_append_path()
-{
-	for p in $@; do
-		if [ -d "$p" ]; then
-			PATH="$PATH:$p"
-		fi
-	done ; unset p
+_push_path() {
+  local path_var="$1"
+  shift
+  for p in $@ ; do
+    [[ -d "$p" ]] && eval $path_var="${p}:\$${path_var}"
+  done ; unset p
 }
 
-_prepend_path()
-{
-	for p in $@; do
-		if [ -d "$p" ]; then
-			PATH="$p:$PATH"
-		fi
-	done ; unset p
-}
 
-_append_manpath()
-{
-	for p in $@; do
-		if [ -d "$p" ]; then
-			MANPATH="$MANPATH:$p"
-		fi
-	done ; unset p
-}
+# Determines the machine _os to set PATH, MANPATH and _id
+_os="$(uname -s)"
+case "$_os" in
+  Linux)		# Linux
+  	_push_path /opt/*/current/bin
 
-_prepend_manpath()
-{
-	for p in $@; do
-		if [ -d "$p" ]; then
-			MANPATH="$p:$MANPATH"
-		fi
-	done ; unset p
-}
+  	# if grails is installed manually, then export GRAILS_HOME preferentially
+  	if [ -f "/opt/grails/current/bin/grails" -a -d "/opt/grails/current" ] ; then
+  		export GRAILS_HOME=/opt/grails/current
+  	fi
 
-# Determines the machine OS to set PATH, MANPATH and ID
-OS="$(uname -s)"
-case "$OS" in
-SunOS)		# Solaris
-	case "$(uname -r)" in
-	"5.11")	# OpenSolaris
-		PATH=/usr/gnu/bin
-		_append_path /usr/bin
-		_append_path /usr/X11/bin
-		_append_path /usr/sbin
-		_append_path /sbin
-		_prepend_path /opt/*/current/bin
+  	# if groovy is installed manually, then export GROOVY_HOME preferentially
+  	if [ -f "/opt/groovy/current/bin/groovy" -a -d "/opt/groovy/current" ] ; then
+  		export GROOVY_HOME=/opt/groovy/current
+  	fi
 
-		MANPATH=/usr/gnu/share/man
-		_append_manpath /usr/share/man
-		_append_manpath /usr/X11/share/man
+  	_id=/usr/bin/id
+  	super_cmd=/usr/bin/sudo
+  	if [ -f "/etc/redhat-release" ] ; then
+  		LINUX_FLAVOR="$(awk '{print $1}' /etc/redhat-release)"
+  	fi
+  	if [ -f "/etc/lsb-release" ] ; then
+  		LINUX_FLAVOR="$(head -n 1 /etc/lsb-release | awk -F= '{print $2}')"
+  	fi
+  	;;
 
-		ID=/usr/bin/id
-		SUPER_CMD=/usr/bin/pfexec
+  Darwin)		# Mac OS X
+  	_push_path PATH /opt/local/sbin /opt/local/bin /opt/*/current/bin
+  	_push_path MANPATH /opt/local/man
 
-		# Files you make look like rw-r--r--
-		umask 022
+  	# if we can determine the version of java as set in java prefs, then export
+  	# JAVA_HOME to match this
+  	[[ -s "/usr/libexec/java_home" ]] && export JAVA_HOME=$(/usr/libexec/java_home)
 
-		# Make less the default pager
-		PAGER="/usr/bin/less -ins"
-		export PAGER
-		;;
+  	# if grails is installed manually, then export GRAILS_HOME preferentially
+  	if [ -f "/opt/grails/current/bin/grails" -a -d "/opt/grails/current" ] ; then
+  		export GRAILS_HOME=/opt/grails/current
+  	# if grails is installed via macports, then export GRAILS_HOME
+  	elif [ -f "/opt/local/bin/grails" -a -d "/opt/local/share/java/grails" ] ; then
+  		export GRAILS_HOME=/opt/local/share/java/grails
+  	fi
 
-	"5.10")	# Solaris 10
-		ADMINPATH=/opt/local/sbin
-		_append_adminpath /usr/gnu/sbin
-		_append_adminpath /usr/local/sbin
-		_append_adminpath /usr/platform/$(uname -i)/sbin
-		ADMINPATH="$ADMINPATH:/sbin:/usr/sbin"
+  	# if groovy is installed manually, then export GROOVY_HOME preferentially
+  	if [ -f "/opt/groovy/current/bin/groovy" -a -d "/opt/groovy/current" ] ; then
+  		export GROOVY_HOME=/opt/groovy/current
+  	# if groovy is installed via macports, then export GROOVY_HOME
+  	elif [ -f "/opt/local/bin/groovy" -a -d "/opt/local/share/java/groovy" ] ; then
+  		export GROOVY_HOME=/opt/local/share/java/groovy
+  	fi
 
-		PATH="$ADMINPATH"
-		_append_path /opt/local/bin
-		_append_path /usr/gnu/bin
-		_append_path /usr/local/bin
-		PATH="$PATH:/bin:/usr/bin:/usr/ccs/bin"
-		_append_path /usr/openwin/bin
-		_append_path /usr/dt/bin
-		_append_path /opt/sun/bin
-		_append_path /opt/SUNWspro/bin
-		_append_path /opt/SUNWvts/bin
+  	_id=/usr/bin/id
+  	super_cmd=/usr/bin/sudo
+  	;;
 
-		MANPATH="$MANPATH"
-		_append_manpath /opt/local/share/man
-		_append_manpath /usr/gnu/man
-		_append_manpath /usr/local/man
-		MANPATH="$MANPATH:/usr/man:/usr/share/man"
-		_append_manpath /opt/SUNWspro/man
-		_append_manpath /opt/SUNWvts/man
+  OpenBSD)	# OpenBSD
+  	# Set a base PATH based on original /etc/skel/.profile and /root/.profile
+  	# from 4.6 on 2010-01-01
+  	PATH=/sbin
+  	_append_path PATH /usr/sbin /bin /usr/bin /usr/X11R6/bin \
+  	  /usr/local/sbin /usr/local/bin
 
-		ID=/usr/xpg4/bin/id
-		SUPER_CMD=/usr/bin/pfexec
+  	_id=/usr/bin/id
+  	super_cmd=/usr/bin/sudo
+  	;;
 
-		if [ -d "/usr/local/lib/python2.6/site-packages" ]; then
-			PYTHONPATH="$PYTHONPATH:/usr/local/lib/python2.6/site-packages"
-		fi
-		if [ -d "/usr/local/lib/python2.5/site-packages" ]; then
-			PYTHONPATH="$PYTHONPATH:/usr/local/lib/python2.5/site-packages"
-		fi
-		if [ -d "/usr/local/lib/python2.4/site-packages" ]; then
-			PYTHONPATH="$PYTHONPATH:/usr/local/lib/python2.4/site-packages"
-		fi
-		if [ -n "$PYTHONPATH" ]; then
-			export PYTHONPATH
-		fi
+  SunOS)		# Solaris
+  	case "$(uname -r)" in
+    	"5.11")	# OpenSolaris
+    		PATH=/opt/*/current/bin
+    		_append_path PATH /usr/gnu/bin /usr/bin /usr/X11/bin /usr/sbin /sbin
 
-		# Files you make look like rw-r--r--
-		umask 022
+    		MANPATH=/usr/gnu/share/man
+    		_append_path MANPATH /usr/share/man /usr/X11/share/man
 
-		# Make less the default pager
-		which less > /dev/null 2>&1
-		if [ "$?" -eq "0" ]; then
-			PAGER="$(which less)"
-			export PAGER
-		fi
+    		_id=/usr/bin/id
+    		super_cmd=/usr/bin/pfexec
 
-		unset ADMINPATH
-		;;
-	esac
-	;;
+    		# Files you make look like rw-r--r--
+    		umask 022
 
-Darwin)		# Mac OS X
-	# Set the PATH based on original /etc/profile from 
-	# 10.3.6 on 2004/11/22.
-	PATH="/bin:/sbin:/usr/local/bin:/usr/bin:/usr/sbin"
-	_prepend_path /opt/local/sbin
-	_prepend_path /opt/local/bin
-	_prepend_path /opt/*/current/bin
+    		# Make less the default pager
+    		export PAGER="/usr/bin/less -ins"
+    		;;
 
-	MANPATH="$MANPATH"
-	_prepend_manpath /opt/local/man
+    	"5.10")	# Solaris 10
+    	  PATH=/opt/local/sbin
+    	  # admin path
+    	  _append_path PATH /usr/gnu/sbin /usr/local/sbin \
+    	    /usr/platform/$(uname -i)/sbin /sbin /usr/sbin
+    	  # general path
+    	  _append_path PATH /opt/local/bin /usr/gnu/bin /usr/local/bin \
+    	    /bin /usr/bin /usr/ccs/bin /usr/openwin/bin /usr/dt/bin /opt/sun/bin \
+    	    /opt/SUNWspro/bin /opt/SUNWvts/bin
 
-	# if we can determine the version of java as set in java prefs, then export
-	# JAVA_HOME to match this
-	if [ -f "/usr/libexec/java_home" ]; then
-		JAVA_HOME=$(/usr/libexec/java_home)
-		export JAVA_HOME
-	fi
+        _append_path MANPATH /opt/local/share/man /usr/gnu/man /usr/local/man \
+          /usr/man /usr/share/man /opt/SUNWspro/man /opt/SUNWvts/man
 
-	# if grails is installed manually, then export GRAILS_HOME preferentially
-	if [ -f "/opt/grails/current/bin/grails" -a -d "/opt/grails/current" ]
-	then
-		GRAILS_HOME=/opt/grails/current
-		export GRAILS_HOME
-	# if grails is installed via macports, then export GRAILS_HOME
-	elif [ -f "/opt/local/bin/grails" -a -d "/opt/local/share/java/grails" ]
-	then
-		GRAILS_HOME=/opt/local/share/java/grails
-		export GRAILS_HOME
-	fi
+    		_id=/usr/xpg4/bin/id
+    		super_cmd=/usr/bin/pfexec
 
-	# if groovy is installed manually, then export GROOVY_HOME preferentially
-	if [ -f "/opt/groovy/current/bin/groovy" -a -d "/opt/groovy/current" ]
-	then
-		GROOVY_HOME=/opt/groovy/current
-		export GROOVY_HOME
-	# if groovy is installed via macports, then export GROOVY_HOME
-	elif [ -f "/opt/local/bin/groovy" -a -d "/opt/local/share/java/groovy" ]
-	then
-		GROOVY_HOME=/opt/local/share/java/groovy
-		export GROOVY_HOME
-	fi
+    		if [ -d "/usr/local/lib/python2.6/site-packages" ] ; then
+    			PYTHONPATH="$PYTHONPATH:/usr/local/lib/python2.6/site-packages"
+    		fi
+    		if [ -d "/usr/local/lib/python2.5/site-packages" ] ; then
+    			PYTHONPATH="$PYTHONPATH:/usr/local/lib/python2.5/site-packages"
+    		fi
+    		if [ -d "/usr/local/lib/python2.4/site-packages" ] ; then
+    			PYTHONPATH="$PYTHONPATH:/usr/local/lib/python2.4/site-packages"
+    		fi
+    		if [ -n "$PYTHONPATH" ] ; then
+    			export PYTHONPATH
+    		fi
 
-	ID=/usr/bin/id
-	SUPER_CMD=/usr/bin/sudo
-	;;
+    		# Files you make look like rw-r--r--
+    		umask 022
 
-OpenBSD)	# OpenBSD
-	# Set a base PATH based on original /etc/skel/.profile and /root/.profile
-	# from 4.6 on 2010-01-01
-	PATH=/sbin
-	_append_path /usr/sbin
-	_append_path /bin
-	_append_path /usr/bin
-	_append_path /usr/X11R6/bin
-	_append_path /usr/local/sbin
-	_append_path /usr/local/bin
+    		# Make less the default pager
+    		if command -v less >/dev/null ; then
+    			export PAGER="$(command -v less)"
+    		fi
 
-	ID=/usr/bin/id
-	SUPER_CMD=/usr/bin/sudo
-	;;
+    		unset ADMINPATH
+    		;;
+  	esac
+  	;;
 
-Linux)		# Linux
-	PATH="$PATH"
-	_prepend_path /opt/*/current/bin
-	
-	# if grails is installed manually, then export GRAILS_HOME preferentially
-	if [ -f "/opt/grails/current/bin/grails" -a -d "/opt/grails/current" ]
-	then
-		GRAILS_HOME=/opt/grails/current
-		export GRAILS_HOME
-	fi
-
-	# if groovy is installed manually, then export GROOVY_HOME preferentially
-	if [ -f "/opt/groovy/current/bin/groovy" -a -d "/opt/groovy/current" ]
-	then
-		GROOVY_HOME=/opt/groovy/current
-		export GROOVY_HOME
-	fi
-
-	ID=/usr/bin/id
-	SUPER_CMD=/usr/bin/sudo
-	if [ -f "/etc/redhat-release" ]; then
-		LINUX_FLAVOR="$(awk '{print $1}' /etc/redhat-release)"
-	fi
-	if [ -f "/etc/lsb-release" ]; then
-		LINUX_FLAVOR="$(head -n 1 /etc/lsb-release | awk -F= '{print $2}')"
-	fi
-	;;
-
-CYGWIN_*)	# Windows running Cygwin
-	ID=/usr/bin/id
-	SUPER_CMD=
-	;;
+  CYGWIN_*)	# Windows running Cygwin
+  	_id=/usr/bin/id
+  	super_cmd=
+  	;;
 esac # uname -s
 
 
 # If a $HOME/bin directory exists, add it to the PATH
-_append_path $HOME/bin
+_append_path PATH $HOME/bin
 
 # If a $HOME/man directory exists, add it to the MANPATH
-_append_manpath $HOME/man
+_append_path MANPATH $HOME/man
 
-case "$OS" in 
-OpenBSD)
-	# make sure MANPATH isn't set
-	unset MANPATH
-	;;
-*)
-	export MANPATH
-	;;
+case "$_os" in
+  OpenBSD)
+  	# make sure MANPATH isn't set
+  	unset MANPATH
+  	;;
+
+  *)
+  	export MANPATH
+  	;;
 esac # uname -s
 
-export PATH SUPER_CMD
+export PATH super_cmd
 
-unset _append_adminpath _append_path _prepend_path _append_manpath _prepend_manpath
+[[ -r "/etc/bash/bashrc.local" ]] &&  source /etc/bash/bashrc.local
 
-#---------------------------------------------------------------
-# Set Global Environment Variables
-#---------------------------------------------------------------
-
-if [ -r "/etc/bash/bashrc.local" ]; then
-	. /etc/bash/bashrc.local
-fi
+unset _append_path _push_path
 
 
 #---------------------------------------------------------------
 # Functions
 #---------------------------------------------------------------
 
+##
+# Unsets any outstanding environment variables and unsets itself.
 #
-# cleanup: unsets any outstanding environment variables and
-#     unsets itself
-#
-cleanup()
-{
-	unset PROMPT_STRING PROMPT_COLOR OS ID
-	unset prompthost
-	unset get_color_code
+cleanup() {
+	unset PROMPT_COLOR _os _id
 	unset cleanup
 }
 
-
 # Skip the rest if this is not an interactive shell
-if [ -z "${PS1}" -a "$-" != "*i*" ]; then
-	cleanup; return
-fi
+if [ -z "${PS1}" -a "$-" != "*i*" ] ; then	cleanup ; return ; fi
 
-
+##
+# Prints terminal codes.
 #
-# hostfromdomain:
+# Thanks to: http://github.com/wayneeseguin/rvm/blob/master/scripts/color
 #
-if which dig &> /dev/null; then
-	hostfromdomain()
-	{
-		if [ -z "$1" ]; then
-			return 10
-		fi
-		dig -x $(dig $1 +short) +short
-	}
-fi # which dig
+# @param [String] terminal code keyword (usually a color)
+bput() {
+  case "$1" in
+    # regular colors
+    black)    tput setaf 0 ;;
+    red)      tput setaf 1 ;;
+    green)    tput setaf 2 ;;
+    yellow)   tput setaf 3 ;;
+    blue)     tput setaf 4 ;;
+    magenta)  tput setaf 5 ;;
+    cyan)     tput setaf 6 ;;
+    white)    tput setaf 7 ;;
 
+    # emphasized (bolded) colors
+    eblack)   tput bold ; tput setaf 0 ;;
+    ered)     tput bold ; tput setaf 1 ;;
+    egreen)   tput bold ; tput setaf 2 ;;
+    eyellow)  tput bold ; tput setaf 3 ;;
+    eblue)    tput bold ; tput setaf 4 ;;
+    emagenta) tput bold ; tput setaf 5 ;;
+    ecyan)    tput bold ; tput setaf 6 ;;
+    ewhite)   tput bold ; tput setaf 7 ;;
 
-#
-# authme:
-#
-authme()
-{
-	local _usage="Usage: authme <ssh_host> [<pub_key>]"
-	if [ -z "$1" ]; then
-		echo $_usage
-		return 10
-	fi
+    # underlined colors
+    ublack)   set smul unset rmul ; tput setaf 0 ;;
+    ured)     set smul unset rmul ; tput setaf 1 ;;
+    ugreen)   set smul unset rmul ; tput setaf 2 ;;
+    uyellow)  set smul unset rmul ; tput setaf 3 ;;
+    ublue)    set smul unset rmul ; tput setaf 4 ;;
+    umagenta) set smul unset rmul ; tput setaf 5 ;;
+    ucyan)    set smul unset rmul ; tput setaf 6 ;;
+    uwhite)   set smul unset rmul ; tput setaf 7 ;;
 
-	local _host="$1"
-	local _key="${HOME}/.ssh/id_dsa.pub"
+    # background colors
+    bblack)   tput setab 0 ;;
+    bred)     tput setab 1 ;;
+    bgreen)   tput setab 2 ;;
+    byellow)  tput setab 3 ;;
+    bblue)    tput setab 4 ;;
+    bmagenta) tput setab 5 ;;
+    bcyan)    tput setab 6 ;;
+    bwhite)   tput setab 7 ;;
 
-	if [ -n "$2" ]; then
-		_key="$2"
-	fi
-
-	local _ssh_cmd="ssh $_host"
-	echo "$_host" | grep -q ':'
-	if [ "$?" -eq "0" ]; then
-		_ssh_cmd="$(echo $_host | awk -F':' '{print \"ssh -p \" $2 \" \" $1}')"
-	fi
-
-	if [ ! -f "$_key" ]; then
-		echo "SSH key: $_key does not exist."
-		return 11
-	fi
-
-	$_ssh_cmd '(if [ ! -d "${HOME}/.ssh" ]; then \
-		mkdir -m 0700 -p ${HOME}/.ssh; fi; \
-		cat - >> .ssh/authorized_keys)' < $_key
+    # Defaults
+    default)  tput setaf 9 ;;
+    bdefault) tput setab 9 ;;
+    none)     tput sgr0    ;;
+    *)        tput sgr0    # Reset
+  esac
 }
 
+##
+# Sets a shell prompt. Uses a set variable of `PROMPT_COLOR' to determine
+# the main color of the prompt, if it exists. This is generally set in
+# bashrc.local.
+#
+bash_prompt() {
+  [[ -z "$PROMPT_COLOR" ]] && PROMPT_COLOR="default"
+  
+  if [ "$($_id -ur)" -eq "0" ] ; then  # am I root?
+    local user_c="#" ; local tb=$user_c ; local color="${root_red}"
+  else
+    local user_c=">" ; local tb=""      ; local color="$PROMPT_COLOR"
+  fi
+  local prompt="\u@\h:\w"
 
+  case "$TERM" in
+    *term | rxvt)
+      local titlebar="\[\033]0;${tb}${prompt}${tb}\007\]"
+      PS1="${titlebar}\[$(bput $color)\]${prompt}${user_c} \[$(bput rst)\]"
+      PS2="\[$(bput $color)\]${user_c} \[$(bput rst)\]"
+      ;;
+
+    *)
+      PS1="${prompt}${user_c} "
+      PS2="${user_c} "
+      ;;
+  esac
+}
+
+##
+# Determines the primary hostname of another domain name. Often used to
+# resolve a website url (like `www.example.com') to a server hostname
+# (like `webserver1.domainhosting.com').
 #
-# maven_set_settings:
+# @params [String] domainname to look up
+if command -v dig >/dev/null ; then
+	hostfromdomain() {
+	  [[ -z "$1" ]] && printf "usage: hostfromdomain <domainname>\n" && return 10
+		dig -x $(dig $1 +short) +short
+	}
+fi
+
+##
+# Places a given public ssh key on a remote host for key-based authentication.
+# The host can optionally contain the username (like `jdoe@ssh.example.com')
+# and a non-standard port number (like `ssh.example.com:666').
 #
-maven_set_settings()
-{
-	if [ ! -h "${HOME}/.m2/settings.xml" ]; then
-		if [ ! -f "${HOME}/.m2/settings-default.xml" ]; then
-			echo ">> Moving existing settings.xml to settings-default.xml..."
+# @param [String] remote ssh host in for form of [<user>@]host[:<port>]
+# @param [String] public key, using $HOME/.ssh/id_dsa.pub by default
+authme() {
+	[[ -z "$1" ]] && printf "Usage: authme <ssh_host> [<pub_key>]\n" && return 10
+
+	local host="$1"
+	shift
+  if [[ -z "$1" ]] ; then
+    local key="${HOME}/.ssh/id_dsa.pub"
+  else
+    local key="$1"
+  fi
+  shift
+
+	[[ ! -f "$key" ]] && echo "SSH key: $key does not exist." && return 11
+
+	if echo "$host" | grep -q ':' ; then
+		local ssh_cmd="$(echo $host | awk -F':' '{print \"ssh -p \" $2 \" \" $1}')"
+	else
+  	local ssh_cmd="ssh $host"
+	fi
+
+	$ssh_cmd '(if [ ! -d "${HOME}/.ssh" ]; then \
+		mkdir -m 0700 -p ${HOME}/.ssh; fi; \
+		cat - >> .ssh/authorized_keys)' < $key
+}
+
+##
+# Activates a maven settings profile. A profile lives under $HOME/.m2 and is
+# of the form `settings-myprofile.xml'. Calling this function with the profile
+# `myprofile' will symlink `settings-myprofile.xml' to `settings.xml' in
+# maven home.
+#
+# @param [String] profile name to activate
+maven_set_settings() {
+	if [ ! -h "${HOME}/.m2/settings.xml" ] ; then
+		if [ ! -f "${HOME}/.m2/settings-default.xml" ] ; then
+			printf ">> Moving existing settings.xml to settings-default.xml...\n"
 			mv ${HOME}/.m2/settings.xml ${HOME}/.m2/settings-default.xml
 		fi
 	fi
 
-	local _ext="default"
-	if [ -n "$1" ]; then
-		_ext="$1"
+	if [ -z "$1" ] ; then
+		printf '>> No settings explictly asked for, so using "default".\n'
+  	local ext="default"
 	else
-		echo '>> No settings explictly asked for, so using "default".'
+		local ext="$1"
+	fi
+	shift
+
+	if [ ! -f "${HOME}/.m2/settings-${ext}.xml" ] ; then
+		printf "Maven settings $_ext (at: ${HOME}/.m2/settings-${ext}.xml) does not exist\n"
+		return 10
 	fi
 
-	if [ ! -f "${HOME}/.m2/settings-${_ext}.xml" ]; then
-		echo "Maven settings $_ext (at: ${HOME}/.m2/settings-${_ext}.xml) does not exist"
-		return 1
-	fi
-
-	(cd ${HOME}/.m2 && ln -sf ./settings-${_ext}.xml settings.xml)
-	echo "===> Activating maven settings file: ${HOME}/.m2/settings-${_ext}.xml"
+	(cd ${HOME}/.m2 && ln -sf ./settings-${ext}.xml settings.xml)
+	printf "===> Activating maven settings file: ${HOME}/.m2/settings-${ext}.xml\n"
 }
 
 
 #
-# psg: performs an egrep on the process list
+# Performs an egrep on the process list. Use any arguments that egrep accetps.
 #
-case "$OS" in
-Darwin|OpenBSD)
-	psg()
-	{
-		ps wwwaux | egrep $@
-	}
-	;;
-
-SunOS|Linux)
-	psg()
-	{
-		ps -ef | egrep $@
-	}
-	;;
-CYGWIN_*)
-	psg()
-	{
-		ps -efW | egrep $@
-	}
-	;;
+# @param [Array] egrep arguments
+case "$_os" in
+  Darwin|OpenBSD) psg() { ps wwwaux | egrep $@  ; } ;;
+  SunOS|Linux)    psg() { ps -ef | egrep $@     ; } ;;
+  CYGWIN_*)       psg() { ps -efW | egrep $@    ; } ;;
 esac
-
 
 #
 # zoneinfo: displays a list of zones and their comments. For Solaris 10/11 only.
 #
-case "$OS" in
+case "$_os" in
 SunOS)
 	# only define the function if this is a global zone
-	if zoneadm list -pi | grep :global: &> /dev/null; then
-		zoneinfo()
-		{
+	if zoneadm list -pi | grep :global: >/dev/null ; then
+		zoneinfo() {
 			printf "%-5s  %-10s  %-16s  %-10s  %s\n" \
 				"ISC" "DOMAIN" "NAME" "STATUS" "COMMENT"
-			for zoneline in $(zoneadm list -pi | grep -v ':global:' | sort); do
+			for zoneline in $(zoneadm list -pi | grep -v ':global:' | sort) ; do
 				local zone="$(echo $zoneline | nawk -F':' '{ print $2 }')"
 				local status="$(echo $zoneline | nawk -F':' '{ print $3 }')"
 
 				local isc_num="$(zonecfg -z $zone info zonepath | \
 					nawk '{print $2}' | sed 's|^.*/\(isc[0-9][0-9]*\)/.*$|\1|')"
-				if [ "$isc_num" == "" ]; then domain="N/A"; fi
+				if [ "$isc_num" == "" ]; then domain="N/A" ; fi
 
 				local domain="$(zonecfg -z $zone info attr name=domain | \
 					egrep 'value: ' |  nawk '{print $2}')"
-				if [ "$domain" == "" ]; then domain="NOT SET"; fi
+				if [ "$domain" == "" ]; then domain="NOT SET" ; fi
 
 				local comment="$(zonecfg -z $zone info attr name=comment | \
 					egrep 'value: ' |  sed 's|^[^\"]*\"\([^\"]*\)\".*$|\1|')"
-				if [ "$comment" == "" ]; then comment="NOT SET"; fi
+				if [ "$comment" == "" ]; then comment="NOT SET" ; fi
 
 				printf "%-5s  %-10s  %-16s  %-10s  %s\n" \
 					"$isc_num" "$domain" "$zone" "$status" "$comment"
@@ -428,19 +406,17 @@ SunOS)
 	;;
 esac
 
-
 #
 # update_bashrc: pulls down new changes to the bashrc via mercurial.
 #
-which hg &> /dev/null
+command -v hg >/dev/null
 if [ "$?" -eq 0 -a -d "/etc/bash/.hg" ]; then
-	update_bashrc()
-	{
-		(cd /etc/bash && ${SUPER_CMD} hg pull -u)
+	update_bashrc()	{
+		(cd /etc/bash && ${super_cmd} hg pull -u)
 		if [ "$?" -eq 0 ]; then
 			echo "===> bashrc has been updated to current."
-			${SUPER_CMD} rm -f /etc/bash/tip.date
-			${SUPER_CMD} bash -c "(cd /etc/bash; hg tip \
+			${super_cmd} rm -f /etc/bash/tip.date
+			${super_cmd} bash -c "(cd /etc/bash; hg tip \
 				--template '{date|isodate}\n' > \
 				/etc/bash/tip.date)"
 		else
@@ -453,73 +429,72 @@ fi
 #
 # whatsmy_primary_ip: returns the primary IP address of the system
 #
-case "$OS" in
-Darwin)
-	whatsmy_primary_ip()
-	{
-		local _if="$(netstat -nr | grep ^default | \
-			grep -v 'link#' | awk '{print $6}')"
-		local _ip="$(ifconfig $_if | \
-			grep '^[[:space:]]*inet ' | awk '{print $2}')"
+case "$_os" in
+  Darwin)
+  	whatsmy_primary_ip() {
+  		local _if="$(netstat -nr | grep ^default | \
+  			grep -v 'link#' | awk '{print $6}')"
+  		local _ip="$(ifconfig $_if | \
+  			grep '^[[:space:]]*inet ' | awk '{print $2}')"
 
-		if [ -z "$_ip" -o "$_ip" == "" ]; then
-			echo "Could not determine primary IP address"
-			return 10
-		else
-			echo $_ip
-		fi
-	}
-	;;
-OpenBSD)
-	whatsmy_primary_ip()
-	{
-		local _if="$(netstat -nr | grep ^default | awk '{print $8}')"
-		local _ip="$(ifconfig $_if | \
-			grep '^[[:space:]]*inet ' | awk '{print $2}')"
+  		if [ -z "$_ip" -o "$_ip" == "" ]; then
+  			echo "Could not determine primary IP address"
+  			return 10
+  		else
+  			echo $_ip
+  		fi
+  	}
+  	;;
 
-		if [ -z "$_ip" -o "$_ip" == "" ]; then
-			echo "Could not determine primary IP address"
-			return 10
-		else
-			echo $_ip
-		fi
-	}
-	;;
-Linux)
-	whatsmy_primary_ip()
-	{
-		local _if="$(netstat -nr | grep ^0\.0\.0\.0 | awk '{print $8}')"
-		local _ip="$(/sbin/ifconfig $_if | \
-			grep '^[[:space:]]*inet ' | awk '{print $2}' | \
-			awk -F':' '{print $2}')"
+  OpenBSD)
+  	whatsmy_primary_ip() {
+  		local _if="$(netstat -nr | grep ^default | awk '{print $8}')"
+  		local _ip="$(ifconfig $_if | \
+  			grep '^[[:space:]]*inet ' | awk '{print $2}')"
 
-		if [ -z "$_ip" -o "$_ip" == "" ]; then
-			echo "Could not determine primary IP address"
-			return 10
-		else
-			echo $_ip
-		fi
-	}
-	;;
-SunOS)
-		whatsmy_primary_ip()
-		{
-			local _def_gateway="$(netstat -nr | grep ^default | \
-				awk '{print $2}')"
-			local _if="$(route get $_def_gateway | \
-				grep '^[ ]*interface:' | awk '{print $2}')"
-			local _ip="$(ifconfig $_if | \
-				grep '^	*inet ' | awk '{print $2}')"
+  		if [ -z "$_ip" -o "$_ip" == "" ]; then
+  			echo "Could not determine primary IP address"
+  			return 10
+  		else
+  			echo $_ip
+  		fi
+  	}
+  	;;
 
-			if [ -z "$_ip" -o "$_ip" == "" ]; then
-				echo "Could not determine primary IP address"
-				return 10
-			else
-				echo $_ip
-			fi
-		}
-		;;
-esac # case $OS
+  Linux)
+    whatsmy_primary_ip() {
+    	local _if="$(netstat -nr | grep ^0\.0\.0\.0 | awk '{print $8}')"
+    	local _ip="$(/sbin/ifconfig $_if | \
+    		grep '^[[:space:]]*inet ' | awk '{print $2}' | \
+    		awk -F':' '{print $2}')"
+
+    	if [ -z "$_ip" -o "$_ip" == "" ]; then
+    		echo "Could not determine primary IP address"
+    		return 10
+    	else
+    		echo $_ip
+    	fi
+    }
+    ;;
+
+  SunOS)
+    whatsmy_primary_ip() {
+    	local _def_gateway="$(netstat -nr | grep ^default | \
+    		awk '{print $2}')"
+    	local _if="$(route get $_def_gateway | \
+    		grep '^[ ]*interface:' | awk '{print $2}')"
+    	local _ip="$(ifconfig $_if | \
+    		grep '^	*inet ' | awk '{print $2}')"
+
+    	if [ -z "$_ip" -o "$_ip" == "" ]; then
+    		echo "Could not determine primary IP address"
+    		return 10
+    	else
+    		echo $_ip
+    	fi
+    }
+    ;;
+esac # case $_os
 
 
 #---------------------------------------------------------------
@@ -527,18 +502,11 @@ esac # case $OS
 #---------------------------------------------------------------
 
 # Set the default editor
-if [ "$OS" == "Linux" -a "$LINUX_FLAVOR" == "CentOS" ]; then
-	EDITOR=/bin/vi
-	VISUAL=/bin/vi
-else
-	EDITOR=/usr/bin/vi
-	VISUAL=/usr/bin/vi
-fi
+export EDITOR=/usr/bin/vi
+export VISUAL=/usr/bin/vi
 
 # Set default visual tabstop to 2 characters, rather than 8
-EXINIT="set tabstop=2 bg=dark"
-
-export EDITOR VISUAL EXINIT
+export EXINIT="set tabstop=2 bg=dark"
 
 # Conditional support for Ruby Version Manager (RVM)
 if [[ -s "${HOME}/.rvm/scripts/rvm" ]]; then
@@ -560,70 +528,6 @@ export HISTTIMEFORMAT="%Y-%m-%dT%H:%M:%S "
 # and a few others.
 export HISTIGNORE="[ ]*:&:bg:fg:ls -l:ls -al:ls -la:ll:la"
 
-# Sets a prompt
-bash_prompt()
-{
-  if [ -z "${PROMPT_COLOR}" ]; then PROMPT_COLOR="default"; fi
-
-  local dull=0 ; local bright=1
-
-  local fg_black=30  ; local fg_red=31   ; local fg_green=32
-  local fg_yellow=33 ; local fg_blue=34  ; local fg_violet=35
-  local fg_cyan=36   ; local fg_white=37 ; local fg_null=00
-
-  local bg_black=40  ; local bg_red=41   ; local bg_green=42
-  local bg_yellow=43 ; local bg_blue=44  ; local bg_violet=45
-  local bg_cyan=46   ; local bg_white=47 ; local bg_null=00
-
-  # ANSI Escape Commands
-  local esc="\033" ; local normal="\[$esc[m\]"
-  local reset="\[$esc[${dull};${fg_white};${bg_null}m\]"
-
-  case "$PROMPT_COLOR" in
-    # Dull Text
-    black)          local color="\[$esc[${dull};${fg_black}m\]" ;;
-    red)            local color="\[$esc[${dull};${fg_red}m\]" ;;
-    green)          local color="\[$esc[${dull};${fg_green}m\]" ;;
-    yellow)         local color="\[$esc[${dull};${fg_yellow}m\]" ;;
-    blue)           local color="\[$esc[${dull};${fg_blue}m\]" ;;
-    violet)         local color="\[$esc[${dull};${fg_violet}m\]" ;;
-    cyan)           local color="\[$esc[${dull};${fg_cyan}m\]" ;;
-    white)          local color="\[$esc[${dull};${fg_white}m\]" ;;
-    # Bright Text
-    bright_black)   local color="\[$esc[${bright};${fg_black}m\]" ;;
-    bright_red)     local color="\[$esc[${bright};${fg_red}m\]" ;;
-    bright_green)   local color="\[$esc[${bright};${fg_green}m\]" ;;
-    bright_yellow)  local color="\[$esc[${bright};${fg_yellow}m\]" ;;
-    bright_blue)    local color="\[$esc[${bright};${fg_blue}m\]" ;;
-    bright_violet)  local color="\[$esc[${bright};${fg_violet}m\]" ;;
-    bright_cyan)    local color="\[$esc[${bright};${fg_cyan}m\]" ;;
-    bright_white)   local color="\[$esc[${bright};${fg_white}m\]" ;;
-    # Catchall
-    *)              local color="\[$esc[m\]" ;;
-  esac
-  
-  # Root Color
-  local root_red="\[$esc[${bg_red};${bright}m\]"
-
-  if [ "$($ID -ur)" -eq "0" ]; then
-    local user_c="#" ; local tb=$user_c ; local color="${root_red}"
-  else
-    local user_c=">" ; local tb=""
-  fi
-  local prompt="\u@\h:\w"
-
-  case "$TERM" in
-  *term | rxvt)
-    local titlebar="\[\033]0;${tb}${prompt}${tb}\007\]"
-    PS1="${titlebar}${color}${prompt}${user_c} ${reset}"
-    PS2="${color}${user_c} ${reset}"
-    ;;
-  *)
-    PS1="${prompt}${user_c} "
-    PS2="${user_c} "
-    ;;
-  esac
-}
 bash_prompt ; unset bash_prompt
 
 export IGNOREEOF=10
@@ -632,15 +536,13 @@ shopt -s checkwinsize
 shopt -s histappend
 
 # Echo the version and date of the profile
-if [ -f "/etc/bash/tip.date" ]; then
-	BASHRCVERSION="$(cat /etc/bash/tip.date)"
+if [[ -f "/etc/bash/tip.date" ]] ; then
+	ver="$(cat /etc/bash/tip.date)"
 else
-	BASHRCVERSION="$((cd /etc/bash && hg tip \
-		--template '{date|isodate}\n' 2> /dev/null))"
+	ver="$((cd /etc/bash && hg tip \
+		--template '{date|isodate}\n' 2>/dev/null))"
 fi
-echo "bashrc ($BASHRCVERSION)"
-echo
-unset BASHRCVERSION
+printf "bashrc ($ver)\n\n" ; unset ver
 
 
 #---------------------------------------------------------------
@@ -653,16 +555,15 @@ alias lm='ll | less'
 
 # Colorize maven output, courtesy of:
 # http://blog.blindgaenger.net/colorize_maven_output.html
-if which mvn &> /dev/null; then
-	color_maven()
-	{
+if command -v mvn >/dev/null ; then
+	color_maven()	{
 		local e=$(echo -e "\x1b")[
 		local highlight="1;32m"
 		local info="0;36m"
 		local warn="1;33m"
 		local error="1;31m"
 
-		$(which mvn) $* | sed -e "s/Tests run: \([^,]*\), Failures: \([^,]*\), Errors: \([^,]*\), Skipped: \([^,]*\)/${e}${highlight}Tests run: \1${e}0m, Failures: ${e}${error}\2${e}0m, Errors: ${e}${warn}\3${e}0m, Skipped: ${e}${info}\4${e}0m/g" \
+		$(command -v mvn) $* | sed -e "s/Tests run: \([^,]*\), Failures: \([^,]*\), Errors: \([^,]*\), Skipped: \([^,]*\)/${e}${highlight}Tests run: \1${e}0m, Failures: ${e}${error}\2${e}0m, Errors: ${e}${warn}\3${e}0m, Skipped: ${e}${info}\4${e}0m/g" \
 			-e "s/\(\[WARN\].*\)/${e}${warn}\1${e}0m/g" \
 			-e "s/\(\[INFO\].*\)/${e}${info}\1${e}0m/g" \
 			-e "s/\(\[ERROR\].*\)/${e}${error}\1${e}0m/g"
@@ -671,75 +572,74 @@ if which mvn &> /dev/null; then
 fi
 
 # If pine is installed, eliminated the .pine-debugX files
-if [ -e "/usr/local/bin/pine" ]; then
-	alias pine="pine -d 0"
-fi
+[[ -s "/usr/local/bin/pine" ]] && alias pine="pine -d 0"
 
 # OS-specific aliases
-case "$OS" in
-Darwin)
-	# Add the super alias to properly become root with bash and
-	# environment settings
-	alias super="sudo -s -H"
+case "$_os" in
+  Darwin)
+  	# Add the super alias to properly become root with bash and
+  	# environment settings
+  	alias super="sudo -s -H"
 
-	# Default color scheme except directories are yellow
-	LSCOLORS="Dxfxcxdxbxegedabagacad"
-	export LSCOLORS
+  	# Default color scheme except directories are yellow
+  	export LSCOLORS="Dxfxcxdxbxegedabagacad"
 
-	# Colorize ls by default
-	alias ls="ls -G"
+  	# Colorize ls by default
+  	alias ls="ls -G"
 
-	# Colorize grep/egrep/fgrep by default
-	alias grep='grep --color=auto'
-	alias egrep='egrep --color=auto'
-	alias fgrep='fgrep --color=auto'
+  	# Colorize grep/egrep/fgrep by default
+  	alias grep='grep --color=auto'
+  	alias egrep='egrep --color=auto'
+  	alias fgrep='fgrep --color=auto'
 
-	# If mysql is installed via macports, then provide a startup and shutdown alias
-	if [ -f "/opt/local/share/mysql5/mysql/mysql.server" ]; then
-		alias mysqld_start='sudo /opt/local/share/mysql5/mysql/mysql.server start'
-		alias mysqld_stop='sudo /opt/local/share/mysql5/mysql/mysql.server stop'
-	fi
-	;;
+  	# If mysql is installed via macports, then provide a startup and shutdown alias
+  	if [ -f "/opt/local/share/mysql5/mysql/mysql.server" ] ; then
+  		alias mysqld_start='sudo /opt/local/share/mysql5/mysql/mysql.server start'
+  		alias mysqld_stop='sudo /opt/local/share/mysql5/mysql/mysql.server stop'
+  	fi
+  	;;
 
-SunOS)
-	# Colorize ls by default, courtesy of:
-	# http://blogs.sun.com/observatory/entry/ls_colors
-	if [ "$(which ls)" == "/usr/gnu/bin/ls" -a -x "/usr/bin/dircolors" ]; then
-		eval "$(/usr/bin/dircolors -b)"
-		alias ls='ls --color=auto'
-	fi
+  SunOS)
+  	# Colorize ls by default, courtesy of:
+  	# http://blogs.sun.com/observatory/entry/ls_colors
+  	if [ "$(command -v ls)" == "/usr/gnu/bin/ls" -a -x "/usr/bin/dircolors" ] ; then
+  		eval "$(/usr/bin/dircolors -b)"
+  		alias ls='ls --color=auto'
+  	fi
 
-	# Colorize grep/egrep/fgrep by default
-	if [ "$(which grep)" == "/usr/gnu/bin/grep" ]; then
-		alias grep='grep --color=auto'
-	fi
-	if [ "$(which egrep)" == "/usr/gnu/bin/egrep" ]; then
-		alias egrep='egrep --color=auto'
-	fi
-	if [ "$(which fgrep)" == "/usr/gnu/bin/fgrep" ]; then
-		alias fgrep='fgrep --color=auto'
-	fi
-	;;
+  	# Colorize grep/egrep/fgrep by default
+  	if [ "$(command -v grep)" == "/usr/gnu/bin/grep" ] ; then
+  		alias grep='grep --color=auto'
+  	fi
+  	if [ "$(command -v egrep)" == "/usr/gnu/bin/egrep" ] ; then
+  		alias egrep='egrep --color=auto'
+  	fi
+  	if [ "$(command -v fgrep)" == "/usr/gnu/bin/fgrep" ] ; then
+  		alias fgrep='fgrep --color=auto'
+  	fi
+  	;;
 
-Linux)
-	# Colorize ls by default
-	if which dircolors &> /dev/null; then
-		test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || \
-			eval "$(dircolors -b)"
-	fi
-	alias ls='ls --color=auto'
+  Linux)
+  	# Colorize ls by default
+  	if command -v dircolors >/dev/null ; then
+  		test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || \
+  			eval "$(dircolors -b)"
+  	fi
+  	alias ls='ls --color=auto'
 
-	# Colorize grep/egrep/fgrep by default
-	alias grep='grep --color=auto'
-	alias egrep='egrep --color=auto'
-	alias fgrep='fgrep --color=auto'
-	;;
+  	# Colorize grep/egrep/fgrep by default
+  	alias grep='grep --color=auto'
+  	alias egrep='egrep --color=auto'
+  	alias fgrep='fgrep --color=auto'
+  	;;
+
 esac
 
 # If colors are declared for ls, etc. change blue directories into yellow
-if [ -n "${LS_COLORS}" ]; then
-	LS_COLORS="$(echo $LS_COLORS | sed 's|di=01;34|di=01;33|')"
-	export LS_COLORS
+if [[ -n "${LS_COLORS}" ]] ; then
+	export LS_COLORS="$(echo $LS_COLORS | sed 's|di=01;34|di=01;33|')"
 fi
+
+[[ -r "/etc/bash/bashrc.local" ]] &&  source /etc/bash/bashrc.local
 
 cleanup

@@ -1,20 +1,13 @@
 #---------------------------------------------------------------
 # Local (system) bashrc File
-# $Id$
 #---------------------------------------------------------------
 
-# Ensure that we are in a bash shell, otherwise don't source
-# this file
-if [ ! -n "${BASH_VERSION}" ]; then
-	return
-fi 
+# Skip this config if we aren't in bash
+[[ -n "${BASH_VERSION}" ]] || return
 
 #---------------------------------------------------------------
 # Set Global Environment Variables
 #---------------------------------------------------------------
-
-# Set CVS variables
-#CVS_HOSTPATH=
 
 
 #---------------------------------------------------------------
@@ -22,9 +15,11 @@ fi
 #---------------------------------------------------------------
 # The following color keywords are permitted:
 #
-# ( black red green brown blue purple cyan lightgray
-#   darkgray lightred lightgreen yellow lightblue
-#   lightpurple lightcyan white default )
+# Normal colors
+# black red green yellow blue magenta cyan white default
+# 
+# Emphasized (bolded) colors
+# eblack ered egreen eyellow eblue emagenta ecyan ewhite
 #---------------------------------------------------------------
 #PROMPT_COLOR=
 
