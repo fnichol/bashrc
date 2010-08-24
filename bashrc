@@ -3,11 +3,8 @@
 # $Id$
 #---------------------------------------------------------------
 
-# Ensure that we are in a bash shell, otherwise don't source
-# this file
-if [ ! -n "${BASH_VERSION}" ]; then
-	return
-fi 
+# Skip this config if we aren't in bash
+[[ -n "${BASH_VERSION}" ]] || return
 
 
 #---------------------------------------------------------------
@@ -20,7 +17,7 @@ _append_adminpath()
 		if [ -d "$p" ]; then
 			ADMINPATH="$ADMINPATH:$p"
 		fi
-	done
+	done ; unset p
 }
 
 _append_path()
@@ -29,7 +26,7 @@ _append_path()
 		if [ -d "$p" ]; then
 			PATH="$PATH:$p"
 		fi
-	done
+	done ; unset p
 }
 
 _prepend_path()
@@ -38,7 +35,7 @@ _prepend_path()
 		if [ -d "$p" ]; then
 			PATH="$p:$PATH"
 		fi
-	done
+	done ; unset p
 }
 
 _append_manpath()
@@ -47,7 +44,7 @@ _append_manpath()
 		if [ -d "$p" ]; then
 			MANPATH="$MANPATH:$p"
 		fi
-	done
+	done ; unset p
 }
 
 _prepend_manpath()
@@ -56,14 +53,14 @@ _prepend_manpath()
 		if [ -d "$p" ]; then
 			MANPATH="$p:$MANPATH"
 		fi
-	done
+	done ; unset p
 }
 
 # Determines the machine OS to set PATH, MANPATH and ID
-OS="`uname -s`"
+OS="$(uname -s)"
 case "$OS" in
 SunOS)		# Solaris
-	case "`uname -r`" in
+	case "$(uname -r)" in
 	"5.11")	# OpenSolaris
 		PATH=/usr/gnu/bin
 		_append_path /usr/bin
@@ -91,7 +88,7 @@ SunOS)		# Solaris
 		ADMINPATH=/opt/local/sbin
 		_append_adminpath /usr/gnu/sbin
 		_append_adminpath /usr/local/sbin
-		_append_adminpath /usr/platform/`uname -i`/sbin
+		_append_adminpath /usr/platform/$(uname -i)/sbin
 		ADMINPATH="$ADMINPATH:/sbin:/usr/sbin"
 
 		PATH="$ADMINPATH"
@@ -135,7 +132,7 @@ SunOS)		# Solaris
 		# Make less the default pager
 		which less > /dev/null 2>&1
 		if [ "$?" -eq "0" ]; then
-			PAGER="`which less`"
+			PAGER="$(which less)"
 			export PAGER
 		fi
 
@@ -158,7 +155,7 @@ Darwin)		# Mac OS X
 	# if we can determine the version of java as set in java prefs, then export
 	# JAVA_HOME to match this
 	if [ -f "/usr/libexec/java_home" ]; then
-		JAVA_HOME=`/usr/libexec/java_home`
+		JAVA_HOME=$(/usr/libexec/java_home)
 		export JAVA_HOME
 	fi
 
@@ -226,10 +223,10 @@ Linux)		# Linux
 	ID=/usr/bin/id
 	SUPER_CMD=/usr/bin/sudo
 	if [ -f "/etc/redhat-release" ]; then
-		LINUX_FLAVOR="`awk '{print $1}' /etc/redhat-release`"
+		LINUX_FLAVOR="$(awk '{print $1}' /etc/redhat-release)"
 	fi
 	if [ -f "/etc/lsb-release" ]; then
-		LINUX_FLAVOR="`head -n 1 /etc/lsb-release | awk -F= '{print $2}'`"
+		LINUX_FLAVOR="$(head -n 1 /etc/lsb-release | awk -F= '{print $2}')"
 	fi
 	;;
 
@@ -301,7 +298,7 @@ if which dig &> /dev/null; then
 		if [ -z "$1" ]; then
 			return 10
 		fi
-		dig -x `dig $1 +short` +short
+		dig -x $(dig $1 +short) +short
 	}
 fi # which dig
 
@@ -327,7 +324,7 @@ authme()
 	local _ssh_cmd="ssh $_host"
 	echo "$_host" | grep -q ':'
 	if [ "$?" -eq "0" ]; then
-		_ssh_cmd="`echo $_host | awk -F':' '{print \"ssh -p \" $2 \" \" $1}'`"
+		_ssh_cmd="$(echo $_host | awk -F':' '{print \"ssh -p \" $2 \" \" $1}')"
 	fi
 
 	if [ ! -f "$_key" ]; then
@@ -407,20 +404,20 @@ SunOS)
 		{
 			printf "%-5s  %-10s  %-16s  %-10s  %s\n" \
 				"ISC" "DOMAIN" "NAME" "STATUS" "COMMENT"
-			for zoneline in `zoneadm list -pi | grep -v ':global:' | sort`; do
-				local zone="`echo $zoneline | nawk -F':' '{ print $2 }'`"
-				local status="`echo $zoneline | nawk -F':' '{ print $3 }'`"
+			for zoneline in $(zoneadm list -pi | grep -v ':global:' | sort); do
+				local zone="$(echo $zoneline | nawk -F':' '{ print $2 }')"
+				local status="$(echo $zoneline | nawk -F':' '{ print $3 }')"
 
-				local isc_num="`zonecfg -z $zone info zonepath | \
-					nawk '{print $2}' | sed 's|^.*/\(isc[0-9][0-9]*\)/.*$|\1|'`"
+				local isc_num="$(zonecfg -z $zone info zonepath | \
+					nawk '{print $2}' | sed 's|^.*/\(isc[0-9][0-9]*\)/.*$|\1|')"
 				if [ "$isc_num" == "" ]; then domain="N/A"; fi
 
-				local domain="`zonecfg -z $zone info attr name=domain | \
-					egrep 'value: ' |  nawk '{print $2}'`"
+				local domain="$(zonecfg -z $zone info attr name=domain | \
+					egrep 'value: ' |  nawk '{print $2}')"
 				if [ "$domain" == "" ]; then domain="NOT SET"; fi
 
-				local comment="`zonecfg -z $zone info attr name=comment | \
-					egrep 'value: ' |  sed 's|^[^\"]*\"\([^\"]*\)\".*$|\1|'`"
+				local comment="$(zonecfg -z $zone info attr name=comment | \
+					egrep 'value: ' |  sed 's|^[^\"]*\"\([^\"]*\)\".*$|\1|')"
 				if [ "$comment" == "" ]; then comment="NOT SET"; fi
 
 				printf "%-5s  %-10s  %-16s  %-10s  %s\n" \
@@ -460,10 +457,10 @@ case "$OS" in
 Darwin)
 	whatsmy_primary_ip()
 	{
-		local _if="`netstat -nr | grep ^default | \
-			grep -v 'link#' | awk '{print $6}'`"
-		local _ip="`ifconfig $_if | \
-			grep '^[[:space:]]*inet ' | awk '{print $2}'`"
+		local _if="$(netstat -nr | grep ^default | \
+			grep -v 'link#' | awk '{print $6}')"
+		local _ip="$(ifconfig $_if | \
+			grep '^[[:space:]]*inet ' | awk '{print $2}')"
 
 		if [ -z "$_ip" -o "$_ip" == "" ]; then
 			echo "Could not determine primary IP address"
@@ -476,9 +473,9 @@ Darwin)
 OpenBSD)
 	whatsmy_primary_ip()
 	{
-		local _if="`netstat -nr | grep ^default | awk '{print $8}'`"
-		local _ip="`ifconfig $_if | \
-			grep '^[[:space:]]*inet ' | awk '{print $2}'`"
+		local _if="$(netstat -nr | grep ^default | awk '{print $8}')"
+		local _ip="$(ifconfig $_if | \
+			grep '^[[:space:]]*inet ' | awk '{print $2}')"
 
 		if [ -z "$_ip" -o "$_ip" == "" ]; then
 			echo "Could not determine primary IP address"
@@ -491,10 +488,10 @@ OpenBSD)
 Linux)
 	whatsmy_primary_ip()
 	{
-		local _if="`netstat -nr | grep ^0\.0\.0\.0 | awk '{print $8}'`"
-		local _ip="`/sbin/ifconfig $_if | \
+		local _if="$(netstat -nr | grep ^0\.0\.0\.0 | awk '{print $8}')"
+		local _ip="$(/sbin/ifconfig $_if | \
 			grep '^[[:space:]]*inet ' | awk '{print $2}' | \
-			awk -F':' '{print $2}'`"
+			awk -F':' '{print $2}')"
 
 		if [ -z "$_ip" -o "$_ip" == "" ]; then
 			echo "Could not determine primary IP address"
@@ -507,12 +504,12 @@ Linux)
 SunOS)
 		whatsmy_primary_ip()
 		{
-			local _def_gateway="`netstat -nr | grep ^default | \
-				awk '{print $2}'`"
-			local _if="`route get $_def_gateway | \
-				grep '^[ ]*interface:' | awk '{print $2}'`"
-			local _ip="`ifconfig $_if | \
-				grep '^	*inet ' | awk '{print $2}'`"
+			local _def_gateway="$(netstat -nr | grep ^default | \
+				awk '{print $2}')"
+			local _if="$(route get $_def_gateway | \
+				grep '^[ ]*interface:' | awk '{print $2}')"
+			local _ip="$(ifconfig $_if | \
+				grep '^	*inet ' | awk '{print $2}')"
 
 			if [ -z "$_ip" -o "$_ip" == "" ]; then
 				echo "Could not determine primary IP address"
@@ -608,7 +605,7 @@ bash_prompt()
   # Root Color
   local root_red="\[$esc[${bg_red};${bright}m\]"
 
-  if [ "`$ID -ur`" -eq "0" ]; then
+  if [ "$($ID -ur)" -eq "0" ]; then
     local user_c="#" ; local tb=$user_c ; local color="${root_red}"
   else
     local user_c=">" ; local tb=""
@@ -636,10 +633,10 @@ shopt -s histappend
 
 # Echo the version and date of the profile
 if [ -f "/etc/bash/tip.date" ]; then
-	BASHRCVERSION="`cat /etc/bash/tip.date`"
+	BASHRCVERSION="$(cat /etc/bash/tip.date)"
 else
-	BASHRCVERSION="`(cd /etc/bash && hg tip \
-		--template '{date|isodate}\n' 2> /dev/null)`"
+	BASHRCVERSION="$((cd /etc/bash && hg tip \
+		--template '{date|isodate}\n' 2> /dev/null))"
 fi
 echo "bashrc ($BASHRCVERSION)"
 echo
@@ -665,7 +662,7 @@ if which mvn &> /dev/null; then
 		local warn="1;33m"
 		local error="1;31m"
 
-		`which mvn` $* | sed -e "s/Tests run: \([^,]*\), Failures: \([^,]*\), Errors: \([^,]*\), Skipped: \([^,]*\)/${e}${highlight}Tests run: \1${e}0m, Failures: ${e}${error}\2${e}0m, Errors: ${e}${warn}\3${e}0m, Skipped: ${e}${info}\4${e}0m/g" \
+		$(which mvn) $* | sed -e "s/Tests run: \([^,]*\), Failures: \([^,]*\), Errors: \([^,]*\), Skipped: \([^,]*\)/${e}${highlight}Tests run: \1${e}0m, Failures: ${e}${error}\2${e}0m, Errors: ${e}${warn}\3${e}0m, Skipped: ${e}${info}\4${e}0m/g" \
 			-e "s/\(\[WARN\].*\)/${e}${warn}\1${e}0m/g" \
 			-e "s/\(\[INFO\].*\)/${e}${info}\1${e}0m/g" \
 			-e "s/\(\[ERROR\].*\)/${e}${error}\1${e}0m/g"
@@ -707,19 +704,19 @@ Darwin)
 SunOS)
 	# Colorize ls by default, courtesy of:
 	# http://blogs.sun.com/observatory/entry/ls_colors
-	if [ "`which ls`" == "/usr/gnu/bin/ls" -a -x "/usr/bin/dircolors" ]; then
-		eval "`/usr/bin/dircolors -b`"
+	if [ "$(which ls)" == "/usr/gnu/bin/ls" -a -x "/usr/bin/dircolors" ]; then
+		eval "$(/usr/bin/dircolors -b)"
 		alias ls='ls --color=auto'
 	fi
 
 	# Colorize grep/egrep/fgrep by default
-	if [ "`which grep`" == "/usr/gnu/bin/grep" ]; then
+	if [ "$(which grep)" == "/usr/gnu/bin/grep" ]; then
 		alias grep='grep --color=auto'
 	fi
-	if [ "`which egrep`" == "/usr/gnu/bin/egrep" ]; then
+	if [ "$(which egrep)" == "/usr/gnu/bin/egrep" ]; then
 		alias egrep='egrep --color=auto'
 	fi
-	if [ "`which fgrep`" == "/usr/gnu/bin/fgrep" ]; then
+	if [ "$(which fgrep)" == "/usr/gnu/bin/fgrep" ]; then
 		alias fgrep='fgrep --color=auto'
 	fi
 	;;
@@ -741,7 +738,7 @@ esac
 
 # If colors are declared for ls, etc. change blue directories into yellow
 if [ -n "${LS_COLORS}" ]; then
-	LS_COLORS="`echo $LS_COLORS | sed 's|di=01;34|di=01;33|'`"
+	LS_COLORS="$(echo $LS_COLORS | sed 's|di=01;34|di=01;33|')"
 	export LS_COLORS
 fi
 
