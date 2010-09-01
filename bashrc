@@ -424,7 +424,7 @@ update_bashrc()	{
   fi
 
   if [[ -d "/etc/bash/.git" ]] ; then
-    builtin cd "/etc/bash" && $super_cmd git pull origin master
+    ( builtin cd "/etc/bash" && $super_cmd git pull origin master )
   else
     builtin cd "/etc" && \
       ( $super_cmd git clone --depth 1 git://github.com/fnichol/bashrc.git bash || \
@@ -439,9 +439,8 @@ update_bashrc()	{
 		${super_cmd} rm -f /etc/bash/tip.date
 		$super_cmd bash -c "( builtin cd /etc/bash && \
 		  git log -1 --pretty=\"format:%h %ci\" > /etc/bash/tip.date)"
-		printf "\n===> bashrc was updated to current ($(cat /etc/bash/tip.date)).\n"
-		printf "===> either logout and open a new shell, or type:\n\n"
-		printf "===>   source /etc/bash/bashrc\n\n"
+		printf "\n===> bashrc is current ($(cat /etc/bash/tip.date)).\n"
+		printf "===> Either logout and open a new shell, or type: source /etc/bash/bashrc\n\n"
 	else
 		printf "\n>>>> bashrc could not find an update or has failed.\n\n"
 		return 11
