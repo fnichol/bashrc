@@ -414,15 +414,28 @@ update_bashrc()	{
     printf "\n>>>> Command 'git' not found on the path, please install and try again.\n\n"
     return 10
   fi
-  
+
+  # save a copy of bashrc.local and clear out old hg cruft
+  local stash=
+  if [[ -d "/etc/bash/.hg" && -f "/etc/bash/bashrc.local" ]] ; then
+    stash="/tmp/bashrc.local.$$"
+    $super_cmd cp -p "/etc/bash/bashrc.local" "$stash"
+    $super_cmd rm -rf /etc/bash
+  fi
+
   if [[ -d "/etc/bash/.git" ]] ; then
     builtin cd "/etc/bash" && $super_cmd git pull origin master
   else
-    builtin cd "/etc/bash" && \
+    builtin cd "/etc" && \
       ( $super_cmd git clone --depth 1 git://github.com/fnichol/bashrc.git || \
-      $super_cmd git clone http://github.com/fnichol/bashrc.git )
+      $super_cmd git clone http://github.com/fnichol/bashrc.git bash )
   fi
-	if [ "$?" -eq 0 ]; then
+  local result="$?"
+
+  # move bashrc.local back
+  [[ -n "$stash" ]] && $super_cmd mv "$stash" "/etc/bash/"
+
+	if [ "$result" -eq 0 ]; then
 		${super_cmd} rm -f /etc/bash/tip.date
 		$super_cmd bash -c "( builtin cd /etc/bash && \
 		  git log -1 --pretty=\"format:%h %ci\" > /etc/bash/tip.date)"
