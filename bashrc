@@ -427,13 +427,13 @@ update_bashrc()	{
     builtin cd "/etc/bash" && $super_cmd git pull origin master
   else
     builtin cd "/etc" && \
-      ( $super_cmd git clone --depth 1 git://github.com/fnichol/bashrc.git || \
+      ( $super_cmd git clone --depth 1 git://github.com/fnichol/bashrc.git bash || \
       $super_cmd git clone http://github.com/fnichol/bashrc.git bash )
   fi
   local result="$?"
 
   # move bashrc.local back
-  [[ -n "$stash" ]] && $super_cmd mv "$stash" "/etc/bash/"
+  [[ -n "$stash" ]] && $super_cmd mv "$stash" "/etc/bash/bashrc.local"
 
 	if [ "$result" -eq 0 ]; then
 		${super_cmd} rm -f /etc/bash/tip.date
