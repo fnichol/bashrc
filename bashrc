@@ -406,25 +406,34 @@ SunOS)
 	;;
 esac
 
+##
+# Pulls down new changes to the bashrc via git.
 #
-# update_bashrc: pulls down new changes to the bashrc via mercurial.
-#
-command -v hg >/dev/null
-if [ "$?" -eq 0 -a -d "/etc/bash/.hg" ]; then
-	update_bashrc()	{
-		(cd /etc/bash && ${super_cmd} hg pull -u)
-		if [ "$?" -eq 0 ]; then
-			echo "===> bashrc has been updated to current."
-			${super_cmd} rm -f /etc/bash/tip.date
-			${super_cmd} bash -c "(cd /etc/bash; hg tip \
-				--template '{date|isodate}\n' > \
-				/etc/bash/tip.date)"
-		else
-			echo ">>>> bashrc could not find an update or has failed."
-		fi
-	}
-fi
-
+update_bashrc()	{
+  if ! command -v git >/dev/null; then
+    printf "\n>>>> Command 'git' not found on the path, please install and try again.\n\n"
+    return 10
+  fi
+  
+  if [[ -d "/etc/bash/.git" ]] ; then
+    builtin cd "/etc/bash" && $super_cmd git pull origin master
+  else
+    builtin cd "/etc/bash" && \
+      ( $super_cmd git clone --depth 1 git://github.com/fnichol/bashrc.git || \
+      $super_cmd git clone http://github.com/fnichol/bashrc.git )
+  fi
+	if [ "$?" -eq 0 ]; then
+		${super_cmd} rm -f /etc/bash/tip.date
+		$super_cmd bash -c "( builtin cd /etc/bash && \
+		  git log -1 --pretty=\"format:%h %ci\" > /etc/bash/tip.date)"
+		printf "\n===> bashrc was updated to current ($(cat /etc/bash/tip.date)).\n"
+		printf "===> either logout and open a new shell, or type:\n\n"
+		printf "===>   source /etc/bash/bashrc\n\n"
+	else
+		printf "\n>>>> bashrc could not find an update or has failed.\n\n"
+		return 11
+	fi
+}
 
 #
 # whatsmy_primary_ip: returns the primary IP address of the system
@@ -543,6 +552,27 @@ else
 		--template '{date|isodate}\n' 2>/dev/null))"
 fi
 printf "bashrc ($ver)\n\n" ; unset ver
+
+# github migration nag
+if [[ -d "/etc/bash/.hg" && ! -d "/etc/bash/.git" ]] ; then
+  printf "\n\n    =============================================================\n"
+  printf "    # UPGRADE NOTICE: This project has moved onto github at     #\n"
+  printf "    # http://github.com/fnichol/bashrc.                         #\n"
+  if ! command -v git >/dev/null ; then
+    printf "    #                                                           #\n"
+    printf "    # ** The git command could not be found on your path, and   #\n"
+    printf "    # ** you need to install it for your update to work         #\n"
+    printf "    # ** properly. Here are some starting points:               #\n"
+    printf "    #                                                           #\n"
+    printf "    #   - Mac: http://help.github.com/mac-git-installation/     #\n"
+    printf "    #   - Lin: http://help.github.com/linux-git-installation/   #\n"
+    printf "    #   - Win: http://help.github.com/win-git-installation/     #\n"
+    printf "    #                                                           #\n"
+  fi
+  printf "    #                                                           #\n"
+  printf "    # To update to the latest version, run 'update_bashrc'.     #\n"
+  printf "    =============================================================\n\n\n"
+fi
 
 
 #---------------------------------------------------------------
