@@ -561,31 +561,9 @@ shopt -s histappend
 if [[ -f "/etc/bash/tip.date" ]] ; then
 	ver="$(cat /etc/bash/tip.date)"
 else
-	ver="$(cd '/etc/bash' && hg tip \
-		--template '{date|isodate}\n' 2>/dev/null)"
+	ver="$(cd '/etc/bash' && git log -1 --pretty=\"format:%h %ci\")"
 fi
 printf "bashrc ($ver)\n\n" ; unset ver
-
-# github migration nag
-if [[ -d "/etc/bash/.hg" && ! -d "/etc/bash/.git" ]] ; then
-  printf "\n\n    =============================================================\n"
-  printf "    # UPGRADE NOTICE: This project has moved onto github at     #\n"
-  printf "    # http://github.com/fnichol/bashrc.                         #\n"
-  if ! command -v git >/dev/null ; then
-    printf "    #                                                           #\n"
-    printf "    # ** The git command could not be found on your path, and   #\n"
-    printf "    # ** you need to install it for your update to work         #\n"
-    printf "    # ** properly. Here are some starting points:               #\n"
-    printf "    #                                                           #\n"
-    printf "    #   - Mac: http://help.github.com/mac-git-installation/     #\n"
-    printf "    #   - Lin: http://help.github.com/linux-git-installation/   #\n"
-    printf "    #   - Win: http://help.github.com/win-git-installation/     #\n"
-    printf "    #                                                           #\n"
-  fi
-  printf "    #                                                           #\n"
-  printf "    # To update to the latest version, run 'update_bashrc'.     #\n"
-  printf "    =============================================================\n\n\n"
-fi
 
 
 #---------------------------------------------------------------
