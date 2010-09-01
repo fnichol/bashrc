@@ -561,8 +561,8 @@ shopt -s histappend
 if [[ -f "/etc/bash/tip.date" ]] ; then
 	ver="$(cat /etc/bash/tip.date)"
 else
-	ver="$((cd /etc/bash && hg tip \
-		--template '{date|isodate}\n' 2>/dev/null))"
+	ver="$(cd '/etc/bash' && hg tip \
+		--template '{date|isodate}\n' 2>/dev/null)"
 fi
 printf "bashrc ($ver)\n\n" ; unset ver
 
