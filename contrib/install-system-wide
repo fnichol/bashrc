@@ -60,7 +60,7 @@ else
   printf "===> Adding source hook into \"$p\" ...\n"
   cat >> $p <<END_OF_PROFILE
  
-[[ -s \"/etc/bash/bashrc\" ]] && . \"/etc/bash/bashrc\"
+[[ -s "/etc/bash/bashrc" ]] && . "/etc/bash/bashrc"
 END_OF_PROFILE
 fi
 unset p
