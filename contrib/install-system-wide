@@ -1,0 +1,75 @@
+#!/usr/bin/env bash
+
+if [[ -d "/etc/bash" ]] ; then
+  printf "\n>> /etc/bash must not exist so not installing.\n\n" && exit 1
+fi
+
+# determine superuser command
+case "$(uname -s)" in
+  Darwin|OpenBSD|Linux) super_cmd="$(command -v sudo)" ;;
+  SunOS)                super_cmd="$(command -v pfexec)" ;;
+  CYGWIN_*)             super_cmd="" ;;
+esac
+
+if command -v git >/dev/null ; then
+  printf "===> Cloning git repository to /etc/bash ...\n"
+  builtin cd "/etc" && \
+    ( $super_cmd git clone --depth 1 git://github.com/fnichol/bashrc.git bash || \
+    $super_cmd git clone http://github.com/fnichol/bashrc.git bash )
+elif command -v curl >/dev/null ; then
+  printf "===> Git not found, so downloading tarball to /etc/bash ...\n"
+  $super_cmd mkdir -p "/etc/bash"
+  curl -LsSf http://github.com/fnichol/bashrc/tarball/master | \
+    $super_cmd tar xvz -C/etc/bash --strip 1
+else
+  printf "\n>> Neither git nor curl could be found on path so not installing.\n\n"
+  exit 2
+fi
+
+printf "===> Creating /etc/bash/bashrc.local for system-specific configuration ...\n"
+$super_cmd cp "/etc/bash/bashrc.local.site" "/etc/bash/bashrc.local"
+
+case "$(uname -s)" in
+  Darwin)   color="green"         ;;
+  Linux)    color="bright_white"  ;;
+  OpenBSD)  color="red"           ;;
+  CYGWIN*)  color="black"         ;;
+  SunOS)
+    if zoneadm list -pi | grep :global: >/dev/null ; then
+      color="magenta" # root zone
+    else
+      color="cyan"    # non-global zone
+    fi
+    ;;
+esac
+
+printf "Setting prompt color to be \"$color\" ...\n"
+sudo perl -pi -e "s|^#?PROMPT_COLOR=.*$|PROMPT_COLOR=$color|g" \
+  "/etc/bash/bashrc.local"
+unset color
+
+case "$(uname -s)" in
+  Darwin)                       profile="/etc/bashrc"   ;;
+  Linux|SunOS|OpenBSD|CYGWIN*)  profile="/etc/profile"  ;;
+esac
+
+if grep -q '/etc/bash/bashrc' >/dev/null ; then
+  printf ">> Mention of /etc/bash/bashrc found in \"$profile\"\n"
+  printf ">> You can add the following line to get sourced:\n"
+  printf ">>   [[ -s \"/etc/bash/bashrc\" ]] && . \"/etc/bash/bashrc\""
+else
+  printf "===> Adding source hook into \"$profile\" ...\n"
+  sudo bash -c "cat >> $profile <<END_OF_PROFILE
+ 
+[[ -s \"/etc/bash/bashrc\" ]] && . \"/etc/bash/bashrc\"
+END_OF_PROFILE
+"
+fi
+unset profile
+
+printf "\n\n    #---------------------------------------------------------------\n"
+printf "    # Installation of bashrc complete. To activate either exit\n"
+printf "    # this shell or type: 'source /etc/profile'.\n"
+printf "    #\n"
+printf "    # To keep bashrc up to date, periodically run: 'update_bashrc'.\n"
+printf "    #---------------------------------------------------------------\n\n"
