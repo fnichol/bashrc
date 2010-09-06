@@ -48,22 +48,26 @@ perl -pi -e "s|^#?PROMPT_COLOR=.*$|PROMPT_COLOR=$color|g" \
 unset color
 
 case "$(uname -s)" in
-  Darwin)                       profile="/etc/bashrc"   ;;
-  Linux|SunOS|OpenBSD|CYGWIN*)  profile="/etc/profile"  ;;
+  Darwin)                       p="/etc/bashrc"   ;;
+  Linux|SunOS|OpenBSD|CYGWIN*)  p="/etc/profile"  ;;
 esac
 
-if grep -q '/etc/bash/bashrc' >/dev/null ; then
-  printf ">> Mention of /etc/bash/bashrc found in \"$profile\"\n"
+if grep -q '/etc/bash/bashrc' $p >/dev/null ; then
+  printf ">> Mention of /etc/bash/bashrc found in \"$p\"\n"
   printf ">> You can add the following line to get sourced:\n"
   printf ">>   [[ -s \"/etc/bash/bashrc\" ]] && . \"/etc/bash/bashrc\""
 else
-  printf "===> Adding source hook into \"$profile\" ...\n"
-  cat >> $profile <<END_OF_PROFILE
+  printf "===> Adding source hook into \"$p\" ...\n"
+  cat >> $p <<END_OF_PROFILE
  
 [[ -s \"/etc/bash/bashrc\" ]] && . \"/etc/bash/bashrc\"
 END_OF_PROFILE
 fi
-unset profile
+unset p
+
+printf "===> Updating bashrc to current ...\n"
+source "/etc/bash/bashrc"
+update_bashrc
 
 printf "\n\n    #---------------------------------------------------------------\n"
 printf "    # Installation of bashrc complete. To activate either exit\n"
