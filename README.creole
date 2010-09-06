@@ -1,0 +1,4 @@
+= Installation =
+{{{
+bash < <( curl -L http://bit.ly/bashrc-install-system-wide )
+}}}
