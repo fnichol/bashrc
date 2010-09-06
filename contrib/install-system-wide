@@ -1,33 +1,32 @@
 #!/usr/bin/env bash
 
-if [[ -d "/etc/bash" ]] ; then
-  printf "\n>> /etc/bash must not exist so not installing.\n\n" && exit 1
+if [[ "$(whoami)" != "root" ]] ; then
+  printf "\nYou must be root to run this installer. Either become root, or try sudo/pfexec.\n\n"
+  exit 1
 fi
 
-# determine superuser command
-case "$(uname -s)" in
-  Darwin|OpenBSD|Linux) super_cmd="$(command -v sudo)" ;;
-  SunOS)                super_cmd="$(command -v pfexec)" ;;
-  CYGWIN_*)             super_cmd="" ;;
-esac
+if [[ -d "/etc/bash" ]] ; then
+  printf "\n>> /etc/bash must not exist so not installing.\n\n"
+  exit 2
+fi
 
 if command -v git >/dev/null ; then
   printf "===> Cloning git repository to /etc/bash ...\n"
   builtin cd "/etc" && \
-    ( $super_cmd git clone --depth 1 git://github.com/fnichol/bashrc.git bash || \
-    $super_cmd git clone http://github.com/fnichol/bashrc.git bash )
+    ( git clone --depth 1 git://github.com/fnichol/bashrc.git bash || \
+    git clone http://github.com/fnichol/bashrc.git bash )
 elif command -v curl >/dev/null ; then
   printf "===> Git not found, so downloading tarball to /etc/bash ...\n"
-  $super_cmd mkdir -p "/etc/bash"
+  mkdir -p "/etc/bash"
   curl -LsSf http://github.com/fnichol/bashrc/tarball/master | \
-    $super_cmd tar xvz -C/etc/bash --strip 1
+    tar xvz -C/etc/bash --strip 1
 else
   printf "\n>> Neither git nor curl could be found on path so not installing.\n\n"
-  exit 2
+  exit 3
 fi
 
 printf "===> Creating /etc/bash/bashrc.local for system-specific configuration ...\n"
-$super_cmd cp "/etc/bash/bashrc.local.site" "/etc/bash/bashrc.local"
+cp "/etc/bash/bashrc.local.site" "/etc/bash/bashrc.local"
 
 case "$(uname -s)" in
   Darwin)   color="green"         ;;
@@ -44,7 +43,7 @@ case "$(uname -s)" in
 esac
 
 printf "Setting prompt color to be \"$color\" ...\n"
-sudo perl -pi -e "s|^#?PROMPT_COLOR=.*$|PROMPT_COLOR=$color|g" \
+perl -pi -e "s|^#?PROMPT_COLOR=.*$|PROMPT_COLOR=$color|g" \
   "/etc/bash/bashrc.local"
 unset color
 
@@ -59,11 +58,10 @@ if grep -q '/etc/bash/bashrc' >/dev/null ; then
   printf ">>   [[ -s \"/etc/bash/bashrc\" ]] && . \"/etc/bash/bashrc\""
 else
   printf "===> Adding source hook into \"$profile\" ...\n"
-  sudo bash -c "cat >> $profile <<END_OF_PROFILE
+  cat >> $profile <<END_OF_PROFILE
  
 [[ -s \"/etc/bash/bashrc\" ]] && . \"/etc/bash/bashrc\"
 END_OF_PROFILE
-"
 fi
 unset profile
 
