@@ -198,6 +198,47 @@ cleanup() {
 	unset cleanup
 }
 
+##
+# Pulls down new changes to the bashrc via git.
+#
+update_bashrc()	{
+  if ! command -v git >/dev/null; then
+    printf "\n>>>> Command 'git' not found on the path, please install and try again.\n\n"
+    return 10
+  fi
+
+  # save a copy of bashrc.local and clear out old hg cruft
+  local stash=
+  if [[ -d "/etc/bash/.hg" && -f "/etc/bash/bashrc.local" ]] ; then
+    stash="/tmp/bashrc.local.$$"
+    $super_cmd cp -p "/etc/bash/bashrc.local" "$stash"
+    $super_cmd rm -rf /etc/bash
+  fi
+
+  if [[ -d "/etc/bash/.git" ]] ; then
+    ( builtin cd "/etc/bash" && $super_cmd git pull origin master )
+  else
+    builtin cd "/etc" && \
+      ( $super_cmd git clone --depth 1 git://github.com/fnichol/bashrc.git bash || \
+      $super_cmd git clone http://github.com/fnichol/bashrc.git bash )
+  fi
+  local result="$?"
+
+  # move bashrc.local back
+  [[ -n "$stash" ]] && $super_cmd mv "$stash" "/etc/bash/bashrc.local"
+
+	if [ "$result" -eq 0 ]; then
+		${super_cmd} rm -f /etc/bash/tip.date
+		$super_cmd bash -c "( builtin cd /etc/bash && \
+		  git log -1 --pretty=\"format:%h %ci\" > /etc/bash/tip.date)"
+		printf "\n===> bashrc is current ($(cat /etc/bash/tip.date)).\n"
+		printf "===> Either logout and open a new shell, or type: source /etc/bash/bashrc\n\n"
+	else
+		printf "\n>>>> bashrc could not find an update or has failed.\n\n"
+		return 11
+	fi
+}
+
 # Skip the rest if this is not an interactive shell
 if [ -z "${PS1}" -a "$-" != "*i*" ] ; then	cleanup ; return ; fi
 
@@ -407,47 +448,6 @@ SunOS)
 	fi
 	;;
 esac
-
-##
-# Pulls down new changes to the bashrc via git.
-#
-update_bashrc()	{
-  if ! command -v git >/dev/null; then
-    printf "\n>>>> Command 'git' not found on the path, please install and try again.\n\n"
-    return 10
-  fi
-
-  # save a copy of bashrc.local and clear out old hg cruft
-  local stash=
-  if [[ -d "/etc/bash/.hg" && -f "/etc/bash/bashrc.local" ]] ; then
-    stash="/tmp/bashrc.local.$$"
-    $super_cmd cp -p "/etc/bash/bashrc.local" "$stash"
-    $super_cmd rm -rf /etc/bash
-  fi
-
-  if [[ -d "/etc/bash/.git" ]] ; then
-    ( builtin cd "/etc/bash" && $super_cmd git pull origin master )
-  else
-    builtin cd "/etc" && \
-      ( $super_cmd git clone --depth 1 git://github.com/fnichol/bashrc.git bash || \
-      $super_cmd git clone http://github.com/fnichol/bashrc.git bash )
-  fi
-  local result="$?"
-
-  # move bashrc.local back
-  [[ -n "$stash" ]] && $super_cmd mv "$stash" "/etc/bash/bashrc.local"
-
-	if [ "$result" -eq 0 ]; then
-		${super_cmd} rm -f /etc/bash/tip.date
-		$super_cmd bash -c "( builtin cd /etc/bash && \
-		  git log -1 --pretty=\"format:%h %ci\" > /etc/bash/tip.date)"
-		printf "\n===> bashrc is current ($(cat /etc/bash/tip.date)).\n"
-		printf "===> Either logout and open a new shell, or type: source /etc/bash/bashrc\n\n"
-	else
-		printf "\n>>>> bashrc could not find an update or has failed.\n\n"
-		return 11
-	fi
-}
 
 #
 # whatsmy_primary_ip: returns the primary IP address of the system
