@@ -525,8 +525,14 @@ esac # case $_os
 #---------------------------------------------------------------
 
 # Set the default editor
-export EDITOR=/usr/bin/vi
-export VISUAL=/usr/bin/vi
+if [ -z "$SSH_CLIENT" ] && command -v mvim >/dev/null ; then
+  export EDITOR="$(command -v mvim) -f"
+elif [ -z "$SSH_CLIENT" ] && command -v gvim >/dev/null ; then
+  export EDITOR="$(command -v gvim) -f"
+else
+  export EDITOR="$(command -v vi)"
+fi
+export VISUAL="$EDITOR"
 
 # Set default visual tabstop to 2 characters, rather than 8
 export EXINIT="set tabstop=2 bg=dark"
