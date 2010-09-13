@@ -529,6 +529,8 @@ if [ -z "$SSH_CLIENT" ] && command -v mvim >/dev/null ; then
   export EDITOR="$(command -v mvim) -f"
 elif [ -z "$SSH_CLIENT" ] && command -v gvim >/dev/null ; then
   export EDITOR="$(command -v gvim) -f"
+elif [ -z "$SSH_CLIENT" ] && command -v mate >/dev/null ; then
+  export EDITOR="$(command -v mate) -w"
 else
   export EDITOR="$(command -v vi)"
 fi
