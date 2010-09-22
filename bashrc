@@ -627,6 +627,9 @@ case "$_os" in
   		alias mysqld_start='sudo /opt/local/share/mysql5/mysql/mysql.server start'
   		alias mysqld_stop='sudo /opt/local/share/mysql5/mysql/mysql.server stop'
   	fi
+
+		# Lowercase uuids
+		alias uuidlower="uuidgen | tr '[[:upper:]]' '[[:lower:]]'"
   	;;
 
   SunOS)
