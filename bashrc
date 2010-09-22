@@ -630,6 +630,11 @@ case "$_os" in
 
 		# Lowercase uuids
 		alias uuidlower="uuidgen | tr '[[:upper:]]' '[[:lower:]]'"
+
+		# MacVim is found, use it for vim on the commandline
+		if [[ -f "/Applications/MacVim.app/Contents/MacOS/Vim" ]] ; then
+			alias vim="/Applications/MacVim.app/Contents/MacOS/Vim"
+		fi
   	;;
 
   SunOS)
