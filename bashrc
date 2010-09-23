@@ -44,7 +44,7 @@ case "$_os" in
   	fi
 
   	_id=/usr/bin/id
-  	super_cmd="/usr/bin/sudo -p \"[sudo] password for %u@$(hostname): \" --"
+  	alias super_cmd="/usr/bin/sudo -p \"[sudo] password for %u@$(hostname): \""
   	if [ -f "/etc/redhat-release" ] ; then
   		LINUX_FLAVOR="$(awk '{print $1}' /etc/redhat-release)"
   	fi
@@ -80,7 +80,7 @@ case "$_os" in
   	fi
 
   	_id=/usr/bin/id
-  	super_cmd="/usr/bin/sudo -p \"[sudo] password for %u@$(hostname): \" --"
+  	alias super_cmd="/usr/bin/sudo -p \"[sudo] password for %u@$(hostname): \""
   	;;
 
   OpenBSD)	# OpenBSD
@@ -91,7 +91,7 @@ case "$_os" in
   	  /usr/local/sbin /usr/local/bin
 
   	_id=/usr/bin/id
-  	super_cmd="/usr/bin/sudo -p \"[sudo] password for %u@$(hostname): \" --"
+  	alias super_cmd="/usr/bin/sudo -p \"[sudo] password for %u@$(hostname): \""
   	;;
 
   SunOS)		# Solaris
@@ -104,7 +104,7 @@ case "$_os" in
     		_append_path MANPATH /usr/share/man /usr/X11/share/man
 
     		_id=/usr/bin/id
-    		super_cmd=/usr/bin/pfexec
+    		alias super_cmd=/usr/bin/pfexec
 
     		# Files you make look like rw-r--r--
     		umask 022
@@ -127,7 +127,7 @@ case "$_os" in
           /usr/man /usr/share/man /opt/SUNWspro/man /opt/SUNWvts/man
 
     		_id=/usr/xpg4/bin/id
-    		super_cmd=/usr/bin/pfexec
+    		alias super_cmd=/usr/bin/pfexec
 
     		if [ -d "/usr/local/lib/python2.6/site-packages" ] ; then
     			PYTHONPATH="$PYTHONPATH:/usr/local/lib/python2.6/site-packages"
@@ -157,7 +157,7 @@ case "$_os" in
 
   CYGWIN_*)	# Windows running Cygwin
   	_id=/usr/bin/id
-  	super_cmd=
+  	alias super_cmd=
   	;;
 esac # uname -s
 
@@ -211,25 +211,25 @@ update_bashrc()	{
   local stash=
   if [[ -d "/etc/bash/.hg" && -f "/etc/bash/bashrc.local" ]] ; then
     stash="/tmp/bashrc.local.$$"
-    $super_cmd cp -p "/etc/bash/bashrc.local" "$stash"
-    $super_cmd rm -rf /etc/bash
+    super_cmd cp -p "/etc/bash/bashrc.local" "$stash"
+    super_cmd rm -rf /etc/bash
   fi
 
   if [[ -d "/etc/bash/.git" ]] ; then
-    ( builtin cd "/etc/bash" && $super_cmd git pull origin master )
+    ( builtin cd "/etc/bash" && super_cmd git pull origin master )
   else
     builtin cd "/etc" && \
-      ( $super_cmd git clone --depth 1 git://github.com/fnichol/bashrc.git bash || \
-      $super_cmd git clone http://github.com/fnichol/bashrc.git bash )
+      ( super_cmd git clone --depth 1 git://github.com/fnichol/bashrc.git bash || \
+      super_cmd git clone http://github.com/fnichol/bashrc.git bash )
   fi
   local result="$?"
 
   # move bashrc.local back
-  [[ -n "$stash" ]] && $super_cmd mv "$stash" "/etc/bash/bashrc.local"
+  [[ -n "$stash" ]] && super_cmd mv "$stash" "/etc/bash/bashrc.local"
 
 	if [ "$result" -eq 0 ]; then
-		${super_cmd} rm -f /etc/bash/tip.date
-		$super_cmd bash -c "( builtin cd /etc/bash && \
+		super_cmd rm -f /etc/bash/tip.date
+		super_cmd bash -c "( builtin cd /etc/bash && \
 		  git log -1 --pretty=\"format:%h %ci\" > /etc/bash/tip.date)"
 		printf "\n===> bashrc is current ($(cat /etc/bash/tip.date)).\n"
 		printf "===> Either logout and open a new shell, or type: source /etc/bash/bashrc\n\n"
