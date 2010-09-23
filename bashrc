@@ -44,7 +44,7 @@ case "$_os" in
   	fi
 
   	_id=/usr/bin/id
-  	super_cmd=/usr/bin/sudo -p "[sudo] password for %u@$(hostname): "
+  	super_cmd="/usr/bin/sudo -p \"[sudo] password for %u@$(hostname): \""
   	if [ -f "/etc/redhat-release" ] ; then
   		LINUX_FLAVOR="$(awk '{print $1}' /etc/redhat-release)"
   	fi
@@ -80,7 +80,7 @@ case "$_os" in
   	fi
 
   	_id=/usr/bin/id
-  	super_cmd=/usr/bin/sudo -p "[sudo] password for %u@$(hostname): "
+  	super_cmd="/usr/bin/sudo -p \"[sudo] password for %u@$(hostname): \""
   	;;
 
   OpenBSD)	# OpenBSD
@@ -91,7 +91,7 @@ case "$_os" in
   	  /usr/local/sbin /usr/local/bin
 
   	_id=/usr/bin/id
-  	super_cmd=/usr/bin/sudo -p "[sudo] password for %u@$(hostname): "
+  	super_cmd="/usr/bin/sudo -p \"[sudo] password for %u@$(hostname): \""
   	;;
 
   SunOS)		# Solaris
