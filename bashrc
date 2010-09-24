@@ -570,7 +570,7 @@ shopt -s histappend
 if [[ -f "/etc/bash/tip.date" ]] ; then
 	ver="$(cat /etc/bash/tip.date)"
 else
-	ver="$(cd '/etc/bash' && git log -1 --pretty=\"format:%h %ci\")"
+	ver="$(cd '/etc/bash' && git log -1 --pretty='format:%h %ci')"
 fi
 printf "bashrc ($ver)\n\n" ; unset ver
 
