@@ -67,7 +67,7 @@ unset p
 
 printf "===> Updating bashrc to current ...\n"
 source "/etc/bash/bashrc"
-update_bashrc
+bash -i -c "update_bashrc"
 
 printf "\n\n    #---------------------------------------------------------------\n"
 printf "    # Installation of bashrc complete. To activate either exit\n"
