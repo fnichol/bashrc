@@ -380,7 +380,7 @@ authme() {
 #
 # @param [String] profile name to activate
 maven_set_settings() {
-  if [ ! -h "${HOME}/.m2/settings.xml" ] ; then
+  if [ -f "${HOME}/.m2/settings.xml" ] ; then
     if [ ! -f "${HOME}/.m2/settings-default.xml" ] ; then
       printf ">> Moving existing settings.xml to settings-default.xml...\n"
       mv ${HOME}/.m2/settings.xml ${HOME}/.m2/settings-default.xml
