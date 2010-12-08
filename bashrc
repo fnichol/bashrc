@@ -738,6 +738,12 @@ case "$_os" in
     # Thanks to:
     # http://superuser.com/questions/52483/terminal-tips-and-tricks-for-mac-os-x
     alias ql='qlmanage -p 2>/dev/null'
+
+
+    # List TCP port that are listening
+    # Thanks to:
+    # https://github.com/jqr/dotfiles/blob/master/bash_profile.d/mac.sh
+    alias openports='sudo lsof -iTCP -sTCP:LISTEN -P'
     ;;
 
   SunOS)
