@@ -441,13 +441,13 @@ case "$_os" in
   CYGWIN_*)       psg() { ps -efW | egrep $@    ; } ;;
 esac
 
-#
-# zoneinfo: displays a list of zones and their comments. For Solaris 10/11 only.
-#
 case "$_os" in
 SunOS)
   # only define the function if this is a global zone
   if zoneadm list -pi | grep :global: >/dev/null ; then
+    ##
+    # Displays a list of zones and their comments. For Solaris 10/11 only.
+    #
     zoneinfo() {
       printf "%-5s  %-10s  %-16s  %-10s  %s\n" \
         "ISC" "DOMAIN" "NAME" "STATUS" "COMMENT"
@@ -472,6 +472,39 @@ SunOS)
       done | sort
     }
   fi
+  ;;
+
+Darwin)
+  ##
+  # Quits OS X applications from the command line.
+  #
+  # @param [List] list of applications
+  quit() {
+    for app in $* ; do
+      osacript -e 'quit app "'$app'"'
+    done ; unset app
+  }
+
+  ##
+  # Relaunches OS X applications from the command line.
+  #
+  # @param [List] list of applications
+  relaunch() {
+    for app in $* ; do
+      osascript -e 'quit app "'$app'"'
+      sleep 2
+      open -a $app
+    done ; unset app
+  }
+
+  ##
+  # Opens a man page in Preview.app
+  #
+  # @param [String] man page
+  # @param [optional, String] man section
+  pman() {
+    man -t $@ | open -f -a /Applications/Preview.app
+  }
   ;;
 esac
 
