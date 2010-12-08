@@ -658,6 +658,22 @@ printf "bashrc ($ver)\n\n" ; unset ver
 
 
 #---------------------------------------------------------------
+# Completions
+#---------------------------------------------------------------
+
+# ssh hosts from ~/.ssh/known_hosts
+# Thanks to:
+# https://github.com/jqr/dotfiles/blob/master/bash_profile.d/
+_ssh_hosts() {
+  grep "Host " ~/.ssh/config 2> /dev/null | sed -e "s/Host //g"
+  # http://news.ycombinator.com/item?id=751220
+  cat ~/.ssh/known_hosts | cut -f 1 -d ' ' | sed -e s/,.*//g | uniq | grep -v "\["
+}
+complete -W "$(_ssh_hosts)" ssh
+unset _ssh_hosts
+
+
+#---------------------------------------------------------------
 # Set Aliases (Commonly Used Shortcuts)
 #---------------------------------------------------------------
 
