@@ -430,6 +430,13 @@ maven_set_settings() {
   printf "===> Activating maven settings file: ${HOME}/.m2/settings-${ext}.xml\n"
 }
 
+##
+# Quickly starts a webserver from the current directory.
+#
+# @param [optional, Integer] bind port number, default 8000
+web_serve() {
+  $(which python) -m SimpleHTTPServer ${1:-8000}
+}
 
 #
 # Performs an egrep on the process list. Use any arguments that egrep accetps.
