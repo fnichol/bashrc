@@ -243,6 +243,32 @@ update_bashrc() {
 if [ -z "${PS1}" -a "$-" != "*i*" ] ; then  cleanup ; return ; fi
 
 ##
+# Sources all existing files in a list of files. Every file that is readable
+# will get sourced as a shorthand to listing many lines of safe_source.
+#
+# Thanks to: https://github.com/darkhelmet/dotfiles for inspiration.
+#
+# @param [List] space-separated list of source files
+safe_source() {
+  for src ; do
+    [[ -r "$src" ]] && echo source "$src"
+  done ; unset src
+}
+
+##
+# Sources first existing file in a list of files. Only the first match will be
+# sourced which emulates as if/elsif/elsif... structure.
+#
+# Thanks to: https://github.com/darkhelmet/dotfiles for inspiration.
+#
+# @param [List] space-separated list of source files
+safe_source_first() {
+  for src ; do
+    [[ -r "$src" ]] && echo source "$src" && unset src && return
+  done ; unset src
+}
+
+##
 # Prints terminal codes.
 #
 # Thanks to: http://github.com/wayneeseguin/rvm/blob/master/scripts/color
@@ -540,11 +566,7 @@ export VISUAL="$EDITOR"
 export EXINIT="set tabstop=2 bg=dark"
 
 # Conditional support for Ruby Version Manager (RVM)
-if [[ -s "${HOME}/.rvm/scripts/rvm" ]]; then
-  source "${HOME}/.rvm/scripts/rvm"
-elif [[ -s "/usr/local/lib/rvm" ]]; then
-  source "/usr/local/lib/rvm"
-fi
+safe_source_first "${HOME}/.rvm/scripts/rvm" "/usr/local/lib/rvm"
 
 # Number of commands to remember in the command history
 export HISTSIZE=10000
@@ -678,6 +700,6 @@ if [[ -n "${LS_COLORS}" ]] ; then
   export LS_COLORS="$(echo $LS_COLORS | sed 's|di=01;34|di=01;33|')"
 fi
 
-[[ -r "/etc/bash/bashrc.local" ]] &&  source /etc/bash/bashrc.local
+safe_source "/etc/bash/bashrc.local" "${HOME}/.bash_aliases"
 
 cleanup
