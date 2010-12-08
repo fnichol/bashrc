@@ -527,9 +527,8 @@ Darwin)
   ;;
 esac
 
-#
-# whatsmy_primary_ip: returns the primary IP address of the system
-#
+##
+# Returns the primary IP address of the system.
 case "$_os" in
   Darwin)
     whatsmy_primary_ip() {
@@ -597,6 +596,15 @@ case "$_os" in
     ;;
 esac # case $_os
 
+##
+# Returns the public/internet visible IP address of the system.
+#
+# Thanks to:
+# https://github.com/jqr/dotfiles/blob/master/bash_profile.d/
+#
+whatsmy_public_ip() {
+  curl --silent 'www.whatismyip.com/automation/n09230945.asp' && echo
+}
 
 #---------------------------------------------------------------
 # Interactive shell (prompt,history) settings
