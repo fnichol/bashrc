@@ -494,7 +494,7 @@ Darwin)
   # @param [List] list of applications
   quit() {
     for app in $* ; do
-      osacript -e 'quit app "'$app'"'
+      osascript -e 'quit app "'$app'"'
     done ; unset app
   }
 
