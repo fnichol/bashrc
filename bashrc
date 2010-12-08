@@ -251,7 +251,7 @@ if [ -z "${PS1}" -a "$-" != "*i*" ] ; then  cleanup ; return ; fi
 # @param [List] space-separated list of source files
 safe_source() {
   for src ; do
-    [[ -r "$src" ]] && echo source "$src"
+    [[ -r "$src" ]] && source "$src"
   done ; unset src
 }
 
@@ -264,7 +264,7 @@ safe_source() {
 # @param [List] space-separated list of source files
 safe_source_first() {
   for src ; do
-    [[ -r "$src" ]] && echo source "$src" && unset src && return
+    [[ -r "$src" ]] && source "$src" && unset src && return
   done ; unset src
 }
 
