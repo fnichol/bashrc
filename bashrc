@@ -709,6 +709,11 @@ case "$_os" in
     if [[ -f "/Applications/MacVim.app/Contents/MacOS/Vim" ]] ; then
       alias vim="/Applications/MacVim.app/Contents/MacOS/Vim"
     fi
+
+    # Launch quicklook from the commandline
+    # Thanks to:
+    # http://superuser.com/questions/52483/terminal-tips-and-tricks-for-mac-os-x
+    alias ql='qlmanage -p 2>/dev/null'
     ;;
 
   SunOS)
