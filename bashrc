@@ -433,6 +433,9 @@ maven_set_settings() {
 ##
 # Quickly starts a webserver from the current directory.
 #
+# Thanks to:
+# http://superuser.com/questions/52483/terminal-tips-and-tricks-for-mac-os-x
+#
 # @param [optional, Integer] bind port number, default 8000
 web_serve() {
   $(which python) -m SimpleHTTPServer ${1:-8000}
@@ -485,6 +488,9 @@ Darwin)
   ##
   # Quits OS X applications from the command line.
   #
+  # Thanks to:
+  # http://superuser.com/questions/52483/terminal-tips-and-tricks-for-mac-os-x
+  #
   # @param [List] list of applications
   quit() {
     for app in $* ; do
@@ -494,6 +500,9 @@ Darwin)
 
   ##
   # Relaunches OS X applications from the command line.
+  #
+  # Thanks to:
+  # http://superuser.com/questions/52483/terminal-tips-and-tricks-for-mac-os-x
   #
   # @param [List] list of applications
   relaunch() {
@@ -506,6 +515,9 @@ Darwin)
 
   ##
   # Opens a man page in Preview.app
+  #
+  # Thanks to:
+  # http://superuser.com/questions/52483/terminal-tips-and-tricks-for-mac-os-x
   #
   # @param [String] man page
   # @param [optional, String] man section
