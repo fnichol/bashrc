@@ -526,7 +526,7 @@ esac # case $_os
 
 # Set the default editor
 if [ -z "$SSH_CLIENT" ] && command -v mvim >/dev/null ; then
-  export EDITOR="$(command -v mvim) -f"
+  export EDITOR="$(command -v mvim) -f -c \"au VimLeave * !open -a Terminal\""
 elif [ -z "$SSH_CLIENT" ] && command -v gvim >/dev/null ; then
   export EDITOR="$(command -v gvim) -f"
 elif [ -z "$SSH_CLIENT" ] && command -v mate >/dev/null ; then
