@@ -23,6 +23,9 @@
 #---------------------------------------------------------------
 #PROMPT_COLOR=
 
+# If you want a different prompt color when logged in over SSH
+#REMOTE_PROMPT_COLOR=
+
 
 #---------------------------------------------------------------
 # Host ssh aliases

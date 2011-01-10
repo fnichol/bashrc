@@ -194,7 +194,7 @@ unset _append_path _push_path
 # Unsets any outstanding environment variables and unsets itself.
 #
 cleanup() {
-  unset PROMPT_COLOR _os _id
+  unset PROMPT_COLOR REMOTE_PROMPT_COLOR _os _id
   unset cleanup
 }
 
@@ -327,10 +327,16 @@ bput() {
 ##
 # Sets a shell prompt. Uses a set variable of `PROMPT_COLOR' to determine
 # the main color of the prompt, if it exists. This is generally set in
-# bashrc.local.
+# bashrc.local. If a variable of `REMOTE_PROMPT_COLOR' is given, then this
+# color will be used for all remote SSH sessions.
 #
 bash_prompt() {
   [[ -z "$PROMPT_COLOR" ]] && PROMPT_COLOR="default"
+
+  # change prompt color if remotely logged in and alt color is given
+  if [ -n "$SSH_CLIENT" -a -n "$REMOTE_PROMPT_COLOR" ] ; then
+    PROMPT_COLOR="$REMOTE_PROMPT_COLOR"
+  fi
   
   if [ "$($_id -ur)" -eq "0" ] ; then  # am I root?
     local user_c="#" ; local tb=$user_c ; local color="${root_red}"

@@ -29,7 +29,7 @@ printf "===> Creating /etc/bash/bashrc.local for system-specific configuration .
 cp "/etc/bash/bashrc.local.site" "/etc/bash/bashrc.local"
 
 case "$(uname -s)" in
-  Darwin)   color="green" ;;
+  Darwin)   color="green" ; remote_color="yellow" ;;
   Linux)    color="cyan"  ;;
   OpenBSD)  color="red"   ;;
   CYGWIN*)  color="black" ;;
@@ -46,6 +46,14 @@ printf "Setting prompt color to be \"$color\" ...\n"
 perl -pi -e "s|^#?PROMPT_COLOR=.*$|PROMPT_COLOR=$color|g" \
   "/etc/bash/bashrc.local"
 unset color
+
+if [[ -n "$remote_color" ]] ; then
+  printf "Setting remote prompt color to be \"$remote_color\" ...\n"
+  perl -pi -e \
+    "s|^#?REMOTE_PROMPT_COLOR=.*$|REMOTE_PROMPT_COLOR=$remote_color|g" \
+    "/etc/bash/bashrc.local"
+  unset remote_color
+fi
 
 case "$(uname -s)" in
   Darwin)                       p="/etc/bashrc"   ;;
