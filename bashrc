@@ -10,17 +10,59 @@
 # Define Default System Paths
 #---------------------------------------------------------------
 
-_append_path() {
+##
+# Sets a colon-seperated search path variable, overwriting any previous values.
+#
+# @param [String] path variable to manipulate (ex: PATH, PYTHONPATH, etc)
+# @param [List] space-seperated list of system paths to append, in order
+_set_path() {
   local path_var="$1"
   shift
+
+  # set var and overwrite any previous values
+  [[ -d "$1" ]] && eval $path_var="$1"
+  shift
+
   for p in $@ ; do
     [[ -d "$p" ]] && eval $path_var="\$${path_var}:${p}"
   done ; unset p
 }
 
+##
+# Appends paths to the end of a search path variable list.
+#
+# @param [String] path variable to manipulate (ex: PATH, PYTHONPATH, etc)
+# @param [List] space-seperated list of system paths to append, in order
+_append_path() {
+  local path_var="$1"
+  shift
+
+  # create var if not exists
+  if eval "test -z \"\$$path_var\"" ; then
+    [[ -d "$1" ]] && eval $path_var="$1"
+    shift
+  fi
+
+  for p in $@ ; do
+    [[ -d "$p" ]] && eval $path_var="\$${path_var}:${p}"
+  done ; unset p
+}
+
+##
+# Pushes paths to the front of a search path variable list.
+#
+# @param [String] path variable to manipulate (ex: PATH, PYTHONPATH, etc)
+# @param [List] space-seperated list of system paths to push, in reverse order
 _push_path() {
   local path_var="$1"
   shift
+
+  # create var if not exists
+  if eval "test -z \"\$$path_var\"" ; then
+    [[ -d "$1" ]] && eval $path_var="$1"
+    shift
+  fi
+
   for p in $@ ; do
     [[ -d "$p" ]] && eval $path_var="${p}:\$${path_var}"
   done ; unset p
