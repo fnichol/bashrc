@@ -167,18 +167,11 @@ case "$_os" in
         _id=/usr/xpg4/bin/id
         alias super_cmd=/usr/bin/pfexec
 
-        if [ -d "/usr/local/lib/python2.6/site-packages" ] ; then
-          PYTHONPATH="$PYTHONPATH:/usr/local/lib/python2.6/site-packages"
-        fi
-        if [ -d "/usr/local/lib/python2.5/site-packages" ] ; then
-          PYTHONPATH="$PYTHONPATH:/usr/local/lib/python2.5/site-packages"
-        fi
-        if [ -d "/usr/local/lib/python2.4/site-packages" ] ; then
-          PYTHONPATH="$PYTHONPATH:/usr/local/lib/python2.4/site-packages"
-        fi
-        if [ -n "$PYTHONPATH" ] ; then
-          export PYTHONPATH
-        fi
+        # build python search path, favoring newer pythons over older ones
+        for ver in 2.7 2.6 2.5 2.4 ; do
+          _append_path PYTHONPATH /usr/local/lib/python${ver}/site-packages
+        done ; unset ver
+        [[ -n "$PYTHONPATH" ]] && export PYTHONPATH
 
         # Files you make look like rw-r--r--
         umask 022
