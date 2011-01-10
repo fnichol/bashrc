@@ -128,8 +128,7 @@ case "$_os" in
   OpenBSD)  # OpenBSD
     # Set a base PATH based on original /etc/skel/.profile and /root/.profile
     # from 4.6 on 2010-01-01
-    PATH=/sbin
-    _append_path PATH /usr/sbin /bin /usr/bin /usr/X11R6/bin \
+    _set_path PATH /sbin /sbin /usr/sbin /bin /usr/bin /usr/X11R6/bin \
       /usr/local/sbin /usr/local/bin
 
     _id=/usr/bin/id
@@ -139,11 +138,9 @@ case "$_os" in
   SunOS)    # Solaris
     case "$(uname -r)" in
       "5.11") # OpenSolaris
-        PATH=/opt/*/current/bin
-        _append_path PATH /usr/gnu/bin /usr/bin /usr/X11/bin /usr/sbin /sbin
+        _set_path PATH /opt/*/current/bin /usr/gnu/bin /usr/bin /usr/X11/bin /usr/sbin /sbin
 
-        MANPATH=/usr/gnu/share/man
-        _append_path MANPATH /usr/share/man /usr/X11/share/man
+        _set_path MANPATH /usr/gnu/share/man /usr/share/man /usr/X11/share/man
 
         _id=/usr/bin/id
         alias super_cmd=/usr/bin/pfexec
@@ -156,9 +153,8 @@ case "$_os" in
         ;;
 
       "5.10") # Solaris 10
-        PATH=/opt/local/sbin
         # admin path
-        _append_path PATH /usr/gnu/sbin /usr/local/sbin \
+        _set_path PATH /opt/local/sbin /usr/gnu/sbin /usr/local/sbin \
           /usr/platform/$(uname -i)/sbin /sbin /usr/sbin
         # general path
         _append_path PATH /opt/local/bin /usr/gnu/bin /usr/local/bin \
