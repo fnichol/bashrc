@@ -6,7 +6,7 @@
 [[ -n "${BASH_VERSION}" ]] || return
 
 # Skip this config if has already loaded
-if declare -f update_bashrc >/dev/null && [[ ${bashrc_reload_flag:-0} -eq 0 ]]
+if declare -f __bashrc_reload >/dev/null && [[ ${bashrc_reload_flag:-0} -eq 0 ]]
 then
   return
 fi
