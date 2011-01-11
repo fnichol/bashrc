@@ -802,6 +802,8 @@ alias ll='ls -l'
 alias la='ls -al'
 alias lm='ll | less'
 
+alias bu='bashrc update'
+
 # Colorize maven output, courtesy of:
 # http://blog.blindgaenger.net/colorize_maven_output.html
 if command -v mvn >/dev/null ; then
