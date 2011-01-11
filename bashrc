@@ -235,7 +235,9 @@ esac # uname -s
 
 export PATH super_cmd
 
-[[ -r "/etc/bash/bashrc.local" ]] &&  source /etc/bash/bashrc.local
+if [[ -r "${bashrc_prefix:-/etc/bash}/bashrc.local" ]] ; then
+  source "${bashrc_prefix:-/etc/bash}/bashrc.local"
+fi
 
 if [[ -z "$_debug_bashrc" ]] ; then
   unset _set_path _append_path _push_path _remove_from_path
@@ -263,25 +265,28 @@ update_bashrc() {
     return 10
   fi
 
+  local prefix="${bashrc_prefix:-/etc/bash}"
+  local repo="github.com/fnichol/bashrc.git"
+
   # save a copy of bashrc.local and clear out old hg cruft
   local stash=
-  if [[ -d "/etc/bash/.hg" && -f "/etc/bash/bashrc.local" ]] ; then
+  if [[ -d "$prefix/.hg" && -f "$prefix/bashrc.local" ]] ; then
     stash="/tmp/bashrc.local.$$"
-    super_cmd cp -p "/etc/bash/bashrc.local" "$stash"
-    super_cmd rm -rf /etc/bash
+    super_cmd cp -p "$prefix/bashrc.local" "$stash"
+    super_cmd rm -rf "$prefix"
   fi
 
-  if [[ -d "/etc/bash/.git" ]] ; then
-    ( builtin cd "/etc/bash" && super_cmd git pull origin master )
+  if [[ -d "$prefix/.git" ]] ; then
+    ( builtin cd "$prefix" && super_cmd git pull origin master )
   else
     builtin cd "/etc" && \
-      ( super_cmd git clone --depth 1 git://github.com/fnichol/bashrc.git bash || \
-      super_cmd git clone http://github.com/fnichol/bashrc.git bash )
+      ( super_cmd git clone --depth 1 git://$repo bash || \
+      super_cmd git clone https://$repo bash )
   fi
   local result="$?"
 
   # move bashrc.local back
-  [[ -n "$stash" ]] && super_cmd mv "$stash" "/etc/bash/bashrc.local"
+  [[ -n "$stash" ]] && super_cmd mv "$stash" "$prefix/bashrc.local"
 
   if [ "$result" -eq 0 ]; then
     super_cmd rm -f /etc/bash/tip.date
@@ -711,10 +716,10 @@ shopt -s checkwinsize
 shopt -s histappend
 
 # Echo the version and date of the profile
-if [[ -f "/etc/bash/tip.date" ]] ; then
-  ver="$(cat /etc/bash/tip.date)"
+if [[ -f "${bashrc_prefix:-/etc/bash}/tip.date" ]] ; then
+  ver="$(cat ${bashrc_prefix:-/etc/bash}/tip.date)"
 else
-  ver="$(cd '/etc/bash' && git log -1 --pretty='format:%h %ci')"
+  ver="$(cd ${bashrc_prefix:-/etc/bash} && git log -1 --pretty='format:%h %ci')"
 fi
 printf "bashrc ($ver)\n\n" ; unset ver
 
@@ -852,6 +857,6 @@ if [[ -n "${LS_COLORS}" ]] ; then
   export LS_COLORS="$(echo $LS_COLORS | sed 's|di=01;34|di=01;33|')"
 fi
 
-safe_source "/etc/bash/bashrc.local" "${HOME}/.bash_aliases"
+safe_source "${bashrc_prefix:-/etc/bash}/bashrc.local" "${HOME}/.bash_aliases"
 
 cleanup
