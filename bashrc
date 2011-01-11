@@ -829,8 +829,8 @@ if command -v homesick >/dev/null ; then
 
     for c in $castles ; do
       printf "===> Updating $c castle ...\n"
-      $(which homesick) pull "$c"
-      $(which homesick) symlink "$c"
+      $(which homesick) pull "$c" --force
+      $(which homesick) symlink "$c" --force
     done ; unset c
 
     printf "===> homesick castles [$castles] are up to date.\n"
