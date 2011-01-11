@@ -96,6 +96,19 @@ __push_path() {
   done ; unset p
 }
 
+__set_grails_home() {
+  # if grails is installed manually, then export GRAILS_HOME preferentially
+  if [ -f "/opt/grails/current/bin/grails" -a -d "/opt/grails/current" ] ; then
+    export GRAILS_HOME=/opt/grails/current
+  fi
+}
+
+__set_groovy_home() {
+  # if groovy is installed manually, then export GROOVY_HOME preferentially
+  if [ -f "/opt/groovy/current/bin/groovy" -a -d "/opt/groovy/current" ] ; then
+    export GROOVY_HOME=/opt/groovy/current
+  fi
+}
 
 # Determines the machine _os to set PATH, MANPATH and _id
 _os="$(uname -s)"
@@ -103,15 +116,8 @@ case "$_os" in
   Linux)    # Linux
     __push_path /opt/*/current/bin
 
-    # if grails is installed manually, then export GRAILS_HOME preferentially
-    if [ -f "/opt/grails/current/bin/grails" -a -d "/opt/grails/current" ] ; then
-      export GRAILS_HOME=/opt/grails/current
-    fi
-
-    # if groovy is installed manually, then export GROOVY_HOME preferentially
-    if [ -f "/opt/groovy/current/bin/groovy" -a -d "/opt/groovy/current" ] ; then
-      export GROOVY_HOME=/opt/groovy/current
-    fi
+    __set_grails_home
+    __set_groovy_home
 
     _id=/usr/bin/id
     alias super_cmd="/usr/bin/sudo -p \"[sudo] password for %u@$(hostname): \""
@@ -133,21 +139,8 @@ case "$_os" in
     # JAVA_HOME to match this
     [[ -s "/usr/libexec/java_home" ]] && export JAVA_HOME=$(/usr/libexec/java_home)
 
-    # if grails is installed manually, then export GRAILS_HOME preferentially
-    if [ -f "/opt/grails/current/bin/grails" -a -d "/opt/grails/current" ] ; then
-      export GRAILS_HOME=/opt/grails/current
-    # if grails is installed via macports, then export GRAILS_HOME
-    elif [ -f "/opt/local/bin/grails" -a -d "/opt/local/share/java/grails" ] ; then
-      export GRAILS_HOME=/opt/local/share/java/grails
-    fi
-
-    # if groovy is installed manually, then export GROOVY_HOME preferentially
-    if [ -f "/opt/groovy/current/bin/groovy" -a -d "/opt/groovy/current" ] ; then
-      export GROOVY_HOME=/opt/groovy/current
-    # if groovy is installed via macports, then export GROOVY_HOME
-    elif [ -f "/opt/local/bin/groovy" -a -d "/opt/local/share/java/groovy" ] ; then
-      export GROOVY_HOME=/opt/local/share/java/groovy
-    fi
+    __set_grails_home
+    __set_groovy_home
 
     _id=/usr/bin/id
     alias super_cmd="/usr/bin/sudo -p \"[sudo] password for %u@$(hostname): \""
@@ -248,6 +241,7 @@ fi
 
 if [[ -z "$_debug_bashrc" ]] ; then
   unset __set_path __append_path __push_path __remove_from_path
+  unset __set_grails_home __set_groovy_home
 fi
 
 
