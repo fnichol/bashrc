@@ -237,7 +237,9 @@ export PATH super_cmd
 
 [[ -r "/etc/bash/bashrc.local" ]] &&  source /etc/bash/bashrc.local
 
-unset _append_path _push_path
+if [[ -z "$_debug_bashrc" ]] ; then
+  unset _set_path _append_path _push_path _remove_from_path
+fi
 
 
 #---------------------------------------------------------------
