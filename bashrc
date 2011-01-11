@@ -298,7 +298,11 @@ __bashrc_update() {
 
   if [ "$result" -eq 0 ]; then
     local old_file="/tmp/bashrc.date.$$"
-    super_cmd mv "$prefix/tip.date" "$old_file"
+    if [[ -f "$prefix/tip.date" ]] ; then
+      super_cmd mv "$prefix/tip.date" "$old_file"
+    else
+      touch "$old_file"
+    fi
 
     super_cmd bash -c "( builtin cd $prefix && \
       git log -1 --pretty=\"format:%h %ci\" > $prefix/tip.date)"
