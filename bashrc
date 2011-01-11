@@ -5,6 +5,11 @@
 # Skip this config if we aren't in bash
 [[ -n "${BASH_VERSION}" ]] || return
 
+# Skip this config if has already loaded
+if declare -f update_bashrc >/dev/null && [[ ${bashrc_reload_flag:-0} -eq 0 ]]
+then
+  return
+fi
 
 #---------------------------------------------------------------
 # Define Default System Paths
@@ -252,7 +257,7 @@ fi
 # Unsets any outstanding environment variables and unsets itself.
 #
 cleanup() {
-  unset PROMPT_COLOR REMOTE_PROMPT_COLOR _os _id
+  unset PROMPT_COLOR REMOTE_PROMPT_COLOR _os _id bashrc_reload_flag
   unset cleanup
 }
 
@@ -307,6 +312,14 @@ update_bashrc() {
     printf "\n>>>> bashrc could not find an update or has failed.\n\n"
     return 11
   fi
+}
+
+##
+# Reloads bashrc profile
+reload_bashrc() {
+  bashrc_reload_flag=1
+  source "${bashrc_prefix:-/etc/bash}/bashrc"
+  unset bashrc_reload_flag
 }
 
 # Skip the rest if this is not an interactive shell
