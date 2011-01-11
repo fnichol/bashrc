@@ -305,7 +305,7 @@ __bashrc_update() {
 
     if ! diff -q "$old_file" "$prefix/tip.date" >/dev/null ; then
       printf "\n===> bashrc is updated to ($(cat $prefix/tip.date)).\n"
-      printf "===> Either open a new shell, or type: reload_bashrc\n\n"
+      printf "===> Either type: 'bashrc reload' or open a new shell.\n\n"
     else
       printf "\n===> bashrc is already up to date and current.\n"
     fi
