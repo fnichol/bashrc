@@ -308,12 +308,13 @@ __bashrc_update() {
       git log -1 --pretty=\"format:%h %ci\" > $prefix/tip.date)"
 
     if ! diff -q "$old_file" "$prefix/tip.date" >/dev/null ; then
-      __bashrc_reload
       local old_rev=$(awk '{print $1}' $old_file)
       local new_rev=$(awk '{print $1}' $prefix/tip.date)
+      printf "\n#### Updates ####\n-----------------\n"
       super_cmd git --no-pager log \
         --pretty=format:'%C(yellow)%h%Creset - %s %Cgreen(%cr)%Creset' \
         --abbrev-commit --date=relative $old_rev..$new_rev
+      __bashrc_reload
       printf "\n\n===> bashrc was updated and reloaded.\n"
     else
       printf "\n===> bashrc is already up to date and current.\n"
