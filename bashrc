@@ -264,9 +264,16 @@ cleanup() {
 }
 
 ##
+# Deprecation notice.
+update_bashrc() {
+  printf "\n>>>> update_bashrc() is no longer current. Please use 'bashrc update' instead.\n\n"
+  return 10
+}
+
+##
 # Pulls down new changes to the bashrc via git.
 #
-update_bashrc() {
+__bashrc_update() {
   if ! command -v git >/dev/null; then
     printf "\n>>>> Command 'git' not found on the path, please install and try again.\n\n"
     return 10
@@ -318,10 +325,23 @@ update_bashrc() {
 
 ##
 # Reloads bashrc profile
-reload_bashrc() {
+__bashrc_reload() {
   bashrc_reload_flag=1
   source "${bashrc_prefix:-/etc/bash}/bashrc"
   unset bashrc_reload_flag
+}
+
+##
+# CLI for the bash profile.
+bashrc() {
+  local command="$1"
+  shift
+
+  case "$command" in
+    update)   __bashrc_update ;;
+    reload)   __bashrc_reload ;;
+    *)        printf "usage: bashrc (update|reload)" ; return 10 ;;
+  esac
 }
 
 # Skip the rest if this is not an interactive shell
@@ -765,6 +785,8 @@ if [[ -r "${HOME}/.ssh/known_hosts" ]] ; then
   complete -W "$(_ssh_hosts)" ssh
   unset _ssh_hosts
 fi
+
+complete -W "reload update" bashrc
 
 
 #---------------------------------------------------------------
