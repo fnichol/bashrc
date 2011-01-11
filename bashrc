@@ -24,6 +24,7 @@ _set_path() {
   shift
 
   for p in $@ ; do
+    _remove_from_path "$path_var" "$p"
     [[ -d "$p" ]] && eval $path_var="\$${path_var}:${p}"
   done ; unset p
 }
@@ -44,6 +45,7 @@ _append_path() {
   fi
 
   for p in $@ ; do
+    _remove_from_path "$path_var" "$p"
     [[ -d "$p" ]] && eval $path_var="\$${path_var}:${p}"
   done ; unset p
 }
@@ -64,8 +66,29 @@ _push_path() {
   fi
 
   for p in $@ ; do
+    _remove_from_path "$path_var" "$p"
     [[ -d "$p" ]] && eval $path_var="${p}:\$${path_var}"
   done ; unset p
+}
+
+##
+# Removes all instances of paths in a search path.
+#
+# @param [String] path variable to manipulate (ex: PATH, PYTHONPATH, etc)
+# @param [List] space-seperated list of system paths to remove
+_remove_from_path() {
+  local path_var="$1"
+  shift
+  local new_path=""
+
+  # remove paths from path_var, working in new_path
+  for rp in $@ ; do
+    new_path="$(eval "echo \"\$$path_var\"" | tr ':' '\n' | \
+      grep -v "^${rp}$" | tr '\n' ':' | sed -e 's/:$//')"
+  done ; unset rp
+
+  # reassign path_var from new_path
+  eval $path_var="$new_path"
 }
 
 
