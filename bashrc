@@ -328,6 +328,19 @@ __bashrc_reload() {
 }
 
 ##
+# Displays the version of the bashrc profile
+__bashrc_version() {
+  local ver=
+  # Echo the version and date of the profile
+  if [[ -f "${bashrc_prefix:-/etc/bash}/tip.date" ]] ; then
+    ver="$(cat ${bashrc_prefix:-/etc/bash}/tip.date)"
+  else
+    ver="$(cd ${bashrc_prefix:-/etc/bash} && git log -1 --pretty='format:%h %ci')"
+  fi
+  printf "bashrc ($ver)\n\n"
+}
+
+##
 # CLI for the bash profile.
 bashrc() {
   local command="$1"
@@ -336,7 +349,8 @@ bashrc() {
   case "$command" in
     update)   __bashrc_update ;;
     reload)   __bashrc_reload ;;
-    *)        printf "usage: bashrc (update|reload)" ; return 10 ;;
+    version)  __bashrc_version ;;
+    *)        printf "usage: bashrc (update|reload|version)" ; return 10 ;;
   esac
 }
 
@@ -756,12 +770,7 @@ shopt -s checkwinsize
 shopt -s histappend
 
 # Echo the version and date of the profile
-if [[ -f "${bashrc_prefix:-/etc/bash}/tip.date" ]] ; then
-  ver="$(cat ${bashrc_prefix:-/etc/bash}/tip.date)"
-else
-  ver="$(cd ${bashrc_prefix:-/etc/bash} && git log -1 --pretty='format:%h %ci')"
-fi
-printf "bashrc ($ver)\n\n" ; unset ver
+__bashrc_version
 
 
 #---------------------------------------------------------------
@@ -782,7 +791,7 @@ if [[ -r "${HOME}/.ssh/known_hosts" ]] ; then
   unset _ssh_hosts
 fi
 
-complete -W "reload update" bashrc
+complete -W "reload update version" bashrc
 
 
 #---------------------------------------------------------------
