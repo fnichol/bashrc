@@ -310,9 +310,9 @@ __bashrc_update() {
       local old_rev=$(awk '{print $1}' $old_file)
       local new_rev=$(awk '{print $1}' $prefix/tip.date)
       printf "\n#### Updates ####\n-----------------\n"
-      super_cmd git --no-pager log \
+      ( builtin cd $prefix && super_cmd git --no-pager log \
         --pretty=format:'%C(yellow)%h%Creset - %s %Cgreen(%cr)%Creset' \
-        --abbrev-commit --date=relative $old_rev..$new_rev
+        --abbrev-commit --date=relative $old_rev..$new_rev )
       printf "\n-----------------\n\n"
       __bashrc_reload
       printf "\n\n===> bashrc was updated and reloaded.\n"
