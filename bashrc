@@ -304,6 +304,7 @@ __bashrc_update() {
       git log -1 --pretty=\"format:%h %ci\" > $prefix/tip.date)"
 
     if ! diff -q "$old_file" "$prefix/tip.date" >/dev/null ; then
+      printf "\n\n" # give bashrc source line more prominence
       __bashrc_reload
       printf "\n===> bashrc was updated and reloaded.\n"
     else
