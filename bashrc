@@ -588,7 +588,6 @@ SunOS)
   if zoneadm list -pi | grep :global: >/dev/null ; then
     ##
     # Displays a list of zones and their comments. For Solaris 10/11 only.
-    #
     zoneinfo() {
       printf "%-5s  %-10s  %-16s  %-10s  %s\n" \
         "ISC" "DOMAIN" "NAME" "STATUS" "COMMENT"
