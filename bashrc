@@ -314,6 +314,7 @@ __bashrc_update() {
       super_cmd git --no-pager log \
         --pretty=format:'%C(yellow)%h%Creset - %s %Cgreen(%cr)%Creset' \
         --abbrev-commit --date=relative $old_rev..$new_rev
+      printf "\n-----------------\n\n"
       __bashrc_reload
       printf "\n\n===> bashrc was updated and reloaded.\n"
     else
