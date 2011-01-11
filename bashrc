@@ -309,7 +309,12 @@ __bashrc_update() {
 
     if ! diff -q "$old_file" "$prefix/tip.date" >/dev/null ; then
       __bashrc_reload
-      printf "\n===> bashrc was updated and reloaded.\n"
+      local old_rev=$(awk '{print $1}' $old_file)
+      local new_rev=$(awk '{print $1}' $prefix/tip.date)
+      super_cmd git --no-pager log \
+        --pretty=format:'%C(yellow)%h%Creset - %s %Cgreen(%cr)%Creset' \
+        --abbrev-commit --date=relative $old_rev..$new_rev
+      printf "\n\n===> bashrc was updated and reloaded.\n"
     else
       printf "\n===> bashrc is already up to date and current.\n"
     fi
