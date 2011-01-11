@@ -261,7 +261,7 @@ cleanup() {
 # Deprecation notice.
 update_bashrc() {
   printf "\n>>>> update_bashrc() is no longer current. Please use 'bashrc update' instead.\n\n"
-  return 10
+  return 11
 }
 
 ##
