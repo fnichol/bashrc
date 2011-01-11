@@ -822,6 +822,22 @@ if command -v mvn >/dev/null ; then
   alias mvn=color_maven
 fi
 
+if command -v homesick >/dev/null ; then
+  __homesick_update() {
+    local castles="$(homesick list | awk '{print $2}' | \
+      sed -e 's|^\([a-zA-Z0-9_ -]\{1,\}\).*$|\1|' | xargs)"
+
+    for c in $castles ; do
+      printf "===> Updating $c castle ...\n"
+      $(which homesick) pull "$c"
+      $(which homesick) symlink "$c"
+    done ; unset c
+
+    printf "===> homesick castles [$castles] are up to date.\n"
+  }
+  alias hsu=__homesick_update
+fi
+
 # If pine is installed, eliminated the .pine-debugX files
 [[ -s "/usr/local/bin/pine" ]] && alias pine="pine -d 0"
 
