@@ -577,9 +577,9 @@ web_serve() {
 #
 # @param [Array] egrep arguments
 case "$_os" in
-  Darwin|OpenBSD) psg() { ps wwwaux | egrep $@  ; } ;;
-  SunOS|Linux)    psg() { ps -ef | egrep $@     ; } ;;
-  CYGWIN_*)       psg() { ps -efW | egrep $@    ; } ;;
+  Darwin|OpenBSD) psg() { ps wwwaux | egrep "($@|%CPU)" | egrep -v "egrep"; } ;;
+  SunOS|Linux)    psg() { ps -ef | egrep "($@|%CPU)" | egrep -v "egrep"; } ;;
+  CYGWIN_*)       psg() { ps -efW | egrep "($@|%CPU)" | egrep -v "egrep"; } ;;
 esac
 
 case "$_os" in
