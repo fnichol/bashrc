@@ -289,11 +289,20 @@ update_bashrc() {
   [[ -n "$stash" ]] && super_cmd mv "$stash" "$prefix/bashrc.local"
 
   if [ "$result" -eq 0 ]; then
-    super_cmd rm -f /etc/bash/tip.date
-    super_cmd bash -c "( builtin cd /etc/bash && \
-      git log -1 --pretty=\"format:%h %ci\" > /etc/bash/tip.date)"
-    printf "\n===> bashrc is current ($(cat /etc/bash/tip.date)).\n"
-    printf "===> Either logout and open a new shell, or type: source /etc/bash/bashrc\n\n"
+    local old_file="/tmp/bashrc.date.$$"
+    super_cmd mv "$prefix/tip.date" "$old_file"
+
+    super_cmd bash -c "( builtin cd $prefix && \
+      git log -1 --pretty=\"format:%h %ci\" > $prefix/tip.date)"
+
+    if ! diff -q "$old_file" "$prefix/tip.date" >/dev/null ; then
+      printf "\n===> bashrc is updated to ($(cat $prefix/tip.date)).\n"
+      printf "===> Either open a new shell, or type: reload_bashrc\n\n"
+    else
+      printf "\n===> bashrc is already up to date and current.\n"
+    fi
+
+    super_cmd rm -f "$old_file"
   else
     printf "\n>>>> bashrc could not find an update or has failed.\n\n"
     return 11
