@@ -16,72 +16,11 @@ fi
 #---------------------------------------------------------------
 
 ##
-# Sets a colon-seperated search path variable, overwriting any previous values.
-#
-# @param [String] path variable to manipulate (ex: PATH, PYTHONPATH, etc)
-# @param [List] space-seperated list of system paths to append, in order
-_set_path() {
-  local path_var="$1"
-  shift
-
-  # set var and overwrite any previous values
-  [[ -d "$1" ]] && eval $path_var="$1"
-  shift
-
-  for p in $@ ; do
-    _remove_from_path "$path_var" "$p"
-    [[ -d "$p" ]] && eval $path_var="\$${path_var}:${p}"
-  done ; unset p
-}
-
-##
-# Appends paths to the end of a search path variable list.
-#
-# @param [String] path variable to manipulate (ex: PATH, PYTHONPATH, etc)
-# @param [List] space-seperated list of system paths to append, in order
-_append_path() {
-  local path_var="$1"
-  shift
-
-  # create var if not exists
-  if eval "test -z \"\$$path_var\"" ; then
-    [[ -d "$1" ]] && eval $path_var="$1"
-    shift
-  fi
-
-  for p in $@ ; do
-    _remove_from_path "$path_var" "$p"
-    [[ -d "$p" ]] && eval $path_var="\$${path_var}:${p}"
-  done ; unset p
-}
-
-##
-# Pushes paths to the front of a search path variable list.
-#
-# @param [String] path variable to manipulate (ex: PATH, PYTHONPATH, etc)
-# @param [List] space-seperated list of system paths to push, in reverse order
-_push_path() {
-  local path_var="$1"
-  shift
-
-  # create var if not exists
-  if eval "test -z \"\$$path_var\"" ; then
-    [[ -d "$1" ]] && eval $path_var="$1"
-    shift
-  fi
-
-  for p in $@ ; do
-    _remove_from_path "$path_var" "$p"
-    [[ -d "$p" ]] && eval $path_var="${p}:\$${path_var}"
-  done ; unset p
-}
-
-##
 # Removes all instances of paths in a search path.
 #
 # @param [String] path variable to manipulate (ex: PATH, PYTHONPATH, etc)
 # @param [List] space-seperated list of system paths to remove
-_remove_from_path() {
+__remove_from_path() {
   local path_var="$1"
   shift
   local new_path=""
@@ -96,12 +35,73 @@ _remove_from_path() {
   eval $path_var="$new_path"
 }
 
+##
+# Sets a colon-seperated search path variable, overwriting any previous values.
+#
+# @param [String] path variable to manipulate (ex: PATH, PYTHONPATH, etc)
+# @param [List] space-seperated list of system paths to append, in order
+__set_path() {
+  local path_var="$1"
+  shift
+
+  # set var and overwrite any previous values
+  [[ -d "$1" ]] && eval $path_var="$1"
+  shift
+
+  for p in $@ ; do
+    __remove_from_path "$path_var" "$p"
+    [[ -d "$p" ]] && eval $path_var="\$${path_var}:${p}"
+  done ; unset p
+}
+
+##
+# Appends paths to the end of a search path variable list.
+#
+# @param [String] path variable to manipulate (ex: PATH, PYTHONPATH, etc)
+# @param [List] space-seperated list of system paths to append, in order
+__append_path() {
+  local path_var="$1"
+  shift
+
+  # create var if not exists
+  if eval "test -z \"\$$path_var\"" ; then
+    [[ -d "$1" ]] && eval $path_var="$1"
+    shift
+  fi
+
+  for p in $@ ; do
+    __remove_from_path "$path_var" "$p"
+    [[ -d "$p" ]] && eval $path_var="\$${path_var}:${p}"
+  done ; unset p
+}
+
+##
+# Pushes paths to the front of a search path variable list.
+#
+# @param [String] path variable to manipulate (ex: PATH, PYTHONPATH, etc)
+# @param [List] space-seperated list of system paths to push, in reverse order
+__push_path() {
+  local path_var="$1"
+  shift
+
+  # create var if not exists
+  if eval "test -z \"\$$path_var\"" ; then
+    [[ -d "$1" ]] && eval $path_var="$1"
+    shift
+  fi
+
+  for p in $@ ; do
+    __remove_from_path "$path_var" "$p"
+    [[ -d "$p" ]] && eval $path_var="${p}:\$${path_var}"
+  done ; unset p
+}
+
 
 # Determines the machine _os to set PATH, MANPATH and _id
 _os="$(uname -s)"
 case "$_os" in
   Linux)    # Linux
-    _push_path /opt/*/current/bin
+    __push_path /opt/*/current/bin
 
     # if grails is installed manually, then export GRAILS_HOME preferentially
     if [ -f "/opt/grails/current/bin/grails" -a -d "/opt/grails/current" ] ; then
@@ -124,10 +124,10 @@ case "$_os" in
     ;;
 
   Darwin)   # Mac OS X
-    _push_path PATH /opt/local/sbin /opt/local/bin /opt/*/current/bin \
+    __push_path PATH /opt/local/sbin /opt/local/bin /opt/*/current/bin \
       /usr/local/Cellar/python/2.?/bin /usr/local/Cellar/python/3.?/bin \
       /usr/local/sbin /usr/local/bin
-    _push_path MANPATH /opt/local/man /usr/local/share/man
+    __push_path MANPATH /opt/local/man /usr/local/share/man
 
     # if we can determine the version of java as set in java prefs, then export
     # JAVA_HOME to match this
@@ -156,7 +156,7 @@ case "$_os" in
   OpenBSD)  # OpenBSD
     # Set a base PATH based on original /etc/skel/.profile and /root/.profile
     # from 4.6 on 2010-01-01
-    _set_path PATH /sbin /sbin /usr/sbin /bin /usr/bin /usr/X11R6/bin \
+    __set_path PATH /sbin /sbin /usr/sbin /bin /usr/bin /usr/X11R6/bin \
       /usr/local/sbin /usr/local/bin
 
     _id=/usr/bin/id
@@ -166,9 +166,10 @@ case "$_os" in
   SunOS)    # Solaris
     case "$(uname -r)" in
       "5.11") # OpenSolaris
-        _set_path PATH /opt/*/current/bin /usr/gnu/bin /usr/bin /usr/X11/bin /usr/sbin /sbin
+        __set_path PATH /opt/*/current/bin /usr/gnu/bin /usr/bin /usr/X11/bin \
+          /usr/sbin /sbin
 
-        _set_path MANPATH /usr/gnu/share/man /usr/share/man /usr/X11/share/man
+        __set_path MANPATH /usr/gnu/share/man /usr/share/man /usr/X11/share/man
 
         _id=/usr/bin/id
         alias super_cmd=/usr/bin/pfexec
@@ -182,22 +183,23 @@ case "$_os" in
 
       "5.10") # Solaris 10
         # admin path
-        _set_path PATH /opt/local/sbin /usr/gnu/sbin /usr/local/sbin \
+        __set_path PATH /opt/local/sbin /usr/gnu/sbin /usr/local/sbin \
           /usr/platform/$(uname -i)/sbin /sbin /usr/sbin
         # general path
-        _append_path PATH /opt/local/bin /usr/gnu/bin /usr/local/bin \
-          /bin /usr/bin /usr/ccs/bin /usr/openwin/bin /usr/dt/bin /opt/sun/bin \
-          /opt/SUNWspro/bin /opt/SUNWvts/bin
+        __append_path PATH /opt/local/bin /usr/gnu/bin /usr/local/bin \
+          /bin /usr/bin /usr/ccs/bin /usr/openwin/bin /usr/dt/bin \
+          /opt/sun/bin /opt/SUNWspro/bin /opt/SUNWvts/bin
 
-        _append_path MANPATH /opt/local/share/man /usr/gnu/man /usr/local/man \
-          /usr/man /usr/share/man /opt/SUNWspro/man /opt/SUNWvts/man
+        __append_path MANPATH /opt/local/share/man /usr/gnu/man \
+          /usr/local/man /usr/man /usr/share/man /opt/SUNWspro/man \
+          /opt/SUNWvts/man
 
         _id=/usr/xpg4/bin/id
         alias super_cmd=/usr/bin/pfexec
 
         # build python search path, favoring newer pythons over older ones
         for ver in 2.7 2.6 2.5 2.4 ; do
-          _append_path PYTHONPATH /usr/local/lib/python${ver}/site-packages
+          __append_path PYTHONPATH /usr/local/lib/python${ver}/site-packages
         done ; unset ver
         [[ -n "$PYTHONPATH" ]] && export PYTHONPATH
 
@@ -222,10 +224,10 @@ esac # uname -s
 
 
 # If a $HOME/bin directory exists, add it to the PATH
-_append_path PATH $HOME/bin
+__append_path PATH $HOME/bin
 
 # If a $HOME/man directory exists, add it to the MANPATH
-_append_path MANPATH $HOME/man
+__append_path MANPATH $HOME/man
 
 case "$_os" in
   OpenBSD)
@@ -245,7 +247,7 @@ if [[ -r "${bashrc_prefix:-/etc/bash}/bashrc.local" ]] ; then
 fi
 
 if [[ -z "$_debug_bashrc" ]] ; then
-  unset _set_path _append_path _push_path _remove_from_path
+  unset __set_path __append_path __push_path __remove_from_path
 fi
 
 
