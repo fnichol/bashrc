@@ -492,7 +492,7 @@ bash_prompt() {
 # @params [String] domainname to look up
 if command -v dig >/dev/null ; then
   hostfromdomain() {
-    [[ -z "$1" ]] && printf "usage: hostfromdomain <domainname>\n" && return 10
+    [[ -z "$1" ]] && printf "usage: hostfromdomain <domainname>\n" && return 11
     dig -x $(dig $1 +short) +short
   }
 fi
