@@ -508,6 +508,7 @@ __prompt_state() {
     case "$TERM" in
       *term | rxvt)
         age="$(bput $age_color)$age$(bput rst)"
+        bits="$(bput cyan)$bits$(bput rst)"
         ;;
     esac
 
