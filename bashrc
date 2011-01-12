@@ -450,30 +450,73 @@ bput() {
 }
 
 ##
-# Builds a string of git status characters for the current repo.
+# Calculates are truncated pwd. Overriding of the truncation length can be done
+# by setting `PROMPT_LEN'.
 #
-# Thanks to: https://github.com/darkhelmet/dotfiles
-__prompt_git_status() {
-  local status="$1"
-  shift
+# Thanks to: https://gist.github.com/548242 (@nicksieger)
+short_pwd ()
+{
+  local pwd_length=${PROMPT_LEN-35}
+  local cur_pwd=$(echo $(pwd) | sed -e "s,^$HOME,~,")
 
-  local bits=''
-  printf "$status" | grep -q 'Changed but not updated'  && bits="${bits}⚡"
-  printf "$status" | grep -q 'Untracked files'          && bits="${bits}?"
-  printf "$status" | grep -q 'new file:'                && bits="${bits}*"
-  printf "$status" | grep -q 'Your branch is ahead of'  && bits="${bits}+"
-  printf "$status" | grep -q 'renamed file:'            && bits="${bits}>"
-
-  printf "$bits"
+  if [ $(echo -n $cur_pwd | wc -c | tr -d " ") -gt $pwd_length ]; then
+    echo "...$(echo $cur_pwd | sed -e "s/.*\(.\{$pwd_length\}\)/\1/")"
+  else
+    echo $cur_pwd
+  fi
 }
 
-__prompt_git_branch() {
-  printf "$(git branch --no-color | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/')"
-}
+##
+# Prints out contextual rvm/git state for the command prompt.
+#
+# Thanks to https://github.com/darkhelmet/dotfiles for the inspiration.
+__prompt_state() {
+  local status=$(git status 2>/dev/null)
+  if [[ -n "$status" ]] ; then
+    local bits=''
+    printf "$status" | grep -q 'Changed but not updated'  && bits="${bits}⚡"
+    printf "$status" | grep -q 'Untracked files'          && bits="${bits}?"
+    printf "$status" | grep -q 'new file:'                && bits="${bits}*"
+    printf "$status" | grep -q 'Your branch is ahead of'  && bits="${bits}+"
+    printf "$status" | grep -q 'renamed file:'            && bits="${bits}>"
 
-__prompt_git_age() {
-  local last_commit=$(git log --pretty=format:'%at' -1 2>/dev/null)
-  printf "$(($(($(date +%s)-last_commit))/60))"         # zomg nesting
+    local branch="$(git branch --no-color | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/')"
+    [[ -z "$branch" ]] && branch="nobranch"
+
+    local last_commit=$(git log --pretty=format:'%at' -1 2>/dev/null)
+    local age="-1"
+    if [[ -n "$last_commit" ]] ; then
+      age="$(($(($(date +%s)-last_commit))/60))" # zomg nesting
+    fi
+
+    local age_color="green"
+    if [[ "$age" -lt 0 ]] ; then
+      age_color="cyan"
+    elif [[ "$age" -gt 60 ]] ; then
+      age_color="red"
+    elif [[ "$age" -gt 30 ]] ; then
+      age_color="yellow"
+    fi
+
+    # if age is more than 7 days, show in days otherwise minutes
+    if [[ "$age" -gt 10080 ]] ; then
+      age="$((age/1440))d"
+    else
+      age="${age}m"
+    fi
+
+    case "$TERM" in
+      *term | rxvt)
+        age="$(bput $age_color)$age$(bput rst)"
+        ;;
+    esac
+
+    printf "%b" " (${age}|${branch}${bits})"
+  fi
+
+  if command -v rvm-prompt >/dev/null ; then
+    printf "%b" " {$(rvm-prompt)}"
+  fi
 }
 
 ##
@@ -491,33 +534,36 @@ bash_prompt() {
   fi
   
   if [ "$($_id -ur)" -eq "0" ] ; then  # am I root?
-    local user_c="#" ; local tb=$user_c ; local color="${root_red}"
+    local user_c="#" ; local tb=$user_c ; local color="red"
   else
-    local user_c="»" ; local tb=""      ; local color="$PROMPT_COLOR"
+    local user_c=">" ; local tb=""      ; local color="$PROMPT_COLOR"
   fi
-  local prompt="\u@\h:\w"
-
-  #local status=$(git status 2>/dev/null)
-  #local age_color="green"
-  #if [[ "$age_min" -gt 30 ]] ; then
-  #  age_color="red"
-  #elif [[ "$age_min" -gt 30 ]] ; then
-  #  age_color="red"
-  #fi
-  #printf "(${age_min}|${branch}${bits})"
 
   case "$TERM" in
     *term | rxvt)
-      local titlebar="\[\033]0;${tb}${prompt}${tb}\007\]"
-      PS1="${titlebar}\[$(bput $color)\]${prompt}${user_c} \[$(bput rst)\]"
-      PS2="\[$(bput $color)\]${user_c} \[$(bput rst)\]"
+      local cyan="\[$(bput cyan)\]"
+      local white="\[$(bput white)\]"
+      local nocolor="\[$(bput rst)\]"
+      local custom="\[$(bput $color)\]"
+      local titlebar="\[\033]0;${tb}\u@\h:\w${tb}\007\]"
       ;;
 
     *)
-      PS1="${prompt}${user_c} "
-      PS2="${user_c} "
+      local cyan=""
+      local white=""
+      local nocolor=""
+      local custom=""
+      local titlebar=""
       ;;
   esac
+
+  local prompt_core=""
+  if [ -n "$SSH_TTY" -o "$($_id -ur)" -eq "0" ] ; then
+    local prompt_core="\u@\h"
+  fi
+
+  PS1="${titlebar}${cyan}[${custom}\$(short_pwd)${white}\$(__prompt_state)${cyan}]${nocolor}\n${custom}${prompt_core}${user_c} ${nocolor}"
+  PS2="${custom}${user_c} ${nocolor}"
 }
 
 ##
