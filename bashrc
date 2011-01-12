@@ -450,6 +450,33 @@ bput() {
 }
 
 ##
+# Builds a string of git status characters for the current repo.
+#
+# Thanks to: https://github.com/darkhelmet/dotfiles
+__prompt_git_status() {
+  local status="$1"
+  shift
+
+  local bits=''
+  printf "$status" | grep -q 'Changed but not updated'  && bits="${bits}⚡"
+  printf "$status" | grep -q 'Untracked files'          && bits="${bits}?"
+  printf "$status" | grep -q 'new file:'                && bits="${bits}*"
+  printf "$status" | grep -q 'Your branch is ahead of'  && bits="${bits}+"
+  printf "$status" | grep -q 'renamed file:'            && bits="${bits}>"
+
+  printf "$bits"
+}
+
+__prompt_git_branch() {
+  printf "$(git branch --no-color | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/')"
+}
+
+__prompt_git_age() {
+  local last_commit=$(git log --pretty=format:'%at' -1 2>/dev/null)
+  printf "$(($(($(date +%s)-last_commit))/60))"         # zomg nesting
+}
+
+##
 # Sets a shell prompt. Uses a set variable of `PROMPT_COLOR' to determine
 # the main color of the prompt, if it exists. This is generally set in
 # bashrc.local. If a variable of `REMOTE_PROMPT_COLOR' is given, then this
@@ -466,9 +493,18 @@ bash_prompt() {
   if [ "$($_id -ur)" -eq "0" ] ; then  # am I root?
     local user_c="#" ; local tb=$user_c ; local color="${root_red}"
   else
-    local user_c=">" ; local tb=""      ; local color="$PROMPT_COLOR"
+    local user_c="»" ; local tb=""      ; local color="$PROMPT_COLOR"
   fi
   local prompt="\u@\h:\w"
+
+  #local status=$(git status 2>/dev/null)
+  #local age_color="green"
+  #if [[ "$age_min" -gt 30 ]] ; then
+  #  age_color="red"
+  #elif [[ "$age_min" -gt 30 ]] ; then
+  #  age_color="red"
+  #fi
+  #printf "(${age_min}|${branch}${bits})"
 
   case "$TERM" in
     *term | rxvt)
