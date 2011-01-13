@@ -506,7 +506,7 @@ __prompt_state() {
     fi
 
     case "$TERM" in
-      *term | rxvt)
+      *term | rxvt | screen)
         age="$(bput $age_color)$age$(bput rst)"
         bits="$(bput cyan)$bits$(bput rst)"
         ;;
@@ -541,7 +541,7 @@ bash_prompt() {
   fi
 
   case "$TERM" in
-    *term | rxvt)
+    *term | rxvt | screen)
       local cyan="\[$(bput cyan)\]"
       local white="\[$(bput white)\]"
       local nocolor="\[$(bput rst)\]"
