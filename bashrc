@@ -832,13 +832,13 @@ if [ -z "$SSH_CLIENT" ] ; then          # for local/console sessions
   elif command -v mate >/dev/null ; then
     export EDITOR="mate -w"
   elif command -v vim >/dev/null ; then
-    export EDITOR="vim -w"
+    export EDITOR="vim"
   else
     export EDITOR="vi"
   fi
 else                                    # for remote/ssh sessions
   if command -v vim >/dev/null ; then
-    export EDITOR="vim -w"
+    export EDITOR="vim"
   else
     export EDITOR="vi"
   fi
