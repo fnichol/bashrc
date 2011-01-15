@@ -826,21 +826,21 @@ whatsmy_public_ip() {
 # Set the default editor
 if [ -z "$SSH_CLIENT" ] ; then          # for local/console sessions
   if command -v mvim >/dev/null ; then
-    export EDITOR="$(command -v mvim) -f -c \"au VimLeave * !open -a Terminal\""
+    export EDITOR="$(which mvim) -f -c \"au VimLeave * !open -a Terminal\""
   elif command -v gvim >/dev/null ; then
-    export EDITOR="$(command -v gvim) -f"
+    export EDITOR="$(which gvim) -f"
   elif command -v mate >/dev/null ; then
-    export EDITOR="$(command -v mate) -w"
+    export EDITOR="$(which mate) -w"
   elif command -v vim >/dev/null ; then
-    export EDITOR="$(command -v vim) -w"
+    export EDITOR="$(which vim) -w"
   else
-    export EDITOR="$(command -v vi)"
+    export EDITOR="$(which vi)"
   fi
 else                                    # for remote/ssh sessions
   if command -v vim >/dev/null ; then
-    export EDITOR="$(command -v vim) -w"
+    export EDITOR="$(which vim) -w"
   else
-    export EDITOR="$(command -v vi)"
+    export EDITOR="$(which vi)"
   fi
 fi
 export VISUAL="$EDITOR"
