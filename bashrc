@@ -343,6 +343,10 @@ __bashrc_update() {
       printf "\n===> bashrc is already up to date and current.\n"
     fi
 
+    if [[ -z "$(cat $prefix/tip.date)" ]] ; then
+      super_cmd rm -f "$prefix/tip.date"
+    fi
+
     super_cmd rm -f "$old_file"
   else
     printf "\n>>>> bashrc could not find an update or has failed.\n\n"
