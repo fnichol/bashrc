@@ -1,4 +1,11 @@
 = Installation =
+
+== System-Wide Deployment ==
 {{{
 sudo bash < <( curl -L http://bit.ly/bashrc-install-system-wide )
+}}}
+
+== Local (User) Deployment ==
+{{{
+bash < <( curl -L http://bit.ly/bashrc-install-local-user )
 }}}
