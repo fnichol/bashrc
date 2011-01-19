@@ -15,7 +15,7 @@ if command -v git >/dev/null ; then
   builtin cd "/etc" && \
     ( git clone --depth 1 git://github.com/fnichol/bashrc.git bash || \
     git clone http://github.com/fnichol/bashrc.git bash )
-elif command -v curl >/dev/null ; then
+elif command -v curl >/dev/null && command -v python >/dev/null; then
   printf "===> Git not found, so downloading tarball to /etc/bash ...\n"
   mkdir -p "/etc/bash"
   curl -LsSf http://github.com/fnichol/bashrc/tarball/master | \
@@ -26,7 +26,7 @@ elif command -v curl >/dev/null ; then
     python -c 'import sys; import json; j = json.loads(sys.stdin.read()); print j["commit"]["committed_date"];')"
   printf "TARBALL $tip_date" > "/etc/bash/tip.date"
 else
-  printf "\n>> Neither git nor curl could be found on path so not installing.\n\n"
+  printf "\n>> Neither git nor curl (with python) could be found on path so not installing.\n\n"
   exit 3
 fi
 
