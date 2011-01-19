@@ -11,6 +11,9 @@ then
   return
 fi
 
+[[ -n "${bashrc_prefix}" ]] && export bashrc_prefix
+
+
 #---------------------------------------------------------------
 # Define Default System Paths
 #---------------------------------------------------------------
@@ -120,7 +123,11 @@ case "$_os" in
     __set_groovy_home
 
     _id=/usr/bin/id
-    alias super_cmd="/usr/bin/sudo -p \"[sudo] password for %u@$(hostname): \""
+    if [[ -n "${bashrc_local_install}" ]] ; then
+      alias super_cmd=""
+    else
+      alias super_cmd="/usr/bin/sudo -p \"[sudo] password for %u@$(hostname): \""
+    fi
     if [ -f "/etc/redhat-release" ] ; then
       LINUX_FLAVOR="$(awk '{print $1}' /etc/redhat-release)"
     fi
@@ -143,7 +150,11 @@ case "$_os" in
     __set_groovy_home
 
     _id=/usr/bin/id
-    alias super_cmd="/usr/bin/sudo -p \"[sudo] password for %u@$(hostname): \""
+    if [[ -n "${bashrc_local_install}" ]] ; then
+      alias super_cmd=""
+    else
+      alias super_cmd="/usr/bin/sudo -p \"[sudo] password for %u@$(hostname): \""
+    fi
     ;;
 
   OpenBSD)  # OpenBSD
@@ -153,7 +164,11 @@ case "$_os" in
       /usr/local/sbin /usr/local/bin
 
     _id=/usr/bin/id
-    alias super_cmd="/usr/bin/sudo -p \"[sudo] password for %u@$(hostname): \""
+    if [[ -n "${bashrc_local_install}" ]] ; then
+      alias super_cmd=""
+    else
+      alias super_cmd="/usr/bin/sudo -p \"[sudo] password for %u@$(hostname): \""
+    fi
     ;;
 
   SunOS)    # Solaris
@@ -165,7 +180,11 @@ case "$_os" in
         __set_path MANPATH /usr/gnu/share/man /usr/share/man /usr/X11/share/man
 
         _id=/usr/bin/id
-        alias super_cmd=/usr/bin/pfexec
+        if [[ -n "${bashrc_local_install}" ]] ; then
+          alias super_cmd=""
+        else
+          alias super_cmd=/usr/bin/pfexec
+        fi
 
         # Files you make look like rw-r--r--
         umask 022
@@ -188,7 +207,11 @@ case "$_os" in
           /opt/SUNWvts/man
 
         _id=/usr/xpg4/bin/id
-        alias super_cmd=/usr/bin/pfexec
+        if [[ -n "${bashrc_local_install}" ]] ; then
+          alias super_cmd=""
+        else
+          alias super_cmd=/usr/bin/pfexec
+        fi
 
         # build python search path, favoring newer pythons over older ones
         for ver in 2.7 2.6 2.5 2.4 ; do

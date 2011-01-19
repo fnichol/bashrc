@@ -1,0 +1,87 @@
+#!/usr/bin/env bash
+
+if [[ -d "${HOME}/.bash" ]] ; then
+  printf "\n>> ${HOME}/.bash must not exist so not installing.\n\n"
+  exit 2
+fi
+
+if command -v git >/dev/null ; then
+  printf "===> Cloning git repository to /etc/bash ...\n"
+  builtin cd "${HOME}" && \
+    ( git clone --depth 1 git://github.com/fnichol/bashrc.git .bash || \
+    git clone http://github.com/fnichol/bashrc.git .bash )
+elif command -v curl >/dev/null ; then
+  printf "===> Git not found, so downloading tarball to ${HOME}/.bash ...\n"
+  mkdir -p "${HOME}/.bash"
+  curl -LsSf http://github.com/fnichol/bashrc/tarball/master | \
+    tar xvz -C${HOME}/.bash --strip 1
+else
+  printf "\n>> Neither git nor curl could be found on path so not installing.\n\n"
+  exit 3
+fi
+
+printf "===> Creating ${HOME}/.bash/bashrc.local for system-specific configuration ...\n"
+cp "${HOME}/.bash/bashrc.local.site" "${HOME}/.bash/bashrc.local"
+
+case "$(uname -s)" in
+  Darwin)   color="green" ; remote_color="yellow" ;;
+  Linux)    color="cyan"  ;;
+  OpenBSD)  color="red"   ;;
+  CYGWIN*)  color="black" ;;
+  SunOS)
+    if zoneadm list -pi | grep :global: >/dev/null ; then
+      color="magenta" # root zone
+    else
+      color="cyan"    # non-global zone
+    fi
+    ;;
+esac
+
+printf "Setting prompt color to be \"$color\" ...\n"
+perl -pi -e "s|^#?PROMPT_COLOR=.*$|PROMPT_COLOR=$color|g" \
+  "${HOME}/.bash/bashrc.local"
+unset color
+
+if [[ -n "$remote_color" ]] ; then
+  printf "Setting remote prompt color to be \"$remote_color\" ...\n"
+  perl -pi -e \
+    "s|^#?REMOTE_PROMPT_COLOR=.*$|REMOTE_PROMPT_COLOR=$remote_color|g" \
+    "${HOME}/.bash/bashrc.local"
+  unset remote_color
+fi
+
+case "$(uname -s)" in
+  *) p="${HOME}/.bash_profile" ;;
+esac
+
+if [[ -r "$p" ]] && grep -q '${HOME}/.bash/bashrc' $p >/dev/null ; then
+  printf ">> Mention of \${HOME}/.bash/bashrc found in \"$p\"\n"
+  printf ">> You can add the following lines to get sourced:\n"
+  printf ">>   if [[ -s \"\${HOME}/.bash/bashrc\" ]] ; then\n"
+  printf ">>     bashrc_local_install=1\n"
+  printf ">>     bashrc_prefix=\${HOME}/.bash\n"
+  printf ">>     export bashrc_local_install bashrc_prefix\n"
+  printf ">>     source \"\${bashrc_prefix}/bashrc\"\n"
+  printf ">>   fi\n"
+else
+  printf "===> Adding source hook into \"$p\" ...\n"
+  cat >> $p <<END_OF_PROFILE
+ 
+if [[ -s "\${HOME}/.bash/bashrc" ]] ; then
+  bashrc_local_install=1
+  bashrc_prefix="\${HOME}/.bash"
+  export bashrc_local_install bashrc_prefix
+  source "\${bashrc_prefix}/bashrc"
+fi
+END_OF_PROFILE
+fi
+
+printf "===> Updating bashrc to current ...\n"
+bash -i -c "bashrc_local_install=1; bashrc_prefix=\"\${HOME}/.bash\"; source \${bashrc_prefix}/bashrc && bashrc update"
+
+printf "\n\n    #---------------------------------------------------------------\n"
+printf "    # Installation of bashrc complete. To activate either exit\n"
+printf "    # this shell or type: 'source ${p}'.\n"
+printf "    #\n"
+printf "    # To keep bashrc up to date, periodically run: 'bashrc update'.\n"
+printf "    #---------------------------------------------------------------\n\n"
