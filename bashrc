@@ -291,7 +291,7 @@ update_bashrc() {
 # Pulls down new changes to the bashrc via git.
 __bashrc_update() {
   if ! command -v git >/dev/null; then
-    printf "\n>>>> Command 'git' not found on the path, please install and try again.\n\n"
+    printf "\n>>>> Command 'git' not found on the path, please install a packge or build git from source and try again.\n\n"
     return 10
   fi
 
