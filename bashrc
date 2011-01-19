@@ -367,8 +367,11 @@ __bashrc_version() {
   # Echo the version and date of the profile
   if [[ -f "${bashrc_prefix:-/etc/bash}/tip.date" ]] ; then
     ver="$(cat ${bashrc_prefix:-/etc/bash}/tip.date)"
+  elif command -v git >/dev/null ; then
+    ver="$(cd ${bashrc_prefix:-/etc/bash} && \
+      git log -1 --pretty='format:%h %ci')"
   else
-    ver="$(cd ${bashrc_prefix:-/etc/bash} && git log -1 --pretty='format:%h %ci')"
+    ver="UNKNOWN"
   fi
   printf "bashrc ($ver)\n\n"
 }
