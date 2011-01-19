@@ -10,13 +10,18 @@ if command -v git >/dev/null ; then
   builtin cd "${HOME}" && \
     ( git clone --depth 1 git://github.com/fnichol/bashrc.git .bash || \
     git clone http://github.com/fnichol/bashrc.git .bash )
-elif command -v curl >/dev/null ; then
+elif command -v curl >/dev/null && command -v python >/dev/null; then
   printf "===> Git not found, so downloading tarball to ${HOME}/.bash ...\n"
   mkdir -p "${HOME}/.bash"
   curl -LsSf http://github.com/fnichol/bashrc/tarball/master | \
     tar xvz -C${HOME}/.bash --strip 1
+  printf "===> Determining version date from github api ...\n"
+  tip_date="$(curl -sSL \
+    http://github.com/api/v2/json/commits/show/fnichol/bashrc/HEAD | \
+    python -c 'import sys; import json; j = json.loads(sys.stdin.read()); print j[\"commit\"][\"committed_date\"];')"
+  printf "$tip_date" > "${HOME}.bash/tip.date"
 else
-  printf "\n>> Neither git nor curl could be found on path so not installing.\n\n"
+  printf "\n>> Neither git nor curl (with python) could be found on path so not installing.\n\n"
   exit 3
 fi
 
