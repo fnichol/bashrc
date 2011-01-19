@@ -6,7 +6,7 @@ if [[ -d "${HOME}/.bash" ]] ; then
 fi
 
 if command -v git >/dev/null ; then
-  printf "===> Cloning git repository to /etc/bash ...\n"
+  printf "===> Cloning git repository to ${HOME}/.bash ...\n"
   builtin cd "${HOME}" && \
     ( git clone --depth 1 git://github.com/fnichol/bashrc.git .bash || \
     git clone http://github.com/fnichol/bashrc.git .bash )
