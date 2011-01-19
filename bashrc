@@ -117,7 +117,7 @@ __set_groovy_home() {
 _os="$(uname -s)"
 case "$_os" in
   Linux)    # Linux
-    __push_path /opt/*/current/bin
+    __push_path PATH /opt/*/current/bin
 
     __set_grails_home
     __set_groovy_home
