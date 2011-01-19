@@ -20,6 +20,11 @@ elif command -v curl >/dev/null ; then
   mkdir -p "/etc/bash"
   curl -LsSf http://github.com/fnichol/bashrc/tarball/master | \
     tar xvz -C/etc/bash --strip 1
+  printf "===> Determining version date from github api ...\n"
+  tip_date="$(curl -sSL \
+    http://github.com/api/v2/json/commits/show/fnichol/bashrc/HEAD | \
+    python -c 'import sys; import json; j = json.loads(sys.stdin.read()); print j["commit"]["committed_date"];')"
+  printf "TARBALL $tip_date" > "/etc/bash/tip.date"
 else
   printf "\n>> Neither git nor curl could be found on path so not installing.\n\n"
   exit 3
@@ -56,8 +61,23 @@ if [[ -n "$remote_color" ]] ; then
 fi
 
 case "$(uname -s)" in
-  Darwin)                       p="/etc/bashrc"   ;;
-  Linux|SunOS|OpenBSD|CYGWIN*)  p="/etc/profile"  ;;
+  Darwin)
+    p="/etc/bashrc"
+    ;;
+  Linux)
+    if [[ -f "/etc/SuSE-release" ]] ; then
+      p="/etc/profile.local"
+    else
+      p="/etc/profile"
+    fi
+    ;;
+  SunOS|OpenBSD|CYGWIN*)
+    p="/etc/profile"
+    ;;
+  *)
+    printf ">>>> Don't know how to add source hook in this operating system.\n"
+    exit 4
+    ;;
 esac
 
 if grep -q '/etc/bash/bashrc' $p >/dev/null ; then
