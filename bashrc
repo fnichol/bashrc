@@ -849,6 +849,22 @@ whatsmy_public_ip() {
   curl --silent 'www.whatismyip.com/automation/n09230945.asp' && echo
 }
 
+##
+# Wraps Rails 2.x and 3.x consoles.
+#
+# @param [List] args for rails console
+rc() {
+  if [[ -x "./script/console" ]] ; then
+    ./script/console $@
+  elif [[ -x "./script/rails" ]] ; then
+    ./script/rails console $@
+  else
+    printf "\n$(bput red)>>>>$(bput rst) You're not in the $(bput eyellow)root$(bput rst) of a $(bput eyellow)rails$(bput rst) app, doofus. Try again.\n\n"
+    return 5
+  fi
+}
+
+
 #---------------------------------------------------------------
 # Interactive shell (prompt,history) settings
 #---------------------------------------------------------------
