@@ -852,6 +852,8 @@ whatsmy_public_ip() {
 ##
 # Wraps Rails 2.x and 3.x consoles.
 #
+# Thanks to: https://gist.github.com/539140
+#
 # @param [List] args for rails console
 rc() {
   if [[ -x "./script/console" ]] ; then
