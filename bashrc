@@ -988,6 +988,10 @@ if command -v homesick >/dev/null ; then
   alias hsu=__homesick_update
 fi
 
+if command -v twitter >/dev/null ; then
+  alias tt='twitter tweet'
+fi
+
 # If pine is installed, eliminated the .pine-debugX files
 [[ -s "/usr/local/bin/pine" ]] && alias pine="pine -d 0"
 
