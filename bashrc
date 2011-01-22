@@ -138,7 +138,7 @@ case "$_os" in
 
   Darwin)   # Mac OS X
     __push_path PATH /opt/local/sbin /opt/local/bin /opt/*/current/bin \
-      /usr/local/Cellar/python/2.?/bin /usr/local/Cellar/python/3.?/bin \
+      /usr/local/Cellar/python/2.*/bin /usr/local/Cellar/python/3.*/bin \
       /usr/local/sbin /usr/local/bin
     __push_path MANPATH /opt/local/man /usr/local/share/man
 
