@@ -501,14 +501,16 @@ short_pwd ()
 #
 # Thanks to https://github.com/darkhelmet/dotfiles for the inspiration.
 __prompt_state() {
-  local status=$(git status 2>/dev/null)
-  if [[ -n "$status" ]] ; then
+  local git_status=$(git status 2>/dev/null)
+  local hg_status=
+  local hg_status_exit=255
+  if [[ -n "$git_status" ]] ; then
     local bits=''
-    printf "$status" | grep -q 'Changed but not updated'  && bits="${bits}⚡"
-    printf "$status" | grep -q 'Untracked files'          && bits="${bits}?"
-    printf "$status" | grep -q 'new file:'                && bits="${bits}*"
-    printf "$status" | grep -q 'Your branch is ahead of'  && bits="${bits}+"
-    printf "$status" | grep -q 'renamed file:'            && bits="${bits}>"
+    printf "$git_status" | grep -q 'Changed but not updated'  && bits="${bits}⚡"
+    printf "$git_status" | grep -q 'Untracked files'          && bits="${bits}?"
+    printf "$git_status" | grep -q 'new file:'                && bits="${bits}*"
+    printf "$git_status" | grep -q 'Your branch is ahead of'  && bits="${bits}+"
+    printf "$git_status" | grep -q 'renamed file:'            && bits="${bits}>"
 
     local branch="$(git branch --no-color | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/')"
     [[ -z "$branch" ]] && branch="nobranch"
@@ -542,7 +544,56 @@ __prompt_state() {
         ;;
     esac
 
-    printf "%b" " (${age}|${branch}${bits})"
+    printf "%b" " $(bput magenta)git(${age}$(bput magenta)|$(bput rst)${branch}${bits}$(bput magenta))$(bput rst)"
+  else
+
+    # only attempt hg repo checks if git fails (no need to compute both every time)
+    hg_status=$(hg status --config 'extensions.color=!' 2>/dev/null)
+    hg_status_exit=$?
+  fi
+
+  if [ $hg_status_exit -eq 0 ] ; then
+    local bits=''
+    printf "$hg_status" | grep -q '^M '   && bits="${bits}⚡"  # modified files
+    printf "$hg_status" | grep -q '^\? '  && bits="${bits}?"  # untracked files
+    printf "$hg_status" | grep -q '^A '   && bits="${bits}*"  # new files
+    printf "$hg_status" | grep -q '^! '   && bits="${bits}!"  # deleted files
+    printf "$hg_status" | grep -q '^R '   && bits="${bits}☭ "  # removed files
+
+    local branch="$(hg branch)"
+    [[ -z "$branch" ]] && branch="nobranch"
+
+    local last_commit=$(hg log -l 1 --template '{date|hgdate}' 2>/dev/null | \
+      awk '{print $1}')
+    local age="-1"
+    if [[ -n "$last_commit" ]] ; then
+      age="$(($(($(date +%s)-last_commit))/60))" # zomg nesting
+    fi
+
+    local age_color="green"
+    if [[ "$age" -lt 0 ]] ; then
+      age_color="cyan"
+    elif [[ "$age" -gt 60 ]] ; then
+      age_color="red"
+    elif [[ "$age" -gt 30 ]] ; then
+      age_color="yellow"
+    fi
+
+    # if age is more than 7 days, show in days otherwise minutes
+    if [[ "$age" -gt 10080 ]] ; then
+      age="$((age/1440))d"
+    else
+      age="${age}m"
+    fi
+
+    case "$TERM" in
+      *term | rxvt | screen)
+        age="$(bput $age_color)$age$(bput rst)"
+        bits="$(bput cyan)$bits$(bput rst)"
+        ;;
+    esac
+
+    printf "%b" " $(bput magenta)hg(${age}$(bput magenta)|$(bput rst)${branch}${bits}$(bput magenta))$(bput rst)"
   fi
 
   if command -v rvm-prompt >/dev/null ; then
