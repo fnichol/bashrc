@@ -415,8 +415,9 @@ __bashrc_update() {
       touch "$old_file"
     fi
 
+    local git_cmd=$(which git)
     super_cmd bash -c "( builtin cd $prefix && \
-      git log -1 --pretty=\"format:%h %ci\" > $prefix/tip.date)"
+      $git_cmd log -1 --pretty=\"format:%h %ci\" > $prefix/tip.date)"
 
     if ! diff -q "$old_file" "$prefix/tip.date" >/dev/null ; then
       local old_rev=$(awk '{print $1}' $old_file)
