@@ -328,7 +328,7 @@ __bashrc_check() {
       ;;
     *)
       if command -v git >/dev/null ; then
-        (cd $prefix && super_cmd git fetch --quiet >/dev/null)
+        (cd $prefix && super_cmd git fetch --quiet 2>&1 >/dev/null)
         (cd $prefix && super_cmd git --no-pager log --quiet --exit-code \
           --no-color origin..origin/master >/dev/null)
         if [[ "$?" -eq 0 ]] ; then
