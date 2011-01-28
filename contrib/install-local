@@ -11,7 +11,7 @@ if command -v git >/dev/null ; then
     ( git clone --depth 1 git://github.com/fnichol/bashrc.git .bash || \
     git clone http://github.com/fnichol/bashrc.git .bash )
 elif command -v curl >/dev/null && command -v python >/dev/null; then
-  local tarball_install=1
+  tarball_install=1
   printf "===> Git not found, so downloading tarball to ${HOME}/.bash ...\n"
   mkdir -p "${HOME}/.bash"
   curl -LsSf http://github.com/fnichol/bashrc/tarball/master | \
