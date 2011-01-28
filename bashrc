@@ -291,7 +291,7 @@ update_bashrc() {
 # Checks if there any upstream updates.
 #
 # @param -q  suppress output
-# @return 0 if up to date, 1 if there are updates, and 5 if there are erros
+# @return 0 if up to date, 1 if there are updates, and 5 if there are errors
 __bashrc_check() {
   if [ "$1" == "-q" ] ; then local suppress=1 && shift ; fi
 
