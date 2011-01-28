@@ -354,30 +354,60 @@ __bashrc_update() {
   local prefix="${bashrc_prefix:-/etc/bash}"
   local repo="github.com/fnichol/bashrc.git"
 
-  # save a copy of bashrc.local and clear out old hg cruft
+  # clear out old tarball install or legacy hg cruft
   local stash=
-  if [[ -d "$prefix/.hg" && -f "$prefix/bashrc.local" ]] ; then
-    stash="/tmp/bashrc.local.$$"
-    super_cmd cp -p "$prefix/bashrc.local" "$stash"
+  if [ ! -d "$prefix/git" ] ; then
+    # save a copy of bashrc.local
+    if [[ -f "$prefix/bashrc.local" ]] ; then
+      stash="/tmp/bashrc.local.$$"
+      super_cmd cp -p "$prefix/bashrc.local" "$stash"
+    fi
     super_cmd rm -rf "$prefix"
   fi
 
   if [[ -d "$prefix/.git" ]] ; then
-    ( builtin cd "$prefix" && super_cmd git pull origin master )
+    if command -v git >/dev/null ; then
+      ( builtin cd "$prefix" && super_cmd git pull origin master )
+    else
+      printf "\n>>>> Command 'git' not found on the path, please install a"
+      printf " packge or build git from source and try again.\n\n"
+      return 10
+    fi
   elif command -v git >/dev/null ; then
-    builtin cd "/etc" && \
-      ( super_cmd git clone --depth 1 git://$repo bash || \
-      super_cmd git clone https://$repo bash )
+    ( builtin cd "$(dirname $prefix)" && \
+      super_cmd git clone --depth 1 git://$repo $(basename $prefix) || \
+      super_cmd git clone https://$repo $(basename $prefix) )
+  elif command -v curl >/dev/null && command -v python >/dev/null; then
+    local tarball_install=1
+    printf "===> Git not found, so downloading tarball to $prefix ...\n"
+    super_cmd mkdir -p "$prefix"
+    curl -LsSf http://github.com/fnichol/bashrc/tarball/master | \
+      super_cmd tar xvz -C${prefix} --strip 1
   else
-    printf "\n>>>> Command 'git' not found on the path, please install a packge or build git from source and try again.\n\n"
-    return 10
+    printf "\n>>>> Command 'git', 'curl', or 'python' were not found on the path, please install a packge or build these packages from source and try again.\n\n"
+    return 16
   fi
   local result="$?"
 
   # move bashrc.local back
   [[ -n "$stash" ]] && super_cmd mv "$stash" "$prefix/bashrc.local"
 
-  if [ "$result" -eq 0 ]; then
+  if [ "$result" -ne 0 ]; then
+    printf "\n>>>> bashrc could not find an update or has failed.\n\n"
+    return 11
+  fi
+
+  if [[ -n "$tarball_install" ]] ; then
+
+    printf "===> Determining version date from github api ...\n"
+    local tip_date="$(curl -sSL \
+      http://github.com/api/v2/json/commits/show/fnichol/bashrc/HEAD | \
+      python -c 'import sys; import json; j = json.loads(sys.stdin.read()); print j["commit"]["committed_date"];')"
+    super_cmd bash -c "(printf \"TARBALL $tip_date\" > \"${prefix}/tip.date\")"
+    __bashrc_reload
+    printf "\n\n===> bashrc was updated and reloaded.\n"
+  else
+
     local old_file="/tmp/bashrc.date.$$"
     if [[ -f "$prefix/tip.date" ]] ; then
       super_cmd mv "$prefix/tip.date" "$old_file"
@@ -402,14 +432,11 @@ __bashrc_update() {
       printf "\n===> bashrc is already up to date and current.\n"
     fi
 
-    if [[ -z "$(cat $prefix/tip.date)" ]] ; then
-      super_cmd rm -f "$prefix/tip.date"
-    fi
-
     super_cmd rm -f "$old_file"
-  else
-    printf "\n>>>> bashrc could not find an update or has failed.\n\n"
-    return 11
+  fi
+
+  if [[ -z "$(cat $prefix/tip.date)" ]] ; then
+    super_cmd rm -f "$prefix/tip.date"
   fi
 }
 
