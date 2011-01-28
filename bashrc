@@ -288,6 +288,67 @@ update_bashrc() {
 }
 
 ##
+# Checks if there any upstream updates.
+#
+# @param -q  suppress output
+# @return 0 if up to date, 1 if there are updates, and 5 if there are erros
+__bashrc_check() {
+  if [ "$1" == "-q" ] ; then local suppress=1 && shift ; fi
+
+  local prefix="${bashrc_prefix:-/etc/bash}"
+
+  if [ ! -f "${prefix}/tip.date" ] ; then
+    printf ">>> File ${prefix}/tip.date does not exist so cannot check.\n"
+    return 5
+  fi
+
+  local tip_date=$(cat ${prefix}/tip.date)
+  local flavor=${flavor%% *}
+
+  case "$flavor" in
+    TARBALL)
+      if command -v curl >/dev/null && command -v python >/dev/null ; then
+        local last_commit_date="$(curl -sSL \
+          http://github.com/api/v2/json/commits/show/fnichol/bashrc/HEAD | \
+          python -c 'import sys; import json; j = json.loads(sys.stdin.read()); print j["commit"]["committed_date"];')"
+        if [ "${tip_date#* }" == "$last_commit_date" ] ; then
+          [[ -z "$suppress" ]] && printf "===> bashrc is up to date.\n"
+          return 0
+        else
+          [[ -z "$suppress" ]] && \
+            printf "===> bashrc has updates to download." && \
+            printf " Use 'bashrc update' to get current.\n"
+          return 1
+        fi
+      else
+        [[ -z "$suppress" ]] && \
+          printf ">>>> Can't find curl and/or python commands.\n"
+        return 5
+      fi
+      ;;
+    *)
+      if command -v git >/dev/null ; then
+        (cd $prefix && super_cmd git fetch --quiet >/dev/null)
+        (cd $prefix && super_cmd git --no-pager log --quiet --exit-code \
+          --no-color origin..origin/master >/dev/null)
+        if [[ "$?" -eq 0 ]] ; then
+          [[ -z "$suppress" ]] && printf "===> bashrc is up to date.\n"
+          return 0
+        else
+          [[ -z "$suppress" ]] && \
+            printf "===> bashrc has updates to download." && \
+            printf " Use 'bashrc update' to get current.\n"
+          return 1
+        fi
+      else
+        [[ -z "$suppress" ]] && printf ">>>> Can't find git command.\n"
+        return 5
+      fi
+      ;;
+  esac
+}
+
+##
 # Pulls down new changes to the bashrc via git.
 __bashrc_update() {
   if ! command -v git >/dev/null; then
@@ -387,10 +448,11 @@ bashrc() {
   shift
 
   case "$command" in
-    update)   __bashrc_update ;;
-    reload)   __bashrc_reload ;;
-    version)  __bashrc_version ;;
-    *)        printf "usage: bashrc (update|reload|version)" ; return 10 ;;
+    check)    __bashrc_check $@;;
+    update)   __bashrc_update $@;;
+    reload)   __bashrc_reload $@;;
+    version)  __bashrc_version $@;;
+    *)  printf "usage: bashrc (check|update|reload|version)\n" && return 10 ;;
   esac
 }
 
@@ -992,7 +1054,7 @@ if [[ -r "${HOME}/.ssh/known_hosts" ]] ; then
   unset _ssh_hosts
 fi
 
-complete -W "reload update version" bashrc
+complete -W "check update reload version" bashrc
 
 
 #---------------------------------------------------------------
