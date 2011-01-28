@@ -100,5 +100,7 @@ printf "\n\n    #---------------------------------------------------------------
 printf "    # Installation of bashrc complete. To activate either exit\n"
 printf "    # this shell or type: 'source /etc/bash/bashrc'.\n"
 printf "    #\n"
+printf "    # To check for updates to bashrc, run: 'bashrc check'.\n"
+printf "    #\n"
 printf "    # To keep bashrc up to date, periodically run: 'bashrc update'.\n"
 printf "    #---------------------------------------------------------------\n\n"
