@@ -351,11 +351,6 @@ __bashrc_check() {
 ##
 # Pulls down new changes to the bashrc via git.
 __bashrc_update() {
-  if ! command -v git >/dev/null; then
-    printf "\n>>>> Command 'git' not found on the path, please install a packge or build git from source and try again.\n\n"
-    return 10
-  fi
-
   local prefix="${bashrc_prefix:-/etc/bash}"
   local repo="github.com/fnichol/bashrc.git"
 
@@ -369,10 +364,13 @@ __bashrc_update() {
 
   if [[ -d "$prefix/.git" ]] ; then
     ( builtin cd "$prefix" && super_cmd git pull origin master )
-  else
+  elif command -v git >/dev/null ; then
     builtin cd "/etc" && \
       ( super_cmd git clone --depth 1 git://$repo bash || \
       super_cmd git clone https://$repo bash )
+  else
+    printf "\n>>>> Command 'git' not found on the path, please install a packge or build git from source and try again.\n\n"
+    return 10
   fi
   local result="$?"
 
