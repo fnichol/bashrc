@@ -538,7 +538,7 @@ __prompt_state() {
     fi
 
     case "$TERM" in
-      *term | rxvt | screen)
+      *term | xterm-* | rxvt | screen)
         age="$(bput $age_color)$age$(bput rst)"
         bits="$(bput cyan)$bits$(bput rst)"
         ;;
@@ -587,7 +587,7 @@ __prompt_state() {
     fi
 
     case "$TERM" in
-      *term | rxvt | screen)
+      *term | xterm-* | rxvt | screen)
         age="$(bput $age_color)$age$(bput rst)"
         bits="$(bput cyan)$bits$(bput rst)"
         ;;
@@ -622,7 +622,7 @@ bash_prompt() {
   fi
 
   case "$TERM" in
-    *term | rxvt | screen)
+    *term | xterm-* | rxvt | screen)
       local cyan="\[$(bput cyan)\]"
       local white="\[$(bput white)\]"
       local nocolor="\[$(bput rst)\]"
