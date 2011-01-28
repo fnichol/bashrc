@@ -356,7 +356,7 @@ __bashrc_update() {
 
   # clear out old tarball install or legacy hg cruft
   local stash=
-  if [ ! -d "$prefix/git" ] ; then
+  if [ ! -d "$prefix/.git" ] ; then
     # save a copy of bashrc.local
     if [[ -f "$prefix/bashrc.local" ]] ; then
       stash="/tmp/bashrc.local.$$"
