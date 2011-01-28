@@ -303,7 +303,7 @@ __bashrc_check() {
   fi
 
   local tip_date=$(cat ${prefix}/tip.date)
-  local flavor=${flavor%% *}
+  local flavor=${tip_date%% *}
 
   case "$flavor" in
     TARBALL)
