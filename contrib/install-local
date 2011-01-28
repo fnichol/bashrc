@@ -11,6 +11,7 @@ if command -v git >/dev/null ; then
     ( git clone --depth 1 git://github.com/fnichol/bashrc.git .bash || \
     git clone http://github.com/fnichol/bashrc.git .bash )
 elif command -v curl >/dev/null && command -v python >/dev/null; then
+  local tarball_install=1
   printf "===> Git not found, so downloading tarball to ${HOME}/.bash ...\n"
   mkdir -p "${HOME}/.bash"
   curl -LsSf http://github.com/fnichol/bashrc/tarball/master | \
@@ -81,8 +82,11 @@ fi
 END_OF_PROFILE
 fi
 
-printf "===> Updating bashrc to current ...\n"
-bash -i -c "bashrc_local_install=1; bashrc_prefix=\"\${HOME}/.bash\"; source \${bashrc_prefix}/bashrc && bashrc update"
+# unless this is a tarball install, run a bashrc update
+if [[ -z "$tarball_install" ]] ; then
+  printf "===> Updating bashrc to current ...\n"
+  bash -i -c "bashrc_local_install=1; bashrc_prefix=\"\${HOME}/.bash\"; source \${bashrc_prefix}/bashrc && bashrc update"
+fi
 
 printf "\n\n    #---------------------------------------------------------------\n"
 printf "    # Installation of bashrc complete. To activate either exit\n"
