@@ -37,6 +37,7 @@ elif command -v curl >/dev/null && command -v python >/dev/null; then
   tip_date="$(curl -sSL \
     http://github.com/api/v2/json/commits/show/fnichol/bashrc/HEAD | \
     python -c 'import sys; import json; j = json.loads(sys.stdin.read()); print j["commit"]["committed_date"];')"
+  [[ -n "$tip_date" ]] && tip_date="UNKNOWN"
   printf "TARBALL $tip_date" > "/etc/bash/tip.date"
 else
   printf "\n>> Neither git nor curl (with python) could be found on path so not installing.\n\n"
