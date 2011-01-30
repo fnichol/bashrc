@@ -12,10 +12,15 @@ if command -v git >/dev/null ; then
     git clone http://github.com/fnichol/bashrc.git .bash )
 elif command -v curl >/dev/null && command -v python >/dev/null; then
   tarball_install=1
+  case "$(uname -s)" in
+    SunOS)  local tar_cmd="$(which gtar)"  ;;
+    *)      local tar_cmd="$(which tar)"   ;;
+  esac
+
   printf "===> Git not found, so downloading tarball to ${HOME}/.bash ...\n"
   mkdir -p "${HOME}/.bash"
   curl -LsSf http://github.com/fnichol/bashrc/tarball/master | \
-    tar xvz -C${HOME}/.bash --strip 1
+    ${tar_cmd} xvz -C${HOME}/.bash --strip 1
   printf "===> Determining version date from github api ...\n"
   tip_date="$(curl -sSL \
     http://github.com/api/v2/json/commits/show/fnichol/bashrc/HEAD | \
