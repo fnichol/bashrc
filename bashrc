@@ -620,7 +620,7 @@ __prompt_state() {
     printf "$git_status" | egrep -q 'Untracked files'          && bits="${bits}?"
     printf "$git_status" | egrep -q 'new file:'                && bits="${bits}*"
     printf "$git_status" | egrep -q 'Your branch is ahead of'  && bits="${bits}+"
-    printf "$git_status" | egrep -q 'renamed file:'            && bits="${bits}>"
+    printf "$git_status" | egrep -q 'renamed:'                 && bits="${bits}>"
 
     local branch="$(git branch --no-color | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/')"
     [[ -z "$branch" ]] && branch="nobranch"
