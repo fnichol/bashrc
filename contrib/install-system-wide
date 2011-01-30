@@ -47,7 +47,7 @@ case "$(uname -s)" in
   OpenBSD)  color="red"   ;;
   CYGWIN*)  color="black" ;;
   SunOS)
-    if zoneadm list -pi | grep :global: >/dev/null ; then
+    if /usr/sbin/zoneadm list -pi | grep :global: >/dev/null ; then
       color="magenta" # root zone
     else
       color="cyan"    # non-global zone
@@ -88,7 +88,7 @@ case "$(uname -s)" in
     ;;
 esac
 
-if grep -q '/etc/bash/bashrc' $p 2>&1 >/dev/null ; then
+if egrep -q '/etc/bash/bashrc' $p 2>&1 >/dev/null ; then
   printf ">> Mention of /etc/bash/bashrc found in \"$p\"\n"
   printf ">> You can add the following line to get sourced:\n"
   printf ">>   [[ -s \"/etc/bash/bashrc\" ]] && . \"/etc/bash/bashrc\""
