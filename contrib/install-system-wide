@@ -18,8 +18,8 @@ if command -v git >/dev/null ; then
 elif command -v curl >/dev/null && command -v python >/dev/null; then
   tarball_install=1
   case "$(uname -s)" in
-    SunOS)  local tar_cmd="$(which gtar)"  ;;
-    *)      local tar_cmd="$(which tar)"   ;;
+    SunOS)  tar_cmd="$(which gtar)"  ;;
+    *)      tar_cmd="$(which tar)"   ;;
   esac
   [[ -z "$tar_cmd" ]] && \
     printf ">>>> tar command not found on path, aborting.\n" && exit 13
