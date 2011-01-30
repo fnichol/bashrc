@@ -11,8 +11,8 @@ if [[ -d "/etc/bash" ]] ; then
 fi
 
 case "$(uname -s)" in
-  SunOS)  local egrep_cmd=/usr/gnu/bin/egrep  ;;
-  *)      local egrep_cmd=egrep               ;;
+  SunOS)  egrep_cmd=/usr/gnu/bin/egrep  ;;
+  *)      egrep_cmd=egrep               ;;
 esac
 
 if command -v git >/dev/null ; then
