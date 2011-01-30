@@ -379,10 +379,17 @@ __bashrc_update() {
       super_cmd git clone https://$repo $(basename $prefix) )
   elif command -v curl >/dev/null && command -v python >/dev/null; then
     local tarball_install=1
+    case "$(uname -s)" in
+      SunOS)  local tar_cmd="$(which gtar)"  ;;
+      *)      local tar_cmd="$(which tar)"   ;;
+    esac
+    [[ -z "$tar_cmd" ]] && \
+      printf ">>>> tar command not found on path, aborting.\n" && return 13
+
     printf "===> Git not found, so downloading tarball to $prefix ...\n"
     super_cmd mkdir -p "$prefix"
     curl -LsSf http://github.com/fnichol/bashrc/tarball/master | \
-      super_cmd tar xvz -C${prefix} --strip 1
+      super_cmd ${tar_cmd} xvz -C${prefix} --strip 1
   else
     printf "\n>>>> Command 'git', 'curl', or 'python' were not found on the path, please install a packge or build these packages from source and try again.\n\n"
     return 16
