@@ -174,8 +174,9 @@ case "$_os" in
   SunOS)    # Solaris
     case "$(uname -r)" in
       "5.11") # OpenSolaris
-        __set_path PATH /opt/*/current/bin /usr/gnu/bin /usr/bin /usr/X11/bin \
-          /usr/sbin /sbin
+        __set_path PATH /opt/*/current/bin /opt/local/sbin /opt/local/bin \
+          /usr/local/sbin /usr/local/bin /usr/gnu/bin \
+          /usr/sbin /sbin /usr/bin /usr/X11/bin
 
         __set_path MANPATH /usr/gnu/share/man /usr/share/man /usr/X11/share/man
 
