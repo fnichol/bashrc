@@ -21,6 +21,8 @@ elif command -v curl >/dev/null && command -v python >/dev/null; then
     SunOS)  local tar_cmd="$(which gtar)"  ;;
     *)      local tar_cmd="$(which tar)"   ;;
   esac
+  [[ -z "$tar_cmd" ]] && \
+    printf ">>>> tar command not found on path, aborting.\n" && exit 13
 
   printf "===> Git not found, so downloading tarball to /etc/bash ...\n"
   mkdir -p "/etc/bash"
