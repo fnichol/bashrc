@@ -28,10 +28,23 @@ __remove_from_path() {
   shift
   local new_path=""
 
+  case "$(uname -s)" in
+    SunOS)
+      local tr_cmd=/usr/gnu/bin/tr
+      local grep_cmd=/usr/gnu/bin/grep
+      local sed_cmd=/usr/gnu/bin/sed
+      ;;
+    *)
+      local tr_cmd=tr
+      local grep_cmd=grep
+      local sed_cmd=sed
+      ;;
+  esac
+
   # remove paths from path_var, working in new_path
   for rp in $@ ; do
-    new_path="$(eval "echo \"\$$path_var\"" | tr ':' '\n' | \
-      grep -v "^${rp}$" | tr '\n' ':' | sed -e 's/:$//')"
+    new_path="$(eval "echo \"\$$path_var\"" | $tr_cmd ':' '\n' | \
+      $grep_cmd -v "^${rp}$" | $tr_cmd '\n' ':' | $sed_cmd -e 's/:$//')"
   done ; unset rp
 
   # reassign path_var from new_path
