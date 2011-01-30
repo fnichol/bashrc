@@ -601,11 +601,11 @@ __prompt_state() {
   local hg_status_exit=255
   if [[ -n "$git_status" ]] ; then
     local bits=''
-    printf "$git_status" | grep -q 'Changed but not updated'  && bits="${bits}⚡"
-    printf "$git_status" | grep -q 'Untracked files'          && bits="${bits}?"
-    printf "$git_status" | grep -q 'new file:'                && bits="${bits}*"
-    printf "$git_status" | grep -q 'Your branch is ahead of'  && bits="${bits}+"
-    printf "$git_status" | grep -q 'renamed file:'            && bits="${bits}>"
+    printf "$git_status" | egrep -q 'Changed but not updated'  && bits="${bits}⚡"
+    printf "$git_status" | egrep -q 'Untracked files'          && bits="${bits}?"
+    printf "$git_status" | egrep -q 'new file:'                && bits="${bits}*"
+    printf "$git_status" | egrep -q 'Your branch is ahead of'  && bits="${bits}+"
+    printf "$git_status" | egrep -q 'renamed file:'            && bits="${bits}>"
 
     local branch="$(git branch --no-color | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/')"
     [[ -z "$branch" ]] && branch="nobranch"
@@ -649,11 +649,11 @@ __prompt_state() {
 
   if [ $hg_status_exit -eq 0 ] ; then
     local bits=''
-    printf "$hg_status" | grep -q '^M '   && bits="${bits}⚡"  # modified files
-    printf "$hg_status" | grep -q '^\? '  && bits="${bits}?"  # untracked files
-    printf "$hg_status" | grep -q '^A '   && bits="${bits}*"  # new files
-    printf "$hg_status" | grep -q '^! '   && bits="${bits}!"  # deleted files
-    printf "$hg_status" | grep -q '^R '   && bits="${bits}☭ "  # removed files
+    printf "$hg_status" | egrep -q '^M '   && bits="${bits}⚡"  # modified files
+    printf "$hg_status" | egrep -q '^\? '  && bits="${bits}?"  # untracked files
+    printf "$hg_status" | egrep -q '^A '   && bits="${bits}*"  # new files
+    printf "$hg_status" | egrep -q '^! '   && bits="${bits}!"  # deleted files
+    printf "$hg_status" | egrep -q '^R '   && bits="${bits}☭ "  # removed files
 
     local branch="$(hg branch)"
     [[ -z "$branch" ]] && branch="nobranch"
@@ -777,7 +777,7 @@ authme() {
 
   [[ ! -f "$key" ]] && echo "SSH key: $key does not exist." && return 11
 
-  if echo "$host" | grep -q ':' ; then
+  if echo "$host" | egrep -q ':' ; then
     local ssh_cmd="$(echo $host | awk -F':' '{print \"ssh -p \" $2 \" \" $1}')"
   else
     local ssh_cmd="ssh $host"
@@ -836,9 +836,9 @@ web_serve() {
 #
 # @param [Array] egrep arguments
 case "$_os" in
-  Darwin|OpenBSD) psg() { ps wwwaux | egrep "($@|\bPID\b)" | egrep -v "egrep"; } ;;
-  SunOS|Linux)    psg() { ps -ef | egrep "($@|\bPID\b)" | egrep -v "egrep"; } ;;
-  CYGWIN_*)       psg() { ps -efW | egrep "($@|\bPID\b)" | egrep -v "egrep"; } ;;
+  Darwin|OpenBSD) psg() { ps wwwaux | egrep "($@|\bPID\b)" | egrep -v "grep"; } ;;
+  SunOS|Linux)    psg() { ps -ef | egrep "($@|\bPID\b)" | egrep -v "grep"; } ;;
+  CYGWIN_*)       psg() { ps -efW | egrep "($@|\bPID\b)" | egrep -v "grep"; } ;;
 esac
 
 case "$_os" in
