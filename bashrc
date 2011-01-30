@@ -424,6 +424,7 @@ __bashrc_update() {
     local tip_date="$(curl -sSL \
       http://github.com/api/v2/json/commits/show/fnichol/bashrc/HEAD | \
       python -c 'import sys; import json; j = json.loads(sys.stdin.read()); print j["commit"]["committed_date"];')"
+    if [ "$?" -ne 0 ] ; then tip_date="UNKNOWN" ; fi
     super_cmd bash -c "(printf \"TARBALL $tip_date\" > \"${prefix}/tip.date\")"
     __bashrc_reload
     printf "\n\n===> bashrc was updated and reloaded.\n"
