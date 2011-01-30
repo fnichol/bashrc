@@ -5,6 +5,11 @@ if [[ -d "${HOME}/.bash" ]] ; then
   exit 2
 fi
 
+case "$(uname -s)" in
+  SunOS)  local egrep_cmd=/usr/gnu/bin/egrep  ;;
+  *)      local egrep_cmd=egrep               ;;
+esac
+
 if command -v git >/dev/null ; then
   printf "===> Cloning git repository to ${HOME}/.bash ...\n"
   builtin cd "${HOME}" && \
@@ -42,7 +47,7 @@ case "$(uname -s)" in
   OpenBSD)  color="red"   ;;
   CYGWIN*)  color="black" ;;
   SunOS)
-    if /usr/sbin/zoneadm list -pi | grep :global: >/dev/null ; then
+    if /usr/sbin/zoneadm list -pi | $egrep_cmd :global: >/dev/null ; then
       color="magenta" # root zone
     else
       color="cyan"    # non-global zone
@@ -67,7 +72,7 @@ case "$(uname -s)" in
   *) p="${HOME}/.bash_profile" ;;
 esac
 
-if [[ -r "$p" ]] && egrep -q '${HOME}/.bash/bashrc' $p 2>&1 >/dev/null ; then
+if [[ -r "$p" ]] && $egrep_cmd -q '${HOME}/.bash/bashrc' $p 2>&1 >/dev/null ; then
   printf ">> Mention of \${HOME}/.bash/bashrc found in \"$p\"\n"
   printf ">> You can add the following lines to get sourced:\n"
   printf ">>   if [[ -s \"\${HOME}/.bash/bashrc\" ]] ; then\n"
