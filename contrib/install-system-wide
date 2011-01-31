@@ -80,7 +80,7 @@ case "$(uname -s)" in
     ;;
   Linux)
     if [[ -f "/etc/SuSE-release" ]] ; then
-      p="/etc/profile.local"
+      p="/etc/bash.bashrc.local"
     else
       p="/etc/profile"
     fi
