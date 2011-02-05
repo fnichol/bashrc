@@ -253,11 +253,11 @@ case "$_os" in
 esac # uname -s
 
 
-# If a $HOME/bin directory exists, add it to the PATH
-__append_path PATH $HOME/bin
+# If a $HOME/bin directory exists, add it to the PATH in front
+__push_path PATH $HOME/bin
 
-# If a $HOME/man directory exists, add it to the MANPATH
-__append_path MANPATH $HOME/man
+# If a $HOME/man directory exists, add it to the MANPATH in front
+__push_path MANPATH $HOME/man
 
 case "$_os" in
   OpenBSD)
