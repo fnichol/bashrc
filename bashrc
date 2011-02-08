@@ -1104,6 +1104,11 @@ fi
 
 complete -W "check update reload version" bashrc
 
+if command -v vagrant >/dev/null ; then
+  complete -W "box destroy halt help init package provision reload resume
+    ssh ssh_config status suspend up version" vagrant
+fi
+
 
 #---------------------------------------------------------------
 # Set Aliases (Commonly Used Shortcuts)
@@ -1151,6 +1156,15 @@ fi
 
 if command -v twitter >/dev/null ; then
   alias tt='twitter tweet'
+fi
+
+if command -v vagrant >/dev/null ; then
+  alias vsh='vagrant ssh'
+  alias vst='vagrant status'
+  alias vup='time vagrant up'
+  alias vpr='time vagrant provision'
+  alias vre='time vagrant reload'
+  alias vsu='vagrant suspend'
 fi
 
 # If pine is installed, eliminated the .pine-debugX files
