@@ -1035,7 +1035,12 @@ rc() {
 # Set the default editor
 if [ -z "$SSH_CLIENT" ] ; then          # for local/console sessions
   if command -v mvim >/dev/null ; then
-    export EDITOR="mvim -f -c \"au VimLeave * !open -a Terminal\""
+    case "$TERM_PROGRAM" in
+      Apple_Terminal) _terminal="Terminal"  ;;
+      iTerm.app)      _terminal="iTerm"     ;;
+    esac
+    export EDITOR="mvim -f -c \"au VimLeave * !open -a ${_terminal}\""
+    unset _terminal
   elif command -v gvim >/dev/null ; then
     export EDITOR="gvim -f"
   elif command -v mate >/dev/null ; then
