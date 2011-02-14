@@ -33,12 +33,12 @@ __remove_from_path() {
       local tr_cmd=/usr/gnu/bin/tr
       local grep_cmd=/usr/gnu/bin/grep
       local sed_cmd=/usr/gnu/bin/sed
-      ;;
+    ;;
     *)
       local tr_cmd=tr
       local grep_cmd=grep
       local sed_cmd=sed
-      ;;
+    ;;
   esac
 
   # remove paths from path_var, working in new_path
@@ -147,8 +147,7 @@ case "$_os" in
     if [ -f "/etc/lsb-release" ] ; then
       LINUX_FLAVOR="$(head -n 1 /etc/lsb-release | awk -F= '{print $2}')"
     fi
-    ;;
-
+  ;;
   Darwin)   # Mac OS X
     __push_path PATH /opt/local/sbin /opt/local/bin /opt/*/current/bin \
       /usr/local/Cellar/python/2.*/bin /usr/local/Cellar/python/3.*/bin \
@@ -168,8 +167,7 @@ case "$_os" in
     else
       alias super_cmd="/usr/bin/sudo -p \"[sudo] password for %u@$(hostname): \""
     fi
-    ;;
-
+  ;;
   OpenBSD)  # OpenBSD
     # Set a base PATH based on original /etc/skel/.profile and /root/.profile
     # from 4.6 on 2010-01-01
@@ -182,8 +180,7 @@ case "$_os" in
     else
       alias super_cmd="/usr/bin/sudo -p \"[sudo] password for %u@$(hostname): \""
     fi
-    ;;
-
+  ;;
   SunOS)    # Solaris
     case "$(uname -r)" in
       "5.11") # OpenSolaris
@@ -205,8 +202,7 @@ case "$_os" in
 
         # Make less the default pager
         export PAGER="/usr/bin/less -ins"
-        ;;
-
+      ;;
       "5.10") # Solaris 10
         # admin path
         __set_path PATH /opt/local/sbin /usr/gnu/sbin /usr/local/sbin \
@@ -242,14 +238,13 @@ case "$_os" in
         fi
 
         unset ADMINPATH
-        ;;
+      ;;
     esac
-    ;;
-
+  ;;
   CYGWIN_*) # Windows running Cygwin
     _id=/usr/bin/id
     alias super_cmd=
-    ;;
+  ;;
 esac # uname -s
 
 
@@ -263,11 +258,10 @@ case "$_os" in
   OpenBSD)
     # make sure MANPATH isn't set
     unset MANPATH
-    ;;
-
+  ;;
   *)
     export MANPATH
-    ;;
+  ;;
 esac # uname -s
 
 export PATH super_cmd
@@ -339,7 +333,7 @@ __bashrc_check() {
           printf ">>>> Can't find curl and/or python commands.\n"
         return 5
       fi
-      ;;
+    ;;
     *)
       if command -v git >/dev/null ; then
         (cd $prefix && super_cmd git fetch --quiet 2>&1 >/dev/null)
@@ -358,7 +352,7 @@ __bashrc_check() {
         [[ -z "$suppress" ]] && printf ">>>> Can't find git command.\n"
         return 5
       fi
-      ;;
+    ;;
   esac
 }
 
@@ -651,7 +645,7 @@ __prompt_state() {
       *term | xterm-* | rxvt | screen)
         age="$(bput $age_color)$age$(bput rst)"
         bits="$(bput cyan)$bits$(bput rst)"
-        ;;
+      ;;
     esac
 
     printf "%b" " $(bput magenta)git(${age}$(bput magenta)|$(bput rst)${branch}${bits}$(bput magenta))$(bput rst)"
@@ -700,7 +694,7 @@ __prompt_state() {
       *term | xterm-* | rxvt | screen)
         age="$(bput $age_color)$age$(bput rst)"
         bits="$(bput cyan)$bits$(bput rst)"
-        ;;
+      ;;
     esac
 
     printf "%b" " $(bput magenta)hg(${age}$(bput magenta)|$(bput rst)${branch}${bits}$(bput magenta))$(bput rst)"
@@ -738,15 +732,14 @@ bash_prompt() {
       local nocolor="\[$(bput rst)\]"
       local custom="\[$(bput $color)\]"
       local titlebar="\[\033]0;${tb}\u@\h:\w${tb}\007\]"
-      ;;
-
+    ;;
     *)
       local cyan=""
       local white=""
       local nocolor=""
       local custom=""
       local titlebar=""
-      ;;
+    ;;
   esac
 
   local prompt_core=""
@@ -886,8 +879,7 @@ SunOS)
       done | sort
     }
   fi
-  ;;
-
+;;
 Darwin)
   ##
   # Quits OS X applications from the command line.
@@ -928,7 +920,7 @@ Darwin)
   pman() {
     man -t $@ | open -f -a /Applications/Preview.app
   }
-  ;;
+;;
 esac
 
 ##
@@ -948,8 +940,7 @@ case "$_os" in
         echo $_ip
       fi
     }
-    ;;
-
+  ;;
   OpenBSD)
     whatsmy_primary_ip() {
       local _if="$(netstat -nr | grep ^default | awk '{print $8}')"
@@ -963,8 +954,7 @@ case "$_os" in
         echo $_ip
       fi
     }
-    ;;
-
+  ;;
   Linux)
     whatsmy_primary_ip() {
       local _if="$(netstat -nr | grep ^0\.0\.0\.0 | awk '{print $8}')"
@@ -979,8 +969,7 @@ case "$_os" in
         echo $_ip
       fi
     }
-    ;;
-
+  ;;
   SunOS)
     whatsmy_primary_ip() {
       local _def_gateway="$(netstat -nr | grep ^default | \
@@ -997,7 +986,7 @@ case "$_os" in
         echo $_ip
       fi
     }
-    ;;
+  ;;
 esac # case $_os
 
 ##
@@ -1212,7 +1201,6 @@ case "$_os" in
     # http://superuser.com/questions/52483/terminal-tips-and-tricks-for-mac-os-x
     alias ql='qlmanage -p 2>/dev/null'
 
-
     # List TCP port that are listening
     # Thanks to:
     # https://github.com/jqr/dotfiles/blob/master/bash_profile.d/mac.sh
@@ -1220,8 +1208,7 @@ case "$_os" in
 
     # Update /etc/hosts
     alias update_hosts='dscacheutil -flushcache'
-    ;;
-
+  ;;
   SunOS)
     # Colorize ls by default, courtesy of:
     # http://blogs.sun.com/observatory/entry/ls_colors
@@ -1240,8 +1227,7 @@ case "$_os" in
     if [ "$(command -v fgrep)" == "/usr/gnu/bin/fgrep" ] ; then
       alias fgrep='fgrep --color=auto'
     fi
-    ;;
-
+  ;;
   Linux)
     # Colorize ls by default
     if command -v dircolors >/dev/null ; then
@@ -1254,8 +1240,7 @@ case "$_os" in
     alias grep='grep --color=auto'
     alias egrep='egrep --color=auto'
     alias fgrep='fgrep --color=auto'
-    ;;
-
+  ;;
 esac
 
 # If colors are declared for ls, etc. change blue directories into yellow
