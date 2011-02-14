@@ -1217,6 +1217,9 @@ case "$_os" in
     # Thanks to:
     # https://github.com/jqr/dotfiles/blob/master/bash_profile.d/mac.sh
     alias openports='sudo lsof -iTCP -sTCP:LISTEN -P'
+
+    # Update /etc/hosts
+    alias update_hosts='dscacheutil -flushcache'
     ;;
 
   SunOS)
