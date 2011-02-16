@@ -605,11 +605,15 @@ short_pwd ()
 #
 # Thanks to https://github.com/darkhelmet/dotfiles for the inspiration.
 __prompt_state() {
-  local git_status=$(git -c color.status=false status --short --branch 2>/dev/null)
-  local git_status_exit=$?
+  local git_status=
+  local git_status_exit=255
   local hg_status=
   local hg_status_exit=255
-  if [[ $git_status_exit -eq 0 ]] ; then
+
+  git_status=$(git -c color.status=false status --short --branch 2>/dev/null)
+  git_status_exit=$?
+
+  if [ $git_status_exit -eq 0 ] ; then
     local bits=''
     printf "$git_status" | egrep -q '^ ?M'      && bits="${bits}⚡"  # modified files
     printf "$git_status" | egrep -q '^ ?\?'     && bits="${bits}?"  # untracked files
