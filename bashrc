@@ -605,20 +605,22 @@ short_pwd ()
 #
 # Thanks to https://github.com/darkhelmet/dotfiles for the inspiration.
 __prompt_state() {
-  local git_status=$(git status 2>/dev/null)
+  local git_status=$(git -c color.status=false status --short --branch 2>/dev/null)
+  local git_status_exit=$?
   local hg_status=
   local hg_status_exit=255
-  if [[ -n "$git_status" ]] ; then
+  if [[ $git_status_exit -eq 0 ]] ; then
     local bits=''
-    printf "$git_status" | egrep -q 'Changed but not updated'  && bits="${bits}⚡"
-    printf "$git_status" | egrep -q 'modified:'                && bits="${bits}⚡"
-    printf "$git_status" | egrep -q 'Untracked files'          && bits="${bits}?"
-    printf "$git_status" | egrep -q 'new file:'                && bits="${bits}*"
-    printf "$git_status" | egrep -q 'Your branch is ahead of'  && bits="${bits}+"
-    printf "$git_status" | egrep -q 'renamed:'                 && bits="${bits}>"
+    printf "$git_status" | egrep -q '^ ?M'      && bits="${bits}⚡"  # modified files
+    printf "$git_status" | egrep -q '^ ?\?'     && bits="${bits}?"  # untracked files
+    printf "$git_status" | egrep -q '^ ?A'      && bits="${bits}*"  # new/added files
+    printf "$git_status" | egrep -q '^ ?R'      && bits="${bits}>"  # renamed files
+    printf "$git_status" | egrep -q ' \[ahead ' && bits="${bits}+"  # ahead of origin
+    printf "$git_status" | egrep -q '^ ?D'      && bits="${bits}☭ " # deleted files
 
-    local branch="$(git branch --no-color | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/')"
-    [[ -z "$branch" ]] && branch="nobranch"
+    local branch="$(printf "$git_status" | egrep '^## ' | \
+      sed -e 's/^## \([^.]\{1,\}\).*$/\1/')"
+    [[ "$branch" == "Initial commit on master" ]] && branch="nobranch"
 
     local last_commit=$(git log --pretty=format:'%at' -1 2>/dev/null)
     local age="-1"
