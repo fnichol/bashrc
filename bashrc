@@ -1058,6 +1058,12 @@ export VISUAL="$EDITOR"
 # Set default visual tabstop to 2 characters, rather than 8
 export EXINIT="set tabstop=2 bg=dark"
 
+# pimp out less with color, assuming source-highlight is installed
+if command -v src-hilite-lesspipe.sh >/dev/null ; then
+  export LESSOPEN="| $(which src-hilite-lesspipe.sh) %s"
+  export LESS=' -R '
+fi
+
 # Conditional support for Ruby Version Manager (RVM)
 safe_source_first "${HOME}/.rvm/scripts/rvm" "/usr/local/lib/rvm"
 
