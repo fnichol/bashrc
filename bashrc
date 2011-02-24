@@ -615,12 +615,12 @@ __prompt_state() {
 
   if [ $git_status_exit -eq 0 ] ; then
     local bits=''
-    printf "$git_status" | egrep -q '^ ?M'      && bits="${bits}⚡"  # modified files
+    printf "$git_status" | egrep -q '^ ?M'      && bits="${bits}±"  # modified files
     printf "$git_status" | egrep -q '^ ?\?'     && bits="${bits}?"  # untracked files
     printf "$git_status" | egrep -q '^ ?A'      && bits="${bits}*"  # new/added files
     printf "$git_status" | egrep -q '^ ?R'      && bits="${bits}>"  # renamed files
+    printf "$git_status" | egrep -q '^ ?D'      && bits="${bits}⚡"  # deleted files
     printf "$git_status" | egrep -q ' \[ahead ' && bits="${bits}+"  # ahead of origin
-    printf "$git_status" | egrep -q '^ ?D'      && bits="${bits}☭ " # deleted files
 
     local branch="$(printf "$git_status" | egrep '^## ' | \
       sed -e 's/^## \([^.]\{1,\}\).*$/\1/')"
@@ -665,11 +665,11 @@ __prompt_state() {
 
   if [ $hg_status_exit -eq 0 ] ; then
     local bits=''
-    printf "$hg_status" | egrep -q '^M '   && bits="${bits}⚡"  # modified files
+    printf "$hg_status" | egrep -q '^M '   && bits="${bits}±"  # modified files
     printf "$hg_status" | egrep -q '^\? '  && bits="${bits}?"  # untracked files
     printf "$hg_status" | egrep -q '^A '   && bits="${bits}*"  # new files
     printf "$hg_status" | egrep -q '^! '   && bits="${bits}!"  # deleted files
-    printf "$hg_status" | egrep -q '^R '   && bits="${bits}☭ "  # removed files
+    printf "$hg_status" | egrep -q '^R '   && bits="${bits}⚡"  # removed files
 
     local branch="$(hg branch)"
     [[ -z "$branch" ]] && branch="nobranch"
