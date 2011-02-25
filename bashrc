@@ -1116,6 +1116,9 @@ if command -v vagrant >/dev/null ; then
     ssh ssh_config status suspend up version" vagrant
 fi
 
+# load in rvm completions, if rvm is loaded
+safe_source "${rvm_path}/scripts/completion"
+
 
 #---------------------------------------------------------------
 # Set Aliases (Commonly Used Shortcuts)
