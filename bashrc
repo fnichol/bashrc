@@ -1136,6 +1136,13 @@ fi
 # load in rvm completions, if rvm is loaded
 safe_source "${rvm_path}/scripts/completion"
 
+# load in some choice completions from homebrew if installed
+if command -v brew >/dev/null ; then
+  for c in git-completion.bash git-flow-completion.bash ; do
+    safe_source "$(brew --prefix)/etc/bash_completion.d/$c"
+  done ; unset c
+fi
+
 
 #---------------------------------------------------------------
 # Set Aliases (Commonly Used Shortcuts)
