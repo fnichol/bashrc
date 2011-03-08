@@ -1138,6 +1138,8 @@ safe_source "${rvm_path}/scripts/completion"
 
 # load in some choice completions from homebrew if installed
 if command -v brew >/dev/null ; then
+  safe_source "$(brew --prefix)/Library/Contributions/brew_bash_completion.sh"
+
   for c in git-completion.bash git-flow-completion.bash ; do
     safe_source "$(brew --prefix)/etc/bash_completion.d/$c"
   done ; unset c
