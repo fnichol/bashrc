@@ -1203,6 +1203,10 @@ if command -v vagrant >/dev/null ; then
   alias vsu='vagrant suspend'
 fi
 
+if command -v bundle >/dev/null ; then
+  alias be='bundle exec'
+fi
+
 # If pine is installed, eliminated the .pine-debugX files
 [[ -s "/usr/local/bin/pine" ]] && alias pine="pine -d 0"
 
