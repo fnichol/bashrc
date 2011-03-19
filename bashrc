@@ -1004,11 +1004,11 @@ esac # case $_os
 ##
 # Returns the public/internet visible IP address of the system.
 #
-# Thanks to:
-# https://github.com/jqr/dotfiles/blob/master/bash_profile.d/
+# Thanks to @mojombo's baddass tweet:
+# https://twitter.com/#!/mojombo/status/48948402955882496
 #
 whatsmy_public_ip() {
-  curl --silent 'www.whatismyip.com/automation/n09230945.asp' && echo
+  curl --silent 'http://jsonip.com/' | json_val '["ip"]'
 }
 
 ##
