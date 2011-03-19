@@ -289,10 +289,15 @@ cleanup() {
 }
 
 ##
-# Deprecation notice.
-update_bashrc() {
-  printf "\n>>>> update_bashrc() is no longer current. Please use 'bashrc update' instead.\n\n"
-  return 11
+# Takes json on stdin and prints the value of a given path on stdout.
+#
+# @param [String] json path in the form of ["one"]["two"]
+json_val() {
+  [[ -z "$1" ]] && printf "Usage: json_val <path>\n" && return 10
+
+  python -c 'import sys; import json; \
+    j = json.loads(sys.stdin.read()); \
+    print j'$1';'
 }
 
 ##
@@ -318,7 +323,7 @@ __bashrc_check() {
       if command -v curl >/dev/null && command -v python >/dev/null ; then
         local last_commit_date="$(curl -sSL \
           http://github.com/api/v2/json/commits/show/fnichol/bashrc/HEAD | \
-          python -c 'import sys; import json; j = json.loads(sys.stdin.read()); print j["commit"]["committed_date"];')"
+          json_val '["commit"]["committed_date"]')"
         if [ "${tip_date#* }" == "$last_commit_date" ] ; then
           [[ -z "$suppress" ]] && printf "===> bashrc is up to date.\n"
           return 0
