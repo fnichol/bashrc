@@ -1212,6 +1212,10 @@ if command -v bundle >/dev/null ; then
   alias be='bundle exec'
 fi
 
+if declare -f rvm >/dev/null ; then
+  alias rvmrc='rvm --create --rvmrc'
+fi
+
 # If pine is installed, eliminated the .pine-debugX files
 [[ -s "/usr/local/bin/pine" ]] && alias pine="pine -d 0"
 
