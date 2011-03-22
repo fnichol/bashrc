@@ -1045,42 +1045,6 @@ rc() {
   fi
 }
 
-if declare -f rvm >/dev/null ; then
-  ##
-  # Creates an .rvmrc with sane defaults. The common pattern is to make use the
-  # `default' ruby with a gemset name equal to that of the current directory.
-  # This is the default behavior. To override a ruby, simply supply it as an
-  # argument. To ovveride the gemset, supply the name prefixed with `@'. For
-  # example:
-  #
-  #    rvm-rcgen jruby @test
-  # 
-  # This would use jruby and set a gemset name of `test'. To not use a gemset,
-  # pass a lone `@' (i.e. `rvm-rcgen @' which would use the default ruby, no
-  # gemset).
-  rvm-rcgen() {
-    local next_token=""
-    local rvm_ruby="default"
-    local rvm_gemset="$(basename $(pwd))"
-    if [[ $# -gt 0 ]] ; then next_token="$1" ; shift ; fi
-
-    while [[ -n "$next_token" ]] ; do
-      if echo "$next_token" | grep -q '^@' >/dev/null ; then
-        rvm_gemset="$(echo $next_token | sed 's/^@//')"
-      else
-        rvm_ruby="$next_token"
-      fi
-
-      if [[ $# -gt 0 ]] ; then next_token="$1" ; shift ; else next_token="" ; fi
-    done
-
-    local rvm_string="${rvm_ruby}@${rvm_gemset}"
-    if [[ -z "$rvm_gemset" ]] ; then rvm_string="$rvm_ruby" ; fi
-
-    rvm --create --rvmrc "$rvm_string"
-  }
-fi
-
 
 #---------------------------------------------------------------
 # Interactive shell (prompt,history) settings
@@ -1184,6 +1148,47 @@ if command -v brew >/dev/null ; then
   for c in git-completion.bash git-flow-completion.bash ; do
     safe_source "$(brew --prefix)/etc/bash_completion.d/$c"
   done ; unset c
+fi
+
+
+#---------------------------------------------------------------
+# Post-environment initialization
+#---------------------------------------------------------------
+
+if declare -f rvm >/dev/null ; then
+  ##
+  # Creates an .rvmrc with sane defaults. The common pattern is to make use the
+  # `default' ruby with a gemset name equal to that of the current directory.
+  # This is the default behavior. To override a ruby, simply supply it as an
+  # argument. To ovveride the gemset, supply the name prefixed with `@'. For
+  # example:
+  #
+  #    rvm-rcgen jruby @test
+  # 
+  # This would use jruby and set a gemset name of `test'. To not use a gemset,
+  # pass a lone `@' (i.e. `rvm-rcgen @' which would use the default ruby, no
+  # gemset).
+  rvm-rcgen() {
+    local next_token=""
+    local rvm_ruby="default"
+    local rvm_gemset="$(basename $(pwd))"
+    if [[ $# -gt 0 ]] ; then next_token="$1" ; shift ; fi
+
+    while [[ -n "$next_token" ]] ; do
+      if echo "$next_token" | grep -q '^@' >/dev/null ; then
+        rvm_gemset="$(echo $next_token | sed 's/^@//')"
+      else
+        rvm_ruby="$next_token"
+      fi
+
+      if [[ $# -gt 0 ]] ; then next_token="$1" ; shift ; else next_token="" ; fi
+    done
+
+    local rvm_string="${rvm_ruby}@${rvm_gemset}"
+    if [[ -z "$rvm_gemset" ]] ; then rvm_string="$rvm_ruby" ; fi
+
+    rvm --create --rvmrc "$rvm_string"
+  }
 fi
 
 
