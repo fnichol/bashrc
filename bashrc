@@ -809,6 +809,34 @@ authme() {
 }
 
 ##
+# Returns the remote user's public SSH key on STDOUT. The host can optionally
+# contain the username (like `jdoe@ssh.example.com') and a non-standard port
+# number (like `ssh.example.com:666').
+#
+# @param [String] remote ssh host in for form of [<user>@]host[:<port>]
+# @param [String] remote public key, using id_dsa.pub by default
+mysshkey() {
+  [[ -z "$1" ]] && printf "Usage: mysshkey <ssh_host> [<pub_key>]\n" && return 10
+
+  local host="$1"
+  shift
+  if [[ -z "$1" ]] ; then
+    local key="id_dsa.pub"
+  else
+    local key="$1"
+  fi
+  shift
+
+  if echo "$host" | egrep -q ':' ; then
+    local ssh_cmd="$(echo $host | awk -F':' '{print \"ssh -p \" $2 \" \" $1}')"
+  else
+    local ssh_cmd="ssh $host"
+  fi
+
+  $ssh_cmd "(cat .ssh/$key)"
+}
+
+##
 # Activates a maven settings profile. A profile lives under $HOME/.m2 and is
 # of the form `settings-myprofile.xml'. Calling this function with the profile
 # `myprofile' will symlink `settings-myprofile.xml' to `settings.xml' in
