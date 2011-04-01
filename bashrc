@@ -1063,13 +1063,26 @@ diskusage() {
 #
 # @param [List] args for rails console
 rc() {
+  local script
+
   if [[ -x "./script/console" ]] ; then
-    ./script/console $@
+    script="./script/console"
   elif [[ -x "./script/rails" ]] ; then
-    ./script/rails console $@
+    script="./script/rails console"
   else
     printf "\n$(bput red)>>>>$(bput rst) You're not in the $(bput eyellow)root$(bput rst) of a $(bput eyellow)rails$(bput rst) app, doofus. Try again.\n\n"
     return 5
+  fi
+
+  if [[ $# -gt 0 ]] && echo "$1" | grep -q '^[^-]' >/dev/null ; then
+    # an environment was probably given, so use it
+    $script $@
+  elif grep -q '^development:$' ./config/database.yml >/dev/null ; then
+    # if a development environment exists, then we'll assume development
+    $script development $@
+  else
+    # if a development environment isn't in the yaml, we'll assume production
+    $script production $@
   fi
 }
 
