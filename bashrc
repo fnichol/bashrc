@@ -740,7 +740,7 @@ bash_prompt() {
   case "$TERM" in
     *term | xterm-* | rxvt | screen)
       local cyan="\[$(bput cyan)\]"
-      if [[ -z "$bashrc_light_bg" ]] ;
+      if [[ -z "$bashrc_light_bg" ]] ; then
         local white="\[$(bput white)\]"
       else
         local white="\[$(bput black)\]"
