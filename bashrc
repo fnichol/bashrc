@@ -740,7 +740,11 @@ bash_prompt() {
   case "$TERM" in
     *term | xterm-* | rxvt | screen)
       local cyan="\[$(bput cyan)\]"
-      local white="\[$(bput white)\]"
+      if [[ -z "$bashrc_light_bg" ]] ;
+        local white="\[$(bput white)\]"
+      else
+        local white="\[$(bput black)\]"
+      fi
       local nocolor="\[$(bput rst)\]"
       local custom="\[$(bput $color)\]"
       local titlebar="\[\033]0;${tb}\u@\h:\w${tb}\007\]"
