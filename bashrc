@@ -1356,6 +1356,9 @@ case "$_os" in
 
     # Update /etc/hosts
     alias update_hosts='dscacheutil -flushcache'
+
+    # Performs a fast logout (user switching) to lock your screen
+    alias lockscreen='/System/Library/CoreServices/Menu\ Extras/User.menu/Contents/Resources/CGSession -suspend'
   ;;
   SunOS)
     # Colorize ls by default, courtesy of:
