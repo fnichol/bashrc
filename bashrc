@@ -628,7 +628,7 @@ __prompt_state() {
     printf "$git_status" | egrep -q ' \[ahead ' && bits="${bits}+"  # ahead of origin
 
     local branch="$(printf "$git_status" | egrep '^## ' | \
-      sed -e 's/^## \(.*\)$/\1/')"
+      awk '{print $2}' | sed 's/\.\.\..*$//')"
     [[ "$branch" == "Initial commit on master" ]] && branch="nobranch"
 
     local last_commit=$(git log --pretty=format:'%at' -1 2>/dev/null)
