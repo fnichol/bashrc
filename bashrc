@@ -1256,6 +1256,8 @@ alias lm='ll | less'
 
 alias bu='bashrc update'
 
+alias tf='tail -f'
+
 # Colorize maven output, courtesy of:
 # http://blog.blindgaenger.net/colorize_maven_output.html
 if command -v mvn >/dev/null ; then
