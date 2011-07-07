@@ -1343,6 +1343,7 @@ case "$_os" in
     # MacVim is found, use it for vim on the commandline
     if [[ -f "/Applications/MacVim.app/Contents/MacOS/Vim" ]] ; then
       alias vim="/Applications/MacVim.app/Contents/MacOS/Vim"
+      alias view="/Applications/MacVim.app/Contents/MacOS/Vim"
     fi
 
     # Launch quicklook from the commandline
