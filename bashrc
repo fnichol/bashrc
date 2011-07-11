@@ -1076,13 +1076,14 @@ rc() {
   elif [[ -x "./script/rails" ]] ; then
     # most likely a rails 3.x app
     script="./script/rails console"
+  elif [[ -f "./config.ru" ]] && \
+      command -v bundle >/dev/null && [[ -f "./Gemfile" ]] && \
+      egrep -v '^#' Gemfile | egrep 'gem.*racksh' >/dev/null ; then
+    # most likely a rack-based app, which can be called via bundle exec
+    script="bundle exec racksh"
   elif [[ -f "./config.ru" ]] && command -v racksh >/dev/null ; then
-    # most likely a rack based app (sinatra, camping, padrino, etc.)
-    if command -v bundle >/dev/null ; then
-      script="bundle exec racksh"
-    else
-      script="racksh"
-    fi
+    # most likely a rack-based app, with racksh on PATH
+    script="racksh"
   else
     printf "\n$(bput red)>>>>$(bput rst) You're not in the "
     printf "$(bput eyellow)root$(bput rst) of a $(bput eyellow)rails$(bput rst) "
