@@ -1060,32 +1060,53 @@ diskusage() {
 }
 
 ##
-# Wraps Rails 2.x and 3.x consoles.
+# Wraps Rack and Rails 2.x/3.x consoles. The Rack console is provided via the
+# racksh gem.
 #
-# Thanks to: https://gist.github.com/539140
+# Thanks to: https://gist.github.com/539140 for the inspiration.
 #
 # @param [List] args for rails console
 rc() {
   local script
+  local env
 
   if [[ -x "./script/console" ]] ; then
+    # most likely a rails 2.x app
     script="./script/console"
   elif [[ -x "./script/rails" ]] ; then
+    # most likely a rails 3.x app
     script="./script/rails console"
+  elif [[ -f "./config.ru" ]] && command -v racksh >/dev/null ; then
+    # most likely a rack based app (sinatra, camping, padrino, etc.)
+    if command -v bundle >/dev/null ; then
+      script="bundle exec racksh"
+    else
+      script="racksh"
+    fi
   else
-    printf "\n$(bput red)>>>>$(bput rst) You're not in the $(bput eyellow)root$(bput rst) of a $(bput eyellow)rails$(bput rst) app, doofus. Try again.\n\n"
+    printf "\n$(bput red)>>>>$(bput rst) You're not in the "
+    printf "$(bput eyellow)root$(bput rst) of a $(bput eyellow)rails$(bput rst) "
+    printf "or $(bput eyellow)rack$(bput rst) app, doofus. Try again.\n\n"
     return 5
   fi
 
   if [[ $# -gt 0 ]] && echo "$1" | grep -q '^[^-]' >/dev/null ; then
     # an environment was probably given, so use it
-    $script $@
-  elif grep -q '^development:$' ./config/database.yml >/dev/null ; then
-    # if a development environment exists, then we'll assume development
-    $script development $@
+    env="$1"
+    shift
+  elif [[ -h "log" ]] ; then
+    # if the log directory is a symlink (like in capistrano deploys), then
+    # we'll assume production mode
+    env="production"
   else
-    # if a development environment isn't in the yaml, we'll assume production
-    $script production $@
+    # fallback assumption of development
+    env="development"
+  fi
+
+  if [[ "$script" == *racksh ]] ; then
+    RACK_ENV=$env $script $@
+  else
+    $script $env $@
   fi
 }
 
