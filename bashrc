@@ -1383,6 +1383,9 @@ case "$_os" in
 
     # Performs a fast logout (user switching) to lock your screen
     alias lockscreen='/System/Library/CoreServices/Menu\ Extras/User.menu/Contents/Resources/CGSession -suspend'
+
+    # Puts the mac to sleep and exists shell session. Shell history gets preserved.
+    alias gotosleep='history -a && sudo shutdown -s now && exit'
   ;;
   SunOS)
     # Colorize ls by default, courtesy of:
