@@ -653,7 +653,7 @@ __prompt_state() {
     fi
 
     case "$TERM" in
-      *term | xterm-* | rxvt | screen)
+      *term | xterm-* | rxvt | screen | screen-*)
         age="$(bput $age_color)$age$(bput rst)"
         bits="$(bput cyan)$bits$(bput rst)"
       ;;
@@ -702,7 +702,7 @@ __prompt_state() {
     fi
 
     case "$TERM" in
-      *term | xterm-* | rxvt | screen)
+      *term | xterm-* | rxvt | screen | screen-*)
         age="$(bput $age_color)$age$(bput rst)"
         bits="$(bput cyan)$bits$(bput rst)"
       ;;
@@ -737,7 +737,7 @@ bash_prompt() {
   fi
 
   case "$TERM" in
-    *term | xterm-* | rxvt | screen)
+    *term | xterm-* | rxvt | screen | screen-*)
       local cyan="\[$(bput cyan)\]"
       if [[ -z "$bashrc_light_bg" ]] ; then
         local white="\[$(bput white)\]"
