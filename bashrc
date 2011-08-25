@@ -1386,6 +1386,10 @@ case "$_os" in
 
     # Puts the mac to sleep and exists shell session. Shell history gets preserved.
     alias gotosleep='history -a && sudo shutdown -s now && exit'
+
+    if [[ -d "/etc/profile.d" ]] ; then
+      safe_source $(ls -1 /etc/profile.d/*.sh | sort | xargs)
+    fi
   ;;
   SunOS)
     # Colorize ls by default, courtesy of:
@@ -1404,12 +1408,6 @@ case "$_os" in
     fi
     if [ "$(command -v fgrep)" == "/usr/gnu/bin/fgrep" ] ; then
       alias fgrep='fgrep --color=auto'
-    fi
-
-    if [[ -d "/etc/profile.d" ]] ; then
-      for s in $(ls -1 /etc/profile.d/*.sh | sort) ; do
-        safe_source $s
-      done ; unset s
     fi
   ;;
   Linux)
