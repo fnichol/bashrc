@@ -1405,6 +1405,12 @@ case "$_os" in
     if [ "$(command -v fgrep)" == "/usr/gnu/bin/fgrep" ] ; then
       alias fgrep='fgrep --color=auto'
     fi
+
+    if [[ -d "/etc/profile.d" ]] ; then
+      for s in $(ls -1 /etc/profile.d/*.sh | sort) ; do
+        safe_source $s
+      done ; unset s
+    fi
   ;;
   Linux)
     # Colorize ls by default
