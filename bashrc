@@ -1133,15 +1133,20 @@ if [ -z "$SSH_CLIENT" ] ; then          # for local/console sessions
       iTerm.app)      _terminal="iTerm"     ;;
     esac
     export EDITOR="mvim -f -c \"au VimLeave * !open -a ${_terminal}\""
+    export BUNDLER_EDITOR="mvim"
     unset _terminal
   elif command -v gvim >/dev/null ; then
     export EDITOR="gvim -f"
+    export BUNDLER_EDITOR="gvim"
   elif command -v mate >/dev/null ; then
     export EDITOR="mate -w"
+    export EDITOR="mate"
   elif command -v vim >/dev/null ; then
     export EDITOR="vim"
+    export BUNDLER_EDITOR="$EDITOR"
   else
     export EDITOR="vi"
+    export BUNDLER_EDITOR="$EDITOR"
   fi
 else                                    # for remote/ssh sessions
   if command -v vim >/dev/null ; then
@@ -1149,8 +1154,10 @@ else                                    # for remote/ssh sessions
   else
     export EDITOR="vi"
   fi
+  export BUNDLER_EDITOR="$EDITOR"
 fi
 export VISUAL="$EDITOR"
+export GEM_EDITOR="$BUNDLER_EDITOR"
 
 # Set default visual tabstop to 2 characters, rather than 8
 export EXINIT="set tabstop=2 bg=dark"
