@@ -1394,7 +1394,7 @@ case "$_os" in
     # Puts the mac to sleep and exists shell session. Shell history gets preserved.
     alias gotosleep='history -a && sudo shutdown -s now && exit'
 
-    if [[ -d "/etc/profile.d" ]] ; then
+    if [[ -n "$(find /etc/profile.d -name '*.sh')" ]] ; then
       safe_source $(ls -1 /etc/profile.d/*.sh | sort | xargs)
     fi
   ;;
