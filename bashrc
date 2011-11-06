@@ -1129,10 +1129,10 @@ cdf() {
 if [ -z "$SSH_CLIENT" ] ; then          # for local/console sessions
   if [[ "$TERM" == screen* ]] ; then    # we're in screen or tmux
     if command -v vim >/dev/null ; then
-      export EDITOR="vim"
+      export EDITOR="$(which vim)"
       export BUNDLER_EDITOR="$EDITOR"
     else
-      export EDITOR="vi"
+      export EDITOR="$(which vi)"
       export BUNDLER_EDITOR="$EDITOR"
     fi
   else                                  # we're on a normal term console
@@ -1141,28 +1141,28 @@ if [ -z "$SSH_CLIENT" ] ; then          # for local/console sessions
         Apple_Terminal) _terminal="Terminal"  ;;
         iTerm.app)      _terminal="iTerm"     ;;
       esac
-      export EDITOR="mvim -f -c \"au VimLeave * !open -a ${_terminal}\""
-      export BUNDLER_EDITOR="mvim"
+      export EDITOR="$(which mvim) -f -c \"au VimLeave * !open -a ${_terminal}\""
+      export BUNDLER_EDITOR="$(which mvim)"
       unset _terminal
     elif command -v gvim >/dev/null ; then
-      export EDITOR="gvim -f"
-      export BUNDLER_EDITOR="gvim"
+      export EDITOR="$(which gvim) -f"
+      export BUNDLER_EDITOR="$(which gvim)"
     elif command -v mate >/dev/null ; then
       export EDITOR="mate -w"
       export EDITOR="mate"
     elif command -v vim >/dev/null ; then
-      export EDITOR="vim"
+      export EDITOR="$(which vim)"
       export BUNDLER_EDITOR="$EDITOR"
     else
-      export EDITOR="vi"
+      export EDITOR="$(which vi)"
       export BUNDLER_EDITOR="$EDITOR"
     fi
   fi
 else                                    # for remote/ssh sessions
   if command -v vim >/dev/null ; then
-    export EDITOR="vim"
+    export EDITOR="$(which vim)"
   else
-    export EDITOR="vi"
+    export EDITOR="$(which vi)"
   fi
   export BUNDLER_EDITOR="$EDITOR"
 fi
@@ -1378,12 +1378,6 @@ case "$_os" in
 
     # Lowercase uuids
     alias uuidlower="uuidgen | tr '[[:upper:]]' '[[:lower:]]'"
-
-    # MacVim is found, use it for vim on the commandline
-    if [[ -f "/Applications/MacVim.app/Contents/MacOS/Vim" ]] ; then
-      alias vim="/Applications/MacVim.app/Contents/MacOS/Vim"
-      alias view="/Applications/MacVim.app/Contents/MacOS/Vim"
-    fi
 
     # Launch quicklook from the commandline
     # Thanks to:
