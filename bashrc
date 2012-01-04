@@ -1242,6 +1242,14 @@ if command -v brew >/dev/null ; then
   done ; unset c
 fi
 
+case "$_os" in
+  Linux)
+    if [ -f "/etc/bash_completion" ] && ! shopt -oq posix; then
+      safe_source "/etc/bash_completion"
+    fi
+  ;;
+esac
+
 
 #---------------------------------------------------------------
 # Post-environment initialization
