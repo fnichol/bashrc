@@ -1406,6 +1406,12 @@ case "$_os" in
     # Puts the mac to sleep and exists shell session. Shell history gets preserved.
     alias gotosleep='history -a && sudo shutdown -s now && exit'
 
+    # set TMPDIR to /tmp for tmux commands. see:
+    # http://stackoverflow.com/questions/9039256/tmux-not-re-attaching
+    if [[ -n "$TMPDIR" ]] ; then
+      alias tmux='TMPDIR=/tmp tmux'
+    fi
+
     if [[ -d "/etc/profile.d" ]] && [[ -n "$(find /etc/profile.d -name '*.sh')" ]] ; then
       safe_source $(ls -1 /etc/profile.d/*.sh | sort | xargs)
     fi
