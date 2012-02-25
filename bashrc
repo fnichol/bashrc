@@ -1225,11 +1225,6 @@ fi
 
 complete -W "check update reload version" bashrc
 
-if command -v vagrant >/dev/null ; then
-  complete -W "box destroy halt help init package provision reload resume
-    ssh ssh_config status suspend up version" vagrant
-fi
-
 # load in rvm completions, if rvm is loaded
 safe_source "${rvm_path}/scripts/completion"
 
