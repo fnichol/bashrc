@@ -1286,6 +1286,10 @@ if declare -f rvm >/dev/null ; then
   }
 fi
 
+if command -v direnv >/dev/null ; then
+  eval `direnv hook $0`
+fi
+
 
 #---------------------------------------------------------------
 # Set Aliases (Commonly Used Shortcuts)
