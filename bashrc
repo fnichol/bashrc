@@ -1127,7 +1127,8 @@ cdf() {
 
 # Set the default editor
 if [ -z "$SSH_CLIENT" ] ; then          # for local/console sessions
-  if [[ "$TERM" == screen* ]] ; then    # we're in screen or tmux
+  case "$TERM" in
+  screen*|xterm-256color)               # we're in screen or tmux
     if command -v vim >/dev/null ; then
       export EDITOR="$(which vim)"
       export BUNDLER_EDITOR="$EDITOR"
@@ -1135,7 +1136,8 @@ if [ -z "$SSH_CLIENT" ] ; then          # for local/console sessions
       export EDITOR="$(which vi)"
       export BUNDLER_EDITOR="$EDITOR"
     fi
-  else                                  # we're on a normal term console
+  ;;
+  *)                                      # we're on a normal term console
     if command -v mvim >/dev/null ; then
       case "$TERM_PROGRAM" in
         Apple_Terminal) _terminal="Terminal"  ;;
@@ -1157,7 +1159,8 @@ if [ -z "$SSH_CLIENT" ] ; then          # for local/console sessions
       export EDITOR="$(which vi)"
       export BUNDLER_EDITOR="$EDITOR"
     fi
-  fi
+  ;;
+  esac
 else                                    # for remote/ssh sessions
   if command -v vim >/dev/null ; then
     export EDITOR="$(which vim)"
