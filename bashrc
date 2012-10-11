@@ -1414,6 +1414,13 @@ case "$_os" in
       alias tmux='TMPDIR=/tmp tmux'
     fi
 
+    # Set the path to the X11 library (in Mountain Lion) for compiling
+    # 1.8.7 MRI. See:
+    # http://stackoverflow.com/questions/11664835/mountain-lion-rvm-install-1-8-7-x11-error#answer-11666019
+    if [[ -d "/opt/X11/include" ]] ; then
+      export CPPFLAGS="-I/opt/X11/include $CPPFLAGS"
+    fi
+
     if [[ -d "/etc/profile.d" ]] && [[ -n "$(find /etc/profile.d -name '*.sh')" ]] ; then
       safe_source $(ls -1 /etc/profile.d/*.sh | sort | xargs)
     fi
