@@ -324,11 +324,11 @@ __bashrc_check() {
           http://github.com/api/v2/json/commits/show/fnichol/bashrc/HEAD | \
           json_val '["commit"]["committed_date"]')"
         if [ "${tip_date#* }" == "$last_commit_date" ] ; then
-          [[ -z "$suppress" ]] && printf "===> bashrc is up to date.\n"
+          [[ -z "$suppress" ]] && printf "-----> bashrc is up to date.\n"
           return 0
         else
           [[ -z "$suppress" ]] && \
-            printf "===> bashrc has updates to download." && \
+            printf "-----> bashrc has updates to download." && \
             printf " Use 'bashrc update' to get current.\n"
           return 1
         fi
@@ -344,11 +344,11 @@ __bashrc_check() {
         (cd $prefix && super_cmd git --no-pager diff --quiet --exit-code \
           --no-color master..origin/master >/dev/null)
         if [[ "$?" -eq 0 ]] ; then
-          [[ -z "$suppress" ]] && printf "===> bashrc is up to date.\n"
+          [[ -z "$suppress" ]] && printf "-----> bashrc is up to date.\n"
           return 0
         else
           [[ -z "$suppress" ]] && \
-            printf "===> bashrc has updates to download." && \
+            printf "-----> bashrc has updates to download." && \
             printf " Use 'bashrc update' to get current.\n"
           return 1
         fi
@@ -398,7 +398,7 @@ __bashrc_update() {
     [[ -z "$tar_cmd" ]] && \
       printf ">>>> tar command not found on path, aborting.\n" && return 13
 
-    printf "===> Git not found, so downloading tarball to $prefix ...\n"
+    printf "-----> Git not found, so downloading tarball to $prefix ...\n"
     super_cmd mkdir -p "$prefix"
     curl -LsSf http://github.com/fnichol/bashrc/tarball/master | \
       super_cmd ${tar_cmd} xvz -C${prefix} --strip 1
@@ -418,14 +418,14 @@ __bashrc_update() {
 
   if [[ -n "$tarball_install" ]] ; then
 
-    printf "===> Determining version date from github api ...\n"
+    printf "-----> Determining version date from github api ...\n"
     local tip_date="$(curl -sSL \
       http://github.com/api/v2/json/commits/show/fnichol/bashrc/HEAD | \
       python -c 'import sys; import json; j = json.loads(sys.stdin.read()); print j["commit"]["committed_date"];')"
     if [ "$?" -ne 0 ] ; then tip_date="UNKNOWN" ; fi
     super_cmd bash -c "(printf \"TARBALL $tip_date\" > \"${prefix}/tip.date\")"
     __bashrc_reload
-    printf "\n\n===> bashrc was updated and reloaded.\n"
+    printf "\n\n-----> bashrc was updated and reloaded.\n"
   else
 
     local old_file="/tmp/bashrc.date.$$"
@@ -448,9 +448,9 @@ __bashrc_update() {
         --abbrev-commit --date=relative $old_rev..$new_rev )
       printf "\n-----------------\n\n"
       __bashrc_reload
-      printf "\n\n===> bashrc was updated and reloaded.\n"
+      printf "\n\n-----> bashrc was updated and reloaded.\n"
     else
-      printf "\n===> bashrc is already up to date and current.\n"
+      printf "\n-----> bashrc is already up to date and current.\n"
     fi
 
     super_cmd rm -f "$old_file"
@@ -467,7 +467,7 @@ __bashrc_reload() {
   bashrc_reload_flag=1
   printf "\n" # give bashrc source line more prominence
   source "${bashrc_prefix:-/etc/bash}/bashrc"
-  printf "===> bashrc was reload at $(date +%F\ %T\ %z).\n"
+  printf "-----> bashrc was reload at $(date +%F\ %T\ %z).\n"
   unset bashrc_reload_flag
 }
 
@@ -868,7 +868,7 @@ maven_set_settings() {
   fi
 
   (cd ${HOME}/.m2 && ln -sf ./settings-${ext}.xml settings.xml)
-  printf "===> Activating maven settings file: ${HOME}/.m2/settings-${ext}.xml\n"
+  printf "-----> Activating maven settings file: ${HOME}/.m2/settings-${ext}.xml\n"
 }
 
 ##
@@ -1330,12 +1330,12 @@ if command -v homesick >/dev/null ; then
       sed -e 's|^\([a-zA-Z0-9_ -]\{1,\}\).*$|\1|' | xargs)"
 
     for c in $castles ; do
-      printf "===> Updating $c castle ...\n"
+      printf "-----> Updating $c castle ...\n"
       $(which homesick) pull "$c" --force
       $(which homesick) symlink "$c" --force
     done ; unset c
 
-    printf "===> homesick castles [$castles] are up to date.\n"
+    printf "-----> homesick castles [$castles] are up to date.\n"
   }
   alias hsu=__homesick_update
 fi
