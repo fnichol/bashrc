@@ -1182,7 +1182,27 @@ if command -v src-hilite-lesspipe.sh >/dev/null ; then
 fi
 
 # Conditional support for Ruby Version Manager (RVM)
-safe_source_first "${HOME}/.rvm/scripts/rvm" "/usr/local/lib/rvm"
+case "$RUBY_MANAGER" in
+  chruby)
+    if command -v brew >/dev/null ; then
+      safe_source_first "$(brew --prefix)/opt/chruby/share/chruby/chruby.sh" \
+        "/usr/local/share/chruby/chruby.sh"
+    else
+      safe_source_first "/usr/local/share/chruby/chruby.sh"
+    fi
+  ;;
+  rbenv)
+    for d in "${HOME}/.rbenv/bin" "/usr/local/rvm/bin" ; do
+      if [ -d "$d" ] ; then
+        export PATH="$d:$PATH" ; break
+      fi
+    done ; unset d
+    eval "$(rbenv init -)"
+  ;;
+  rvm|*)
+    safe_source_first "${HOME}/.rvm/scripts/rvm" "/usr/local/lib/rvm"
+  ;;
+esac
 
 # Number of commands to remember in the command history
 export HISTSIZE=10000
