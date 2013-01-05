@@ -1186,12 +1186,8 @@ fi
 # Conditional support for Ruby Version Manager (RVM)
 case "$RUBY_MANAGER" in
   chruby)
-    if command -v brew >/dev/null ; then
-      safe_source_first "$(brew --prefix)/opt/chruby/share/chruby/chruby.sh" \
-        "/usr/local/share/chruby/chruby.sh"
-    else
-      safe_source_first "/usr/local/share/chruby/chruby.sh"
-    fi
+    safe_source \
+      /usr/local/share/chruby/chruby.sh /usr/local/share/chruby/auto.sh
   ;;
   rbenv)
     for d in "${HOME}/.rbenv/bin" "/usr/local/rvm/bin" ; do
