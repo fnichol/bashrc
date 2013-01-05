@@ -711,7 +711,7 @@ __prompt_state() {
     printf "%b" " $(bput magenta)hg(${age}$(bput magenta)|$(bput rst)${branch}${bits}$(bput magenta))$(bput rst)"
   fi
 
-  if command -v chruby >/dev/null ; then
+  if command -v chruby >/dev/null && [[ -n "$RUBY_ROOT" ]] ; then
     printf "%b" " {$(basename $RUBY_ROOT)}"
   elif command -v rvm-prompt >/dev/null ; then
     printf "%b" " {$(rvm-prompt)}"
