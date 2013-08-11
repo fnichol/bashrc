@@ -1345,9 +1345,9 @@ fi
 if command -v vagrant >/dev/null ; then
   alias vsh='vagrant ssh'
   alias vst='vagrant status'
-  vup() { time (vagrant up $*) }
-  vpr() { time (vagrant provision $*) }
-  vre() { time (vagrant reload $*) }
+  vup() { time (vagrant up $*) ; }
+  vpr() { time (vagrant provision $*) ; }
+  vre() { time (vagrant reload $*) ; }
   alias vsu='vagrant suspend'
   alias vde='vagrant destroy'
 fi
