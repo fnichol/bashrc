@@ -1345,10 +1345,11 @@ fi
 if command -v vagrant >/dev/null ; then
   alias vsh='vagrant ssh'
   alias vst='vagrant status'
-  alias vup='time vagrant up'
-  alias vpr='time vagrant provision'
-  alias vre='time vagrant reload'
+  vup() { time (vagrant up $*) }
+  vpr() { time (vagrant provision $*) }
+  vre() { time (vagrant reload $*) }
   alias vsu='vagrant suspend'
+  alias vde='vagrant destroy'
 fi
 
 if command -v bundle >/dev/null ; then
