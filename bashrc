@@ -1304,6 +1304,10 @@ alias bu='bashrc update'
 
 alias tf='tail -f'
 
+# Strip out ANSI color and escape characters on STDIN, thanks to:
+# http://unix.stackexchange.com/questions/4527/program-that-passes-stdin-to-stdout-with-color-codes-stripped
+alias strip-ansi="perl -pe 's/\e\[?.*?[\@-~]//g'"
+
 # Colorize maven output, courtesy of:
 # http://blog.blindgaenger.net/colorize_maven_output.html
 if command -v mvn >/dev/null ; then
