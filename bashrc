@@ -1411,8 +1411,9 @@ case "$_os" in
 
     # set TMPDIR to /tmp for tmux commands. see:
     # http://stackoverflow.com/questions/9039256/tmux-not-re-attaching
+    # also, force tmux to assume the terminal supports 256 colors
     if [[ -n "$TMPDIR" ]] ; then
-      alias tmux='TMPDIR=/tmp tmux'
+      alias tmux='TMPDIR=/tmp tmux -2'
     fi
 
     # Set the path to the X11 library (in Mountain Lion) for compiling
@@ -1457,6 +1458,9 @@ case "$_os" in
     alias grep='grep --color=auto'
     alias egrep='egrep --color=auto'
     alias fgrep='fgrep --color=auto'
+
+    # Force tmux to assume the terminal supports 256 colors.
+    alias tmux='tmux -2'
   ;;
 esac
 
