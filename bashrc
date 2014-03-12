@@ -1369,8 +1369,8 @@ case "$_os" in
     alias super="sudo -s -H"
 
     if [[ -z "$bashrc_light_bg" ]] ; then
-      # Default color scheme except directories are yellow
-      export LSCOLORS="Dxfxcxdxbxegedabagacad"
+      # Default color scheme
+      export LSCOLORS="exfxcxdxbxegedabagacad"
     fi
 
     # Colorize ls by default
@@ -1459,14 +1459,6 @@ case "$_os" in
     alias fgrep='fgrep --color=auto'
   ;;
 esac
-
-# If colors are declared for ls, etc. change blue directories into yellow
-if [[ -n "${LS_COLORS}" ]] ; then
-  # Don't do this if we've declared a light background
-  if [[ -z "$bashrc_light_bg" ]] ; then
-    export LS_COLORS="$(echo $LS_COLORS | sed 's|di=01;34|di=01;33|')"
-  fi
-fi
 
 safe_source "${bashrc_prefix:-/etc/bash}/bashrc.local" "${HOME}/.bash_aliases"
 
