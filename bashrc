@@ -1234,8 +1234,13 @@ safe_source /usr/local/git/contrib/completion/git-completion.bash
 
 # load in some choice completions from homebrew if installed
 if command -v brew >/dev/null ; then
-  safe_source "$(brew --prefix)/Library/Contributions/brew_bash_completion.sh"
-  safe_source $(brew --prefix)/etc/bash_completion.d/*
+  if [ -f "$(brew --prefix)/etc/bash_completion" ] ; then
+    # bash-completion is installed
+    safe_source $(brew --prefix)/etc/bash_completion
+  else
+    safe_source "$(brew --prefix)/Library/Contributions/brew_bash_completion.sh"
+    safe_source $(brew --prefix)/etc/bash_completion.d/*
+  fi
 fi
 
 case "$_os" in
