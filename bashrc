@@ -884,6 +884,14 @@ web_serve() {
   $(which python) -m SimpleHTTPServer ${1:-8000}
 }
 
+##
+# Launch view using input from STDIN initialized with a desired filetype.
+#
+# @param [String] vim/view filetype, such as `json`, `yaml`, etc.
+viewin() {
+  view -c "set ft=$1" -
+}
+
 #
 # Performs an egrep on the process list. Use any arguments that egrep accetps.
 #
