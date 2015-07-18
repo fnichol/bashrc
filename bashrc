@@ -180,6 +180,14 @@ case "$_os" in
       alias super_cmd="/usr/bin/sudo -p \"[sudo] password for %u@$(hostname): \""
     fi
   ;;
+  FreeBSD)  # FreeBSD
+    _id=/usr/bin/id
+    if [[ -n "${bashrc_local_install}" ]] ; then
+      alias super_cmd=""
+    else
+      alias super_cmd="/usr/local/bin/sudo -p \"[sudo] password for %u@$(hostname): \""
+    fi
+  ;;
   SunOS)    # Solaris
     case "$(uname -r)" in
       "5.11") # OpenSolaris
@@ -897,7 +905,7 @@ viewin() {
 #
 # @param [Array] egrep arguments
 case "$_os" in
-  Darwin|OpenBSD) psg() { ps wwwaux | egrep "($@|\bPID\b)" | egrep -v "grep"; } ;;
+  Darwin|OpenBSD|FreeBSD) psg() { ps wwwaux | egrep "($@|\bPID\b)" | egrep -v "grep"; } ;;
   SunOS|Linux)    psg() { ps -ef | egrep "($@|\bPID\b)" | egrep -v "grep"; } ;;
   CYGWIN_*)       psg() { ps -efW | egrep "($@|\bPID\b)" | egrep -v "grep"; } ;;
 esac
@@ -994,7 +1002,7 @@ case "$_os" in
       fi
     }
   ;;
-  OpenBSD)
+  OpenBSD|FreeBSD)
     whatsmy_primary_ip() {
       local _if="$(netstat -nr | grep ^default | awk '{print $8}')"
       local _ip="$(ifconfig $_if | \
@@ -1257,6 +1265,9 @@ case "$_os" in
       safe_source "/etc/bash_completion"
     fi
   ;;
+  FreeBSD)
+    safe_source /usr/local/etc/bash_completion.d/*
+  ;;
 esac
 
 
@@ -1474,6 +1485,15 @@ case "$_os" in
 
     # Force tmux to assume the terminal supports 256 colors.
     alias tmux='tmux -2'
+  ;;
+  FreeBSD)
+    # Colorize ls by default
+    alias ls="ls -G"
+
+    # Colorize grep/egrep/fgrep by default
+    alias grep='grep --color=auto'
+    alias egrep='egrep --color=auto'
+    alias fgrep='fgrep --color=auto'
   ;;
 esac
 
