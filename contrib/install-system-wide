@@ -48,10 +48,11 @@ printf "===> Creating /etc/bash/bashrc.local for system-specific configuration .
 cp "/etc/bash/bashrc.local.site" "/etc/bash/bashrc.local"
 
 case "$(uname -s)" in
-  Darwin)   color="green" ; remote_color="yellow" ;;
-  Linux)    color="cyan"  ;;
-  OpenBSD)  color="red"   ;;
-  CYGWIN*)  color="black" ;;
+  Darwin)   color="green"   ; remote_color="yellow" ;;
+  Linux)    color="cyan"    ;;
+  OpenBSD)  color="red"     ;;
+  FreeBSD)  color="magenta" ;;
+  CYGWIN*)  color="black"   ;;
   SunOS)
     if /usr/sbin/zoneadm list -pi | $egrep_cmd :global: >/dev/null ; then
       color="magenta" # root zone
