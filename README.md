@@ -13,7 +13,7 @@ curl -L https://raw.githubusercontent.com/fnichol/bashrc/master/contrib/install-
 ```
 
 ### Delay Loading Your Local Deployment
-Simply wrap the code in your {{{${HOME}/.bash_profile}}} with a function, like so:
+Simply wrap the code in your `${HOME}/.bash_profile` with a function, like so:
 
 ```sh
 bl() {
