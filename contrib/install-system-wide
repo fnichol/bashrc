@@ -10,11 +10,6 @@ if [[ -d "/etc/bash" ]] ; then
   exit 2
 fi
 
-case "$(uname -s)" in
-  SunOS)  egrep_cmd=/usr/gnu/bin/egrep  ;;
-  *)      egrep_cmd=egrep               ;;
-esac
-
 if command -v git >/dev/null ; then
   printf "===> Cloning git repository to /etc/bash ...\n"
   builtin cd "/etc" && \
@@ -44,81 +39,5 @@ else
   exit 3
 fi
 
-printf "===> Creating /etc/bash/bashrc.local for system-specific configuration ...\n"
-cp "/etc/bash/bashrc.local.site" "/etc/bash/bashrc.local"
-
-case "$(uname -s)" in
-  Darwin)   color="green"   ; remote_color="yellow" ;;
-  Linux)    color="cyan"    ;;
-  OpenBSD)  color="red"     ;;
-  FreeBSD)  color="magenta" ;;
-  CYGWIN*)  color="black"   ;;
-  SunOS)
-    if /usr/sbin/zoneadm list -pi | $egrep_cmd :global: >/dev/null ; then
-      color="magenta" # root zone
-    else
-      color="cyan"    # non-global zone
-    fi
-    ;;
-esac
-
-printf "Setting prompt color to be \"$color\" ...\n"
-perl -pi -e "s|^#?PROMPT_COLOR=.*$|PROMPT_COLOR=$color|g" \
-  "/etc/bash/bashrc.local"
-unset color
-
-if [[ -n "$remote_color" ]] ; then
-  printf "Setting remote prompt color to be \"$remote_color\" ...\n"
-  perl -pi -e \
-    "s|^#?REMOTE_PROMPT_COLOR=.*$|REMOTE_PROMPT_COLOR=$remote_color|g" \
-    "/etc/bash/bashrc.local"
-  unset remote_color
-fi
-
-case "$(uname -s)" in
-  Darwin)
-    p="/etc/bashrc"
-    ;;
-  Linux)
-    if [[ -f "/etc/SuSE-release" ]] ; then
-      p="/etc/bash.bashrc.local"
-    else
-      p="/etc/profile"
-    fi
-    ;;
-  SunOS|OpenBSD|CYGWIN*)
-    p="/etc/profile"
-    ;;
-  *)
-    printf ">>>> Don't know how to add source hook in this operating system.\n"
-    exit 4
-    ;;
-esac
-
-if $egrep_cmd -q '/etc/bash/bashrc' $p 2>&1 >/dev/null ; then
-  printf ">> Mention of /etc/bash/bashrc found in \"$p\"\n"
-  printf ">> You can add the following line to get sourced:\n"
-  printf ">>   [[ -s \"/etc/bash/bashrc\" ]] && . \"/etc/bash/bashrc\""
-else
-  printf "===> Adding source hook into \"$p\" ...\n"
-  cat >> $p <<END_OF_PROFILE
- 
-[[ -s "/etc/bash/bashrc" ]] && . "/etc/bash/bashrc"
-END_OF_PROFILE
-fi
-unset p
-
-# unless this is a tarball install, run a bashrc update
-if [[ -z "$tarball_install" ]] ; then
-  printf "===> Updating bashrc to current ...\n"
-  bash -i -c "source /etc/bash/bashrc && bashrc update"
-fi
-
-printf "\n\n    #---------------------------------------------------------------\n"
-printf "    # Installation of bashrc complete. To activate either exit\n"
-printf "    # this shell or type: 'source /etc/bash/bashrc'.\n"
-printf "    #\n"
-printf "    # To check for updates to bashrc, run: 'bashrc check'.\n"
-printf "    #\n"
-printf "    # To keep bashrc up to date, periodically run: 'bashrc update'.\n"
-printf "    #---------------------------------------------------------------\n\n"
+printf "===> Running bashrc init ...\n"
+bash -i -c "source /etc/bash/bashrc && bashrc init"
