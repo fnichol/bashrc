@@ -136,7 +136,7 @@ case "$_os" in
     __set_groovy_home
 
     _id=/usr/bin/id
-    if [[ -n "${bashrc_local_install}" ]] ; then
+    if [[ -n "${bashrc_local_install}" ]] || [[ $($_id -u) -eq 0 ]] ; then
       alias super_cmd=""
     else
       alias super_cmd="/usr/bin/sudo -p \"[sudo] password for %u@$(hostname): \""
@@ -161,7 +161,7 @@ case "$_os" in
     __set_groovy_home
 
     _id=/usr/bin/id
-    if [[ -n "${bashrc_local_install}" ]] ; then
+    if [[ -n "${bashrc_local_install}" ]] || [[ $($_id -u) -eq 0 ]] ; then
       alias super_cmd=""
     else
       alias super_cmd="/usr/bin/sudo -p \"[sudo] password for %u@$(hostname): \""
@@ -174,7 +174,7 @@ case "$_os" in
       /usr/local/sbin /usr/local/bin
 
     _id=/usr/bin/id
-    if [[ -n "${bashrc_local_install}" ]] ; then
+    if [[ -n "${bashrc_local_install}" ]] || [[ $($_id -u) -eq 0 ]] ; then
       alias super_cmd=""
     else
       alias super_cmd="/usr/bin/sudo -p \"[sudo] password for %u@$(hostname): \""
@@ -182,7 +182,7 @@ case "$_os" in
   ;;
   FreeBSD)  # FreeBSD
     _id=/usr/bin/id
-    if [[ -n "${bashrc_local_install}" ]] ; then
+    if [[ -n "${bashrc_local_install}" ]] || [[ $($_id -u) -eq 0 ]] ; then
       alias super_cmd=""
     else
       alias super_cmd="/usr/local/bin/sudo -p \"[sudo] password for %u@$(hostname): \""
@@ -198,7 +198,7 @@ case "$_os" in
         __set_path MANPATH /usr/gnu/share/man /usr/share/man /usr/X11/share/man
 
         _id=/usr/bin/id
-        if [[ -n "${bashrc_local_install}" ]] ; then
+        if [[ -n "${bashrc_local_install}" ]] || [[ $($_id -u) -eq 0 ]] ; then
           alias super_cmd=""
         else
           alias super_cmd=/usr/bin/pfexec
@@ -224,7 +224,7 @@ case "$_os" in
           /opt/SUNWvts/man
 
         _id=/usr/xpg4/bin/id
-        if [[ -n "${bashrc_local_install}" ]] ; then
+        if [[ -n "${bashrc_local_install}" ]] || [[ $($_id -u) -eq 0 ]] ; then
           alias super_cmd=""
         else
           alias super_cmd=/usr/bin/pfexec
