@@ -402,13 +402,13 @@ __bashrc_init() {
     esac
 
     printf "Setting prompt color to be \"$color\" ...\n"
-    super_cmd sed -i "" e "s|^#\{0,1\}PROMPT_COLOR=.*$|PROMPT_COLOR=$color|g" \
+    super_cmd sed -i "" -e "s|^#\{0,1\}PROMPT_COLOR=.*$|PROMPT_COLOR=$color|g" \
       "${prefix}/bashrc.local"
     unset color
 
     if [[ -n "$remote_color" ]] ; then
       printf "Setting remote prompt color to be \"$remote_color\" ...\n"
-      super_cmd sed -i "" e \
+      super_cmd sed -i "" -e \
         "s|^#\{0,1\}REMOTE_PROMPT_COLOR=.*$|REMOTE_PROMPT_COLOR=$remote_color|g" \
         "${prefix}/bashrc.local"
       unset remote_color
