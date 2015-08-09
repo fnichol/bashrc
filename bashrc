@@ -369,6 +369,121 @@ __bashrc_check() {
 }
 
 ##
+# Initializes bashrc profile
+__bashrc_init() {
+  local prefix="${bashrc_prefix:-/etc/bash}"
+
+  case "$(uname -s)" in
+    SunOS)  local egrep_cmd=/usr/gnu/bin/egrep  ;;
+    *)      local egrep_cmd=egrep               ;;
+  esac
+
+  if [[ -f "${prefix}/bashrc.local" ]] ; then
+    printf "A pre-existing ${prefix}/bashrc.local file was found, using it\n"
+  else
+    printf -- "-----> Creating ${prefix}/bashrc.local ...\n"
+    super_cmd cp "${prefix}/bashrc.local.site" "${prefix}/bashrc.local"
+
+    case "$(uname -s)" in
+      Darwin)   local color="green"   ; local remote_color="yellow" ;;
+      Linux)    local color="cyan"    ;;
+      OpenBSD)  local color="red"     ;;
+      FreeBSD)  local color="magenta" ;;
+      CYGWIN*)  local color="black"   ;;
+      SunOS)
+        if /usr/sbin/zoneadm list -pi | $egrep_cmd :global: >/dev/null ; then
+          local color="magenta" # root zone
+        else
+          local color="cyan"    # non-global zone
+        fi
+        ;;
+    esac
+
+    printf "Setting prompt color to be \"$color\" ...\n"
+    super_cmd perl -pi -e "s|^#?PROMPT_COLOR=.*$|PROMPT_COLOR=$color|g" \
+      "${prefix}/bashrc.local"
+    unset color
+
+    if [[ -n "$remote_color" ]] ; then
+      printf "Setting remote prompt color to be \"$remote_color\" ...\n"
+      super_cmd perl -pi -e \
+        "s|^#?REMOTE_PROMPT_COLOR=.*$|REMOTE_PROMPT_COLOR=$remote_color|g" \
+        "${prefix}/bashrc.local"
+      unset remote_color
+    fi
+  fi
+
+  if [[ -n "$bashrc_local_install" ]] ; then
+    local p="${HOME}/.bash_profile"
+
+    if [[ -r "$p" ]] && $egrep_cmd -q '${HOME}/.bash/bashrc' $p 2>&1 >/dev/null ; then
+      printf ">> Mention of \${HOME}/.bash/bashrc found in \"$p\"\n"
+      printf ">> You can add the following lines to get sourced:\n"
+      printf ">>   if [[ -s \"\${HOME}/.bash/bashrc\" ]] ; then\n"
+      printf ">>     bashrc_local_install=1\n"
+      printf ">>     bashrc_prefix=\${HOME}/.bash\n"
+      printf ">>     export bashrc_local_install bashrc_prefix\n"
+      printf ">>     source \"\${bashrc_prefix}/bashrc\"\n"
+      printf ">>   fi\n"
+    else
+      printf -- "-----> Adding source hook into \"$p\" ...\n"
+      cat >> $p <<END_OF_PROFILE
+
+if [[ -s "\${HOME}/.bash/bashrc" ]] ; then
+  bashrc_local_install=1
+  bashrc_prefix="\${HOME}/.bash"
+  export bashrc_local_install bashrc_prefix
+  source "\${bashrc_prefix}/bashrc"
+fi
+END_OF_PROFILE
+    fi
+  else
+    case "$(uname -s)" in
+      Darwin)
+        local p="/etc/bashrc"
+        ;;
+      Linux)
+        if [[ -f "/etc/SuSE-release" ]] ; then
+          local p="/etc/bash.bashrc.local"
+        else
+          local p="/etc/profile"
+        fi
+        ;;
+      SunOS|OpenBSD|CYGWIN*)
+        local p="/etc/profile"
+        ;;
+      *)
+        printf ">>>> Don't know how to add source hook in this operating system.\n"
+        return 4
+        ;;
+    esac
+
+    if $egrep_cmd -q '/etc/bash/bashrc' $p 2>&1 >/dev/null ; then
+      printf ">> Mention of /etc/bash/bashrc found in \"$p\"\n"
+      printf ">> You can add the following line to get sourced:\n"
+      printf ">>   [[ -s \"/etc/bash/bashrc\" ]] && . \"/etc/bash/bashrc\""
+    else
+      printf -- "-----> Adding source hook into \"$p\" ...\n"
+      cat <<END_OF_PROFILE | super_cmd tee -a $p >/dev/null
+
+[[ -s "/etc/bash/bashrc" ]] && . "/etc/bash/bashrc"
+END_OF_PROFILE
+    fi
+  fi
+  unset p
+
+  printf "\n\n"
+  printf "    #---------------------------------------------------------------\n"
+  printf "    # Installation of bashrc complete. To activate either exit\n"
+  printf "    # this shell or type: 'source ${prefix}/bashrc'.\n"
+  printf "    #\n"
+  printf "    # To check for updates to bashrc, run: 'bashrc check'.\n"
+  printf "    #\n"
+  printf "    # To keep bashrc up to date, periodically run: 'bashrc update'.\n"
+  printf "    #---------------------------------------------------------------\n\n"
+}
+
+##
 # Pulls down new changes to the bashrc via git.
 __bashrc_update() {
   local prefix="${bashrc_prefix:-/etc/bash}"
@@ -503,10 +618,11 @@ bashrc() {
 
   case "$command" in
     check)    __bashrc_check $@;;
-    update)   __bashrc_update $@;;
+    init)     __bashrc_init $@;;
     reload)   __bashrc_reload $@;;
+    update)   __bashrc_update $@;;
     version)  __bashrc_version $@;;
-    *)  printf "usage: bashrc (check|update|reload|version)\n" && return 10 ;;
+    *)  printf "usage: bashrc (check|init|reload|update|version)\n" && return 10 ;;
   esac
 }
 
@@ -1241,7 +1357,7 @@ if [[ -r "${HOME}/.ssh/known_hosts" ]] ; then
   unset _ssh_hosts
 fi
 
-complete -W "check update reload version" bashrc
+complete -W "check init reload update version" bashrc
 
 # load in rvm completions, if rvm is loaded
 safe_source "${rvm_path}/scripts/completion"
