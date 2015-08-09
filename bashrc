@@ -373,9 +373,10 @@ __bashrc_check() {
 __bashrc_init() {
   local prefix="${bashrc_prefix:-/etc/bash}"
 
+  local egrep_cmd=
   case "$(uname -s)" in
-    SunOS)  local egrep_cmd=/usr/gnu/bin/egrep  ;;
-    *)      local egrep_cmd=egrep               ;;
+    SunOS)  egrep_cmd=/usr/gnu/bin/egrep  ;;
+    *)      egrep_cmd=egrep               ;;
   esac
 
   if [[ -f "${prefix}/bashrc.local" ]] ; then
@@ -384,17 +385,18 @@ __bashrc_init() {
     printf -- "-----> Creating ${prefix}/bashrc.local ...\n"
     super_cmd cp "${prefix}/bashrc.local.site" "${prefix}/bashrc.local"
 
+    local color=
     case "$(uname -s)" in
-      Darwin)   local color="green"   ; local remote_color="yellow" ;;
-      Linux)    local color="cyan"    ;;
-      OpenBSD)  local color="red"     ;;
-      FreeBSD)  local color="magenta" ;;
-      CYGWIN*)  local color="black"   ;;
+      Darwin)   color="green"   ; local remote_color="yellow" ;;
+      Linux)    color="cyan"    ;;
+      OpenBSD)  color="red"     ;;
+      FreeBSD)  color="magenta" ;;
+      CYGWIN*)  color="black"   ;;
       SunOS)
         if /usr/sbin/zoneadm list -pi | $egrep_cmd :global: >/dev/null ; then
-          local color="magenta" # root zone
+          color="magenta" # root zone
         else
-          local color="cyan"    # non-global zone
+          color="cyan"    # non-global zone
         fi
         ;;
     esac
@@ -438,19 +440,20 @@ fi
 END_OF_PROFILE
     fi
   else
+    local p=
     case "$(uname -s)" in
       Darwin)
-        local p="/etc/bashrc"
+        p="/etc/bashrc"
         ;;
       Linux)
         if [[ -f "/etc/SuSE-release" ]] ; then
-          local p="/etc/bash.bashrc.local"
+          p="/etc/bash.bashrc.local"
         else
-          local p="/etc/profile"
+          p="/etc/profile"
         fi
         ;;
       SunOS|OpenBSD|CYGWIN*)
-        local p="/etc/profile"
+        p="/etc/profile"
         ;;
       *)
         printf ">>>> Don't know how to add source hook in this operating system.\n"
