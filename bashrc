@@ -921,7 +921,11 @@ authme() {
   local host="$1"
   shift
   if [[ -z "$1" ]] ; then
-    local key="${HOME}/.ssh/id_dsa.pub"
+    if [[ -f "${HOME}/.ssh/id_rsa.pub" ]] ; then
+      local key="${HOME}/.ssh/id_rsa.pub"
+    else
+      local key="${HOME}/.ssh/id_dsa.pub"
+    fi
   else
     local key="$1"
   fi
