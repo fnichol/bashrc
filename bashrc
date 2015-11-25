@@ -1112,8 +1112,7 @@ esac
 case "$_os" in
   Darwin)
     whatsmy_primary_ip() {
-      local _if="$(netstat -nr | grep ^default | \
-        grep -v 'link#' | awk '{print $6}')"
+      local _if="$(route -n get default | grep 'interface: ' | awk '{print $2}')"
       local _ip="$(ifconfig $_if | \
         grep '^[[:space:]]*inet ' | awk '{print $2}')"
 
