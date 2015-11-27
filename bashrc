@@ -258,6 +258,9 @@ esac # uname -s
 # If a $HOME/bin directory exists, add it to the PATH in front
 __push_path PATH $HOME/bin
 
+# If a $HOME/.cargo/bin directory exists, add it to the PATH in front
+__push_path PATH $HOME/.cargo/bin
+
 # If a $HOME/man directory exists, add it to the MANPATH in front
 __push_path MANPATH $HOME/man
 
