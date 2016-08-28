@@ -28,11 +28,16 @@ __remove_from_path() {
   shift
   local new_path=""
 
-  case "$(uname -s)" in
+  case "$_os" in
     SunOS)
       local tr_cmd=/usr/gnu/bin/tr
       local grep_cmd=/usr/gnu/bin/grep
       local sed_cmd=/usr/gnu/bin/sed
+    ;;
+    OpenBSD)
+      local tr_cmd=/usr/bin/tr
+      local grep_cmd=/usr/bin/grep
+      local sed_cmd=/usr/bin/sed
     ;;
     *)
       local tr_cmd=tr
@@ -170,14 +175,15 @@ case "$_os" in
   OpenBSD)  # OpenBSD
     # Set a base PATH based on original /etc/skel/.profile and /root/.profile
     # from 4.6 on 2010-01-01
-    __set_path PATH /sbin /sbin /usr/sbin /bin /usr/bin /usr/X11R6/bin \
+    __set_path PATH /sbin /usr/sbin /bin /usr/bin /usr/X11R6/bin \
       /usr/local/sbin /usr/local/bin
 
+    # OpenBSD now uses `doas` as the default in favor of sudo
     _id=/usr/bin/id
     if [[ -n "${bashrc_local_install}" ]] || [[ $($_id -u) -eq 0 ]] ; then
       alias super_cmd=""
     else
-      alias super_cmd="/usr/bin/sudo -p \"[sudo] password for %u@$(hostname): \""
+      alias super_cmd="/usr/bin/doas"
     fi
   ;;
   FreeBSD)  # FreeBSD
@@ -1106,6 +1112,27 @@ Darwin)
   # @param [optional, String] man section
   pman() {
     man -t $@ | open -f -a /Applications/Preview.app
+  }
+;;
+OpenBSD)
+  ##
+  # Fixes calls to `tput setaf <INT>` when `TERM` is set to a value ending in
+  # `-256color`. This only appears to affect modern OpenBSD releases and as
+  # the last two interger values seem to do nothing, we'll add `0 0` to the
+  # end of the call. This fixes the prompt coloring on OpenBSD without
+  # affecting the otherwise portable logic.
+  #
+  # See:
+  # http://openbsd-archive.7691.n7.nabble.com/tput-1-setaf-capability-and-256color-terminals-td283296.html
+  tput() {
+    if [[ "$1" == "setaf" ]]; then
+      case "$TERM" in
+      *-256color) /usr/bin/tput $* 0 0 ;;
+      *) /usr/bin/tput $* ;;
+      esac
+    else
+      /usr/bin/tput $*
+    fi
   }
 ;;
 esac
