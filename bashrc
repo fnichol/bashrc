@@ -117,28 +117,11 @@ __push_path() {
   done ; unset p
 }
 
-__set_grails_home() {
-  # if grails is installed manually, then export GRAILS_HOME preferentially
-  if [ -f "/opt/grails/current/bin/grails" -a -d "/opt/grails/current" ] ; then
-    export GRAILS_HOME=/opt/grails/current
-  fi
-}
-
-__set_groovy_home() {
-  # if groovy is installed manually, then export GROOVY_HOME preferentially
-  if [ -f "/opt/groovy/current/bin/groovy" -a -d "/opt/groovy/current" ] ; then
-    export GROOVY_HOME=/opt/groovy/current
-  fi
-}
-
 # Determines the machine _os to set PATH, MANPATH and _id
 _os="$(uname -s)"
 case "$_os" in
   Linux)    # Linux
     __push_path PATH /opt/*/current/bin
-
-    __set_grails_home
-    __set_groovy_home
 
     _id=/usr/bin/id
     if [[ -n "${bashrc_local_install}" ]] || [[ $($_id -u) -eq 0 ]] ; then
@@ -161,9 +144,6 @@ case "$_os" in
     # if we can determine the version of java as set in java prefs, then export
     # JAVA_HOME to match this
     [[ -s "/usr/libexec/java_home" ]] && export JAVA_HOME=$(/usr/libexec/java_home)
-
-    __set_grails_home
-    __set_groovy_home
 
     _id=/usr/bin/id
     if [[ -n "${bashrc_local_install}" ]] || [[ $($_id -u) -eq 0 ]] ; then
@@ -288,7 +268,6 @@ fi
 
 if [[ -z "$_debug_bashrc" ]] ; then
   unset __set_path __append_path __push_path __remove_from_path
-  unset __set_grails_home __set_groovy_home
 fi
 
 
