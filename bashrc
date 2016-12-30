@@ -961,38 +961,6 @@ mysshkey() {
 }
 
 ##
-# Activates a maven settings profile. A profile lives under $HOME/.m2 and is
-# of the form `settings-myprofile.xml'. Calling this function with the profile
-# `myprofile' will symlink `settings-myprofile.xml' to `settings.xml' in
-# maven home.
-#
-# @param [String] profile name to activate
-maven_set_settings() {
-  if [ -f "${HOME}/.m2/settings.xml" ] ; then
-    if [ ! -f "${HOME}/.m2/settings-default.xml" ] ; then
-      printf ">> Moving existing settings.xml to settings-default.xml...\n"
-      mv ${HOME}/.m2/settings.xml ${HOME}/.m2/settings-default.xml
-    fi
-  fi
-
-  if [ -z "$1" ] ; then
-    printf '>> No settings explictly asked for, so using "default".\n'
-    local ext="default"
-  else
-    local ext="$1"
-  fi
-  shift
-
-  if [ ! -f "${HOME}/.m2/settings-${ext}.xml" ] ; then
-    printf "Maven settings $_ext (at: ${HOME}/.m2/settings-${ext}.xml) does not exist\n"
-    return 10
-  fi
-
-  (cd ${HOME}/.m2 && ln -sf ./settings-${ext}.xml settings.xml)
-  printf -- "-----> Activating maven settings file: ${HOME}/.m2/settings-${ext}.xml\n"
-}
-
-##
 # Quickly starts a webserver from the current directory.
 #
 # Thanks to:
