@@ -1146,15 +1146,6 @@ diskusage() {
     }'
 }
 
-##
-# Too lazy to type the full name of a directory? cdf to the rescue.
-# This evilness brought to you by @topfunky: http://dpaste.org/P59h/
-#
-# @param [String] partial directory name for "fuzzy" like matching
-cdf() {
-  cd *$1*/
-}
-
 
 #---------------------------------------------------------------
 # Interactive shell (prompt,history) settings
