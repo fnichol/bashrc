@@ -1295,24 +1295,6 @@ alias tf='tail -f'
 # http://unix.stackexchange.com/questions/4527/program-that-passes-stdin-to-stdout-with-color-codes-stripped
 alias strip-ansi="perl -pe 's/\e\[?.*?[\@-~]//g'"
 
-# Colorize maven output, courtesy of:
-# http://blog.blindgaenger.net/colorize_maven_output.html
-if command -v mvn >/dev/null ; then
-  color_maven() {
-    local e=$(echo -e "\x1b")[
-    local highlight="1;32m"
-    local info="0;36m"
-    local warn="1;33m"
-    local error="1;31m"
-
-    $(which mvn) $* | sed -e "s/Tests run: \([^,]*\), Failures: \([^,]*\), Errors: \([^,]*\), Skipped: \([^,]*\)/${e}${highlight}Tests run: \1${e}0m, Failures: ${e}${error}\2${e}0m, Errors: ${e}${warn}\3${e}0m, Skipped: ${e}${info}\4${e}0m/g" \
-      -e "s/\(\[WARN\].*\)/${e}${warn}\1${e}0m/g" \
-      -e "s/\(\[INFO\].*\)/${e}${info}\1${e}0m/g" \
-      -e "s/\(\[ERROR\].*\)/${e}${error}\1${e}0m/g"
-  }
-  alias mvn=color_maven
-fi
-
 if command -v homesick >/dev/null ; then
   __homesick_update() {
     local castles="$(homesick list | awk '{print $2}' | \
