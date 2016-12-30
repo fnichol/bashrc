@@ -1147,58 +1147,6 @@ diskusage() {
 }
 
 ##
-# Wraps Rack and Rails 2.x/3.x consoles. The Rack console is provided via the
-# racksh gem.
-#
-# Thanks to: https://gist.github.com/539140 for the inspiration.
-#
-# @param [List] args for rails console
-rc() {
-  local script
-  local env
-
-  if [[ -x "./script/console" ]] ; then
-    # most likely a rails 2.x app
-    script="./script/console"
-  elif [[ -x "./script/rails" ]] ; then
-    # most likely a rails 3.x app
-    script="./script/rails console"
-  elif [[ -f "./config.ru" ]] && \
-      command -v bundle >/dev/null && [[ -f "./Gemfile" ]] && \
-      egrep -v '^#' Gemfile | egrep 'gem.*racksh' >/dev/null ; then
-    # most likely a rack-based app, which can be called via bundle exec
-    script="bundle exec racksh"
-  elif [[ -f "./config.ru" ]] && command -v racksh >/dev/null ; then
-    # most likely a rack-based app, with racksh on PATH
-    script="racksh"
-  else
-    printf "\n$(bput red)>>>>$(bput rst) You're not in the "
-    printf "$(bput eyellow)root$(bput rst) of a $(bput eyellow)rails$(bput rst) "
-    printf "or $(bput eyellow)rack$(bput rst) app, doofus. Try again.\n\n"
-    return 5
-  fi
-
-  if [[ $# -gt 0 ]] && echo "$1" | grep -q '^[^-]' >/dev/null ; then
-    # an environment was probably given, so use it
-    env="$1"
-    shift
-  elif [[ -h "log" ]] ; then
-    # if the log directory is a symlink (like in capistrano deploys), then
-    # we'll assume production mode
-    env="production"
-  else
-    # fallback assumption of development
-    env="development"
-  fi
-
-  if [[ "$script" == *racksh ]] ; then
-    RACK_ENV=$env $script $@
-  else
-    $script $env $@
-  fi
-}
-
-##
 # Too lazy to type the full name of a directory? cdf to the rescue.
 # This evilness brought to you by @topfunky: http://dpaste.org/P59h/
 #
