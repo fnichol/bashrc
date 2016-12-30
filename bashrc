@@ -1346,12 +1346,6 @@ case "$_os" in
     alias egrep='egrep --color=auto'
     alias fgrep='fgrep --color=auto'
 
-    # If mysql is installed via macports, then provide a startup and shutdown alias
-    if [ -f "/opt/local/share/mysql5/mysql/mysql.server" ] ; then
-      alias mysqld_start='sudo /opt/local/share/mysql5/mysql/mysql.server start'
-      alias mysqld_stop='sudo /opt/local/share/mysql5/mysql/mysql.server stop'
-    fi
-
     # Lowercase uuids
     alias uuidlower="uuidgen | tr '[[:upper:]]' '[[:lower:]]'"
 
