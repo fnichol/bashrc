@@ -846,7 +846,7 @@ bash_prompt() {
   if [ -n "$SSH_CLIENT" -a -n "$REMOTE_PROMPT_COLOR" ] ; then
     PROMPT_COLOR="$REMOTE_PROMPT_COLOR"
   fi
-  
+
   if [ "$($_id -ur)" -eq "0" ] ; then  # am I root?
     local user_c="#" ; local tb=$user_c ; local color="red"
   else
@@ -1412,7 +1412,7 @@ if declare -f rvm >/dev/null ; then
   # example:
   #
   #    rvm-rcgen jruby @test
-  # 
+  #
   # This would use jruby and set a gemset name of `test'. To not use a gemset,
   # pass a lone `@' (i.e. `rvm-rcgen @' which would use the default ruby, no
   # gemset).
