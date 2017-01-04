@@ -1263,7 +1263,8 @@ complete -W "check init reload update version" bashrc
 # load in rvm completions, if rvm is loaded
 safe_source "${rvm_path}/scripts/completion"
 
-safe_source /usr/local/git/contrib/completion/git-completion.bash
+safe_source_first /usr/local/git/contrib/completion/git-completion.bash \
+  /usr/share/git/completion/git-completion.bash
 
 # load in some choice completions from homebrew if installed
 if command -v brew >/dev/null ; then
