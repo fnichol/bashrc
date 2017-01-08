@@ -1126,7 +1126,7 @@ esac # case $_os
 # https://twitter.com/#!/mojombo/status/48948402955882496
 #
 whatsmy_public_ip() {
-  curl --silent 'http://jsonip.com/' | json_val '["ip"]'
+  curl --silent 'https://jsonip.com/' | json_val '["ip"]'
 }
 
 ##
