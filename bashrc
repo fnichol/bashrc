@@ -968,7 +968,16 @@ mysshkey() {
 #
 # @param [optional, Integer] bind port number, default 8000
 web_serve() {
-  $(which python) -m SimpleHTTPServer ${1:-8000}
+  local p="${1:-8000}"
+  if command -v ruby >/dev/null; then
+    ruby -rwebrick \
+      -e"WEBrick::HTTPServer.new(:Port => $p, :DocumentRoot => Dir.pwd).start"
+  elif command -v python >/dev/null; then
+    python -m SimpleHTTPServer $p
+  else
+    printf ">>>> Could not find ruby or python on PATH. Install and retry.\n"
+    return 9
+  fi
 }
 
 ##
