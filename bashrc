@@ -985,7 +985,7 @@ web_serve() {
 #
 # @param [String] vim/view filetype, such as `json`, `yaml`, etc.
 viewin() {
-  view -c "set ft=$1" -
+  vim -R -c "set ft=$1" -
 }
 
 #
