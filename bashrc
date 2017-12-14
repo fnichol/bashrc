@@ -53,7 +53,7 @@ __remove_from_path() {
   done ; unset rp
 
   # reassign path_var from new_path
-  eval $path_var="$new_path"
+  eval "$path_var='$new_path'"
 }
 
 ##
