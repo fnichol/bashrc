@@ -1295,6 +1295,9 @@ case "$_os" in
       safe_source "/etc/bash_completion"
     fi
   ;;
+  FreeBSD)
+    safe_source "/usr/local/share/bash-completion/bash_completion"
+  ;;
 esac
 
 
