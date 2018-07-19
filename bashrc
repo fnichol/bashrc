@@ -446,7 +446,7 @@ END_OF_PROFILE
           p="/etc/profile"
         fi
         ;;
-      SunOS|OpenBSD|CYGWIN*)
+      FreeBSD|SunOS|OpenBSD|CYGWIN*)
         p="/etc/profile"
         ;;
       *)
