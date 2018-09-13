@@ -1300,6 +1300,10 @@ case "$_os" in
   ;;
 esac
 
+if command -v rustup >/dev/null ; then
+  eval "$(rustup completions bash)"
+fi
+
 
 #---------------------------------------------------------------
 # Post-environment initialization
