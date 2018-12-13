@@ -1231,17 +1231,6 @@ export GEM_EDITOR="$BUNDLER_EDITOR"
 # Set default visual tabstop to 2 characters, rather than 8
 export EXINIT="set tabstop=2 bg=dark"
 
-# Set environment variable with path to Rust src, if it exists (used by Racer
-# and other tooling)
-if command -v rustc >/dev/null ; then
-  RUST_SRC_PATH="$(rustc --print sysroot)/lib/rustlib/src/rust/src"
-  if [[ -d "$RUST_SRC_PATH" ]]; then
-    export RUST_SRC_PATH
-  else
-    unset RUST_SRC_PATH
-  fi
-fi
-
 # Number of commands to remember in the command history
 export HISTSIZE=10000
 
