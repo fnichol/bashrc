@@ -1302,7 +1302,7 @@ fi
 safe_source "$HOME/.homesick/repos/homeshick/homeshick.sh"
 
 if command -v direnv >/dev/null ; then
-  eval $(direnv hook $SHELL)
+  eval "$(direnv hook $SHELL)"
 fi
 
 
