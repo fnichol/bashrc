@@ -1254,6 +1254,17 @@ export HISTTIMEFORMAT="%Y-%m-%dT%H:%M:%S "
 # and a few others.
 export HISTIGNORE="[ ]*:&:bg:fg:ls -l:ls -al:ls -la:ll:la"
 
+# Set the default command for fzf, if it's installed. Prefer `fd` for finding
+# if present, and fall back to `rg` (ripgrep) if present (it's still crazy fast
+# for finding files, even though that's not it's self-declared sweet spot)
+if command -v fzf >/dev/null; then
+  if command -v fd >/dev/null; then
+    export FZF_DEFAULT_COMMAND="fd --type file --follow --hidden --exclude .git"
+  elif command -v rg >/dev/null; then
+    export FZF_DEFAULT_COMMAND="rg --files --no-ignore --hidden --follow -g '!.git/*'"
+  fi
+fi
+
 bash_prompt ; unset bash_prompt
 
 export IGNOREEOF=10
