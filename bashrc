@@ -1176,6 +1176,16 @@ if [[ ! -f "$HOME/.homesick/repos/homeshick/homeshick.sh" ]]; then
   }
 fi
 
+if command -v fd >/dev/null && command -v fzf >/dev/null; then
+  ##
+  # Changes directory based on a fuzzy finder list of directories
+  #
+  # @param [optional, String] directory path to search under, default `.`
+  cf() {
+    cd "$(fd --hidden --no-ignore --type d . "${1:-.}" | fzf)"
+  }
+fi
+
 
 #---------------------------------------------------------------
 # Interactive shell (prompt,history) settings
