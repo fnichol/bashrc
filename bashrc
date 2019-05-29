@@ -125,9 +125,13 @@ case "$_os" in
 
     _id=/usr/bin/id
     if [[ -n "${bashrc_local_install}" ]] || [[ $($_id -u) -eq 0 ]] ; then
-      alias super_cmd=""
+      super_cmd() {
+        "$@"
+      }
     else
-      alias super_cmd="/usr/bin/sudo -p \"[sudo] password for %u@$(hostname): \""
+      super_cmd() {
+        /usr/bin/sudo -p "[sudo] password for %u@$(hostname): " "$@"
+      }
     fi
     if [ -f "/etc/redhat-release" ] ; then
       LINUX_FLAVOR="$(awk '{print $1}' /etc/redhat-release)"
@@ -147,9 +151,13 @@ case "$_os" in
 
     _id=/usr/bin/id
     if [[ -n "${bashrc_local_install}" ]] || [[ $($_id -u) -eq 0 ]] ; then
-      alias super_cmd=""
+      super_cmd() {
+        "$@"
+      }
     else
-      alias super_cmd="/usr/bin/sudo -p \"[sudo] password for %u@$(hostname): \""
+      super_cmd() {
+        /usr/bin/sudo -p "[sudo] password for %u@$(hostname): " "$@"
+      }
     fi
   ;;
   OpenBSD)  # OpenBSD
@@ -161,17 +169,25 @@ case "$_os" in
     # OpenBSD now uses `doas` as the default in favor of sudo
     _id=/usr/bin/id
     if [[ -n "${bashrc_local_install}" ]] || [[ $($_id -u) -eq 0 ]] ; then
-      alias super_cmd=""
+      super_cmd() {
+        "$@"
+      }
     else
-      alias super_cmd="/usr/bin/doas"
+      super_cmd() {
+        /usr/bin/doas "$@"
+      }
     fi
   ;;
   FreeBSD)  # FreeBSD
     _id=/usr/bin/id
     if [[ -n "${bashrc_local_install}" ]] || [[ $($_id -u) -eq 0 ]] ; then
-      alias super_cmd=""
+      super_cmd() {
+        "$@"
+      }
     else
-      alias super_cmd="/usr/local/bin/sudo -p \"[sudo] password for %u@$(hostname): \""
+      super_cmd() {
+        /usr/local/bin/sudo -p "[sudo] password for %u@$(hostname): " "$@"
+      }
     fi
   ;;
   SunOS)    # Solaris
@@ -185,9 +201,13 @@ case "$_os" in
 
         _id=/usr/bin/id
         if [[ -n "${bashrc_local_install}" ]] || [[ $($_id -u) -eq 0 ]] ; then
-          alias super_cmd=""
+          super_cmd() {
+            "$@"
+          }
         else
-          alias super_cmd=/usr/bin/pfexec
+          super_cmd() {
+            /usr/bin/pfexec "$@"
+          }
         fi
 
         # Files you make look like rw-r--r--
@@ -211,9 +231,13 @@ case "$_os" in
 
         _id=/usr/xpg4/bin/id
         if [[ -n "${bashrc_local_install}" ]] || [[ $($_id -u) -eq 0 ]] ; then
-          alias super_cmd=""
+          super_cmd() {
+            "$@"
+          }
         else
-          alias super_cmd=/usr/bin/pfexec
+          super_cmd() {
+            /usr/bin/pfexec "$@"
+          }
         fi
 
         # build python search path, favoring newer pythons over older ones
@@ -236,7 +260,9 @@ case "$_os" in
   ;;
   CYGWIN_*) # Windows running Cygwin
     _id=/usr/bin/id
-    alias super_cmd=
+    super_cmd() {
+      "$@"
+    }
   ;;
 esac # uname -s
 
