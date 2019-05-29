@@ -1208,7 +1208,7 @@ if command -v fd >/dev/null && command -v fzf >/dev/null; then
   #
   # @param [optional, String] directory path to search under, default `.`
   cf() {
-    cd "$(fd --hidden --no-ignore --type d . "${1:-.}" | fzf)"
+    cd "$(fd --hidden --no-ignore --type d "${1:-.}" | fzf)"
   }
 fi
 
