@@ -1079,19 +1079,16 @@ Darwin)
   # https://github.com/mobile-shell/mosh/issues/898#issuecomment-368566044
   mosh-server-fw-update() {
     local fw=/usr/libexec/ApplicationFirewall/socketfilterfw
-    local bin_symlink bin_path set_flags
+    local bin_symlink bin_path
     bin_symlink="$(command -v mosh-server)"
     bin_path="$(greadlink -f "$bin_symlink")"
-    set_flags="$-"
 
-    set -xe
     sudo "$fw" --setglobalstate off
     sudo "$fw" --add "$bin_symlink"
     sudo "$fw" --unblockapp "$bin_symlink"
     sudo "$fw" --add "$bin_path"
     sudo "$fw" --unblockapp "$bin_path"
     sudo "$fw" --setglobalstate on
-    set "-$set_flags"
   }
 ;;
 OpenBSD)
