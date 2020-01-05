@@ -142,7 +142,8 @@ case "$_os" in
   ;;
   Darwin)   # Mac OS X
     __push_path PATH /opt/local/sbin /opt/local/bin /opt/*/current/bin \
-      /usr/local/share/python /usr/local/sbin /usr/local/bin
+      /usr/local/share/python "$HOME"/Library/Python/*/bin \
+      /usr/local/sbin /usr/local/bin
     __push_path MANPATH /opt/local/man /usr/local/share/man
 
     # if we can determine the version of java as set in java prefs, then export
