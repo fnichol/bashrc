@@ -1361,6 +1361,10 @@ if command -v rustup >/dev/null ; then
   eval "$(rustup completions bash cargo)"
 fi
 
+if command -v kubectl >/dev/null ; then
+  eval "$(kubectl completion bash)"
+fi
+
 
 #---------------------------------------------------------------
 # Post-environment initialization
