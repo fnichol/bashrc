@@ -1358,7 +1358,7 @@ esac
 
 if command -v rustup >/dev/null ; then
   eval "$(rustup completions bash rustup)"
-  eval "$(rustup completions bash rustup)"
+  eval "$(rustup completions bash cargo)"
 fi
 
 
