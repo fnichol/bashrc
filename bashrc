@@ -1521,6 +1521,14 @@ case "$_os" in
       alias pbcopy='xsel --clipboard --input'
       alias pbpaste='xsel --clipboard --output'
     fi
+
+    # If the shell is interactive and not a login shell (i.e. the first
+    # character of argument zero is a `-`), then `/etc/profile` won't be
+    # sourced so we'll source any items under `/etc/profile.d` directly.
+    if [[ ! "$0" =~ ^- ]] && [[ -d "/etc/profile.d" ]] \
+      && [[ -n "$(find /etc/profile.d -name '*.sh')" ]] ; then
+      safe_source $(ls -1 /etc/profile.d/*.sh | sort | xargs)
+    fi
   ;;
   FreeBSD)
     # Colorize ls by default
