@@ -1365,6 +1365,14 @@ if command -v kubectl >/dev/null ; then
   eval "$(kubectl completion bash)"
 fi
 
+if command -v kind >/dev/null ; then
+  eval "$(kind completion bash)"
+fi
+
+if command -v minikube >/dev/null ; then
+  eval "$(minikube completion bash)"
+fi
+
 
 #---------------------------------------------------------------
 # Post-environment initialization
