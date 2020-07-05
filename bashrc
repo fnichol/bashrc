@@ -1365,6 +1365,10 @@ if command -v kubectl >/dev/null ; then
   eval "$(kubectl completion bash)"
 fi
 
+if command -v helm >/dev/null ; then
+  eval "$(helm completion bash)"
+fi
+
 if command -v kind >/dev/null ; then
   eval "$(kind completion bash)"
 fi
