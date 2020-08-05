@@ -526,7 +526,7 @@ __bashrc_update() {
 
   if [[ -d "$prefix/.git" ]] ; then
     if command -v git >/dev/null ; then
-      ( builtin cd "$prefix" && super_cmd git pull origin master )
+      ( builtin cd "$prefix" && super_cmd git pull --rebase origin master )
     else
       printf "\n>>>> Command 'git' not found on the path, please install a"
       printf " packge or build git from source and try again.\n\n"
