@@ -1385,6 +1385,10 @@ fi
 # load homeshick if installed
 safe_source "$HOME/.homesick/repos/homeshick/homeshick.sh"
 
+if command -v zoxide >/dev/null ; then
+  eval "$(zoxide init bash)"
+fi
+
 if command -v direnv >/dev/null ; then
   eval "$(direnv hook $SHELL)"
 fi
