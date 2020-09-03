@@ -1034,6 +1034,17 @@ esac
 case "$_os" in
 Darwin)
   ##
+  # Logs out another logged in macOS user, or the current user by default.
+  #
+  # Thanks to:
+  # https://superuser.com/questions/40061/what-is-the-mac-os-x-terminal-command-to-log-out-the-current-user#answer-1368015
+  #
+  # @param [optional, String] macOS username, defaulting to current user
+  logout-gui() {
+    sudo launchctl bootout "user/$(id -u "${1:-$USER}")"
+  }
+
+  ##
   # Quits OS X applications from the command line.
   #
   # Thanks to:
