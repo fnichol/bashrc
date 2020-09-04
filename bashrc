@@ -1269,15 +1269,15 @@ if [ -z "$SSH_CLIENT" ] ; then          # for local/console sessions
       export EDITOR="$(which mvim) -f -c \"au VimLeave * !open -a ${_terminal}\""
       export BUNDLER_EDITOR="$(which mvim)"
       unset _terminal
+    elif command -v vim >/dev/null ; then
+      export EDITOR="$(which vim)"
+      export BUNDLER_EDITOR="$EDITOR"
     elif command -v gvim >/dev/null ; then
       export EDITOR="$(which gvim) -f"
       export BUNDLER_EDITOR="$(which gvim)"
     elif command -v mate >/dev/null ; then
       export EDITOR="mate -w"
       export EDITOR="mate"
-    elif command -v vim >/dev/null ; then
-      export EDITOR="$(which vim)"
-      export BUNDLER_EDITOR="$EDITOR"
     else
       export EDITOR="$(which vi)"
       export BUNDLER_EDITOR="$EDITOR"
