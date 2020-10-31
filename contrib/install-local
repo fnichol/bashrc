@@ -35,4 +35,4 @@ else
 fi
 
 printf "===> Running bashrc init ...\n"
-bash -i -c "bashrc_local_install=1; bashrc_prefix=\"\${HOME}/.bash\"; source \${bashrc_prefix}/bashrc && bashrc init"
+bash -c "bashrc_local_install=1; bashrc_prefix=\"\${HOME}/.bash\"; source \${bashrc_prefix}/bashrc && bashrc init"
