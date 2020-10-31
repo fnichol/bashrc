@@ -40,4 +40,4 @@ else
 fi
 
 printf "===> Running bashrc init ...\n"
-bash -i -c "source /etc/bash/bashrc && bashrc init"
+bash -c "source /etc/bash/bashrc && bashrc init"
