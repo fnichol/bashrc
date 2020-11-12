@@ -1388,6 +1388,10 @@ if command -v minikube >/dev/null ; then
   eval "$(minikube completion bash)"
 fi
 
+if command -v eksctl >/dev/null ; then
+  eval "$(eksctl completion bash)"
+fi
+
 if command -v aws_completer >/dev/null ; then
   complete -C "aws_completer" aws
 fi
