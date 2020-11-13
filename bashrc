@@ -1243,6 +1243,15 @@ if command -v fd >/dev/null && command -v fzf >/dev/null; then
   }
 fi
 
+##
+# Prints a timestamp in RFC3339/ISO8601 format, in UTC
+#
+# In other words, a timestamp of the form: `YYYY-mm-ddTHH:MM:SSZ` or
+# `2006-01-02T15:04:05`
+timetamp() {
+  date -u +%FT%TZ
+}
+
 
 #---------------------------------------------------------------
 # Interactive shell (prompt,history) settings
@@ -1456,10 +1465,6 @@ if command -v vagrant >/dev/null ; then
 fi
 
 alias be='bundle exec'
-
-# Prints a timestamp in RFC3339/ISO8601 format, in UTC. In other words, a
-# timestamp of the form: `YYYY-mm-ddTHH:MM:SSZ` or `2006-01-02T15:04:05`
-alias timetamp='date -u +%FT%TZ'
 
 # If pine is installed, eliminated the .pine-debugX files
 [[ -s "/usr/local/bin/pine" ]] && alias pine="pine -d 0"
