@@ -1248,7 +1248,7 @@ fi
 #
 # In other words, a timestamp of the form: `YYYY-mm-ddTHH:MM:SSZ` or
 # `2006-01-02T15:04:05`
-timetamp() {
+timestamp() {
   date -u +%FT%TZ
 }
 
