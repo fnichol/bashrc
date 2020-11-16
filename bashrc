@@ -1464,6 +1464,12 @@ if command -v vagrant >/dev/null ; then
   alias vde='vagrant destroy'
 fi
 
+if command -v tmux >/dev/null; then
+  alias tn='tmux new -s "$(basename `pwd` | sed 's/\\\\./-/g')" || tmux at -t "$(basename `pwd` | sed 's/\\\\./-/g')"'
+  alias ta='tmux attach'
+  alias tl='tmux ls'
+fi
+
 alias be='bundle exec'
 
 # If pine is installed, eliminated the .pine-debugX files
