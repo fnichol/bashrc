@@ -1537,6 +1537,12 @@ case "$_os" in
       export CPPFLAGS="-I/opt/X11/include $CPPFLAGS"
     fi
 
+    if ! command -v tailscale >/dev/null; then
+      if [[ -x /Applications/Tailscale.app/Contents/MacOS/Tailscale ]]; then
+        alias tailscale='/Applications/Tailscale.app/Contents/MacOS/Tailscale'
+      fi
+    fi
+
     if [[ -d "/etc/profile.d" ]] && [[ -n "$(find /etc/profile.d -name '*.sh')" ]] ; then
       safe_source $(ls -1 /etc/profile.d/*.sh | sort | xargs)
     fi
