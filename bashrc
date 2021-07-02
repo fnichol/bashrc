@@ -480,6 +480,9 @@ END_OF_PROFILE
           p="/etc/profile"
         fi
         ;;
+      FreeBSD)
+        p="/usr/local/etc/profile"
+        ;;
       FreeBSD|SunOS|OpenBSD|CYGWIN*)
         p="/etc/profile"
         ;;
