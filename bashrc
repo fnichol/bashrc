@@ -1419,6 +1419,10 @@ if command -v aws_completer >/dev/null ; then
   complete -C "aws_completer" aws
 fi
 
+if command -v gh >/dev/null ; then
+  eval "$(gh completion --shell bash)"
+fi
+
 
 #---------------------------------------------------------------
 # Post-environment initialization
