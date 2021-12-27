@@ -1341,7 +1341,13 @@ if command -v fzf >/dev/null; then
   fi
 fi
 
-bash_prompt ; unset bash_prompt
+if command -v starship >/dev/null ; then
+  eval "$(starship init bash)"
+  unset bput short_pwd __prompt_state bash_prompt
+else
+  bash_prompt
+  unset bash_prompt
+fi
 
 export IGNOREEOF=10
 
