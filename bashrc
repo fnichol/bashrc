@@ -544,7 +544,7 @@ __bashrc_update() {
     fi
   elif command -v git >/dev/null ; then
     ( builtin cd "$(dirname $prefix)" && \
-      super_cmd git clone --depth 1 git://$repo $(basename $prefix) || \
+      super_cmd git clone --depth 1 https://$repo $(basename $prefix) || \
       super_cmd git clone https://$repo $(basename $prefix) )
   elif command -v curl >/dev/null && command -v python >/dev/null; then
     local tarball_install=1
@@ -557,7 +557,7 @@ __bashrc_update() {
 
     printf -- "-----> Git not found, so downloading tarball to $prefix ...\n"
     super_cmd mkdir -p "$prefix"
-    curl -LsSf http://github.com/fnichol/bashrc/tarball/master | \
+    curl -LsSf https://github.com/fnichol/bashrc/tarball/master | \
       super_cmd ${tar_cmd} xvz -C${prefix} --strip 1
   else
     printf "\n>>>> Command 'git', 'curl', or 'python' were not found on the path, please install a packge or build these packages from source and try again.\n\n"
