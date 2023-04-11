@@ -1114,24 +1114,6 @@ Darwin)
     sudo "$fw" --setglobalstate on
   }
 ;;
-OpenBSD)
-  ##
-  # Fixes calls to `tput setaf <INT>`. This only appears to affect modern
-  # OpenBSD releases and as the last two interger values seem to do nothing,
-  # we'll add `0 0` to the end of the call. This fixes the prompt coloring on
-  # OpenBSD without affecting the otherwise portable logic.
-  #
-  # See:
-  # - <http://openbsd-archive.7691.n7.nabble.com/tput-1-setaf-capability-and-256color-terminals-td283296.html>
-  # - <https://unix.stackexchange.com/a/735937>
-  tput() {
-    if [[ "$1" == "setaf" ]]; then
-      /usr/bin/tput $* 0 0
-    else
-      /usr/bin/tput $*
-    fi
-  }
-;;
 esac
 
 ##
