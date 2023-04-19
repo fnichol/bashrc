@@ -1384,6 +1384,10 @@ if command -v volta >/dev/null ; then
   eval "$(volta completions bash)"
 fi
 
+if command -v moon >/dev/null ; then
+  eval "$(moon completions --shell bash)"
+fi
+
 if command -v kubectl >/dev/null ; then
   eval "$(kubectl completion bash)"
 fi
