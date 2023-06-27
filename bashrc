@@ -1486,6 +1486,10 @@ alias be='bundle exec'
 # If pine is installed, eliminated the .pine-debugX files
 [[ -s "/usr/local/bin/pine" ]] && alias pine="pine -d 0"
 
+# Skip the strict host checking and caching of known hosts for transient hosts
+# and/or netbooted installer images, etc.
+alias ssh-nocheck="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
+
 # OS-specific aliases
 case "$_os" in
   Darwin)
