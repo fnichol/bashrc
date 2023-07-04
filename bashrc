@@ -1429,7 +1429,13 @@ if command -v zoxide >/dev/null ; then
 fi
 
 if command -v direnv >/dev/null ; then
-  eval "$(direnv hook $SHELL)"
+  # Ensure better compatibility between tmux & direnv, thanks to:
+  # https://github.com/direnv/direnv/issues/106#issuecomment-1027330218
+  if [[ -n "${TMUXL-}" && -n "${DIRENV_DIR:-}" ]]; then
+    # Unset vars starting with `DIRENV_`
+    unset "${!DIRENV_@}"
+  fi
+  eval "$(direnv hook "$SHELL")"
 fi
 
 
