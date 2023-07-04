@@ -1431,7 +1431,7 @@ fi
 if command -v direnv >/dev/null ; then
   # Ensure better compatibility between tmux & direnv, thanks to:
   # https://github.com/direnv/direnv/issues/106#issuecomment-1027330218
-  if [[ -n "${TMUXL-}" && -n "${DIRENV_DIR:-}" ]]; then
+  if [[ -n "${TMUX:-}" && -n "${DIRENV_DIR:-}" ]]; then
     # Unset vars starting with `DIRENV_`
     unset "${!DIRENV_@}"
   fi
