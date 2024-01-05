@@ -969,7 +969,7 @@ authme() {
   [[ ! -f "$key" ]] && echo "SSH key: $key does not exist." && return 11
 
   if echo "$host" | egrep -q ':' ; then
-    local ssh_cmd="$(echo $host | awk -F':' '{print \"ssh -p \" $2 \" \" $1}')"
+    local ssh_cmd="$(echo $host | awk -F':' '{print "ssh -p " $2 " " $1}')"
   else
     local ssh_cmd="ssh $host"
   fi
