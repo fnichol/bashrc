@@ -1482,8 +1482,8 @@ if command -v vagrant >/dev/null ; then
 fi
 
 if command -v tmux >/dev/null; then
-  alias tn='tmux new -s "$(basename `pwd` | sed 's/\\\\./-/g')" || tmux at -t "$(basename `pwd` | sed 's/\\\\./-/g')"'
-  alias ta='tmux attach'
+  alias tn='tmux -u new -s "$(basename `pwd` | sed 's/\\\\./-/g')" || tmux -u attach -t "$(basename `pwd` | sed 's/\\\\./-/g')"'
+  alias ta='tmux -u attach'
   alias tl='tmux ls'
 fi
 
