@@ -1416,6 +1416,10 @@ if command -v gh >/dev/null ; then
   eval "$(gh completion --shell bash)"
 fi
 
+if command -v influx >/dev/null ; then
+  eval "$(influx completions bash)"
+fi
+
 
 #---------------------------------------------------------------
 # Post-environment initialization
