@@ -1384,30 +1384,6 @@ if command -v volta >/dev/null ; then
   eval "$(volta completions bash)"
 fi
 
-if command -v moon >/dev/null ; then
-  eval "$(moon completions --shell bash)"
-fi
-
-if command -v kubectl >/dev/null ; then
-  eval "$(kubectl completion bash)"
-fi
-
-if command -v helm >/dev/null ; then
-  eval "$(helm completion bash)"
-fi
-
-if command -v kind >/dev/null ; then
-  eval "$(kind completion bash)"
-fi
-
-if command -v minikube >/dev/null ; then
-  eval "$(minikube completion bash)"
-fi
-
-if command -v eksctl >/dev/null ; then
-  eval "$(eksctl completion bash)"
-fi
-
 if command -v aws_completer >/dev/null ; then
   complete -C "aws_completer" aws
 fi
