@@ -1393,7 +1393,7 @@ if command -v gh >/dev/null ; then
 fi
 
 if command -v influx >/dev/null ; then
-  eval "$(influx completions bash)"
+  eval "$(influx completion bash)"
 fi
 
 
