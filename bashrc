@@ -281,8 +281,8 @@ __push_path PATH $HOME/.cargo/bin
 # If a $HOME/.volta/bin directory exists, add it to the PATH in front
 __push_path PATH $HOME/.volta/bin
 
-# If a $HOME/.moon/bin directory exists, add it to the PATH in front
-__push_path PATH $HOME/.moon/bin
+# If a $HOME/.luarocks/bin directory exists, add it to the PATH in front
+__push_path PATH $HOME/.luarocks/bin
 
 # If a /usr/local/go/bin directory exists, add it to the PATH in front
 __push_path PATH /usr/local/go/bin
