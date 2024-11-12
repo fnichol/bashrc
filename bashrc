@@ -343,7 +343,7 @@ json_val() {
 
   "$python" -c 'import sys; import json; \
     j = json.loads(sys.stdin.read()); \
-    print j'$1';'
+    print(j'$1');'
 }
 
 ##
