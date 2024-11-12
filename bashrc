@@ -334,7 +334,14 @@ cleanup() {
 json_val() {
   [[ -z "$1" ]] && printf "Usage: json_val <path>\n" && return 10
 
-  python -c 'import sys; import json; \
+  local python;
+  if command -v python3; then
+    python=python3
+  else
+    python=python
+  fi
+
+  "$python" -c 'import sys; import json; \
     j = json.loads(sys.stdin.read()); \
     print j'$1';'
 }
