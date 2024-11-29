@@ -1483,6 +1483,12 @@ alias be='bundle exec'
 # and/or netbooted installer images, etc.
 alias ssh-nocheck="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
 
+# Use AWSP to easily switch between AWS Profiles
+# See: https://github.com/johnnyopao/awsp
+if command -v _awsp >/dev/null ; then
+  alias awsp="source _awsp"
+fi
+
 # OS-specific aliases
 case "$_os" in
   Darwin)
