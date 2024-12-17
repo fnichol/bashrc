@@ -1047,9 +1047,9 @@ viewin() {
 #
 # @param [Array] egrep arguments
 case "$_os" in
-  Darwin|OpenBSD|FreeBSD) psg() { ps wwwaux | egrep "($@|\bPID\b)" | egrep -v "grep"; } ;;
-  SunOS|Linux)    psg() { ps -ef | egrep "($@|\bPID\b)" | egrep -v "grep"; } ;;
-  CYGWIN_*)       psg() { ps -efW | egrep "($@|\bPID\b)" | egrep -v "grep"; } ;;
+  Darwin|OpenBSD|FreeBSD) psg() { ps wwwaux | grep -E "($@|\bPID\b)" | grep -E -v "grep"; } ;;
+  SunOS|Linux)    psg() { ps -ef | grep -E "($@|\bPID\b)" | grep -E -v "grep"; } ;;
+  CYGWIN_*)       psg() { ps -efW | grep -E "($@|\bPID\b)" | grep -E -v "grep"; } ;;
 esac
 
 case "$_os" in
