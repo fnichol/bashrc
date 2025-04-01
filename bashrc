@@ -1403,6 +1403,10 @@ if command -v influx >/dev/null ; then
   eval "$(influx completion bash)"
 fi
 
+if command -v nsc >/dev/null ; then
+  eval "$(nsc completion bash)"
+fi
+
 
 #---------------------------------------------------------------
 # Post-environment initialization
