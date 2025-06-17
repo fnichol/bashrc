@@ -956,17 +956,17 @@ fi
 # and a non-standard port number (like `ssh.example.com:666').
 #
 # @param [String] remote ssh host in for form of [<user>@]host[:<port>]
-# @param [String] public key, using $HOME/.ssh/id_dsa.pub by default
+# @param [String] public key, using $HOME/.ssh/id_ed25519.pub by default
 authme() {
   [[ -z "$1" ]] && printf "Usage: authme <ssh_host> [<pub_key>]\n" && return 10
 
   local host="$1"
   shift
   if [[ -z "$1" ]] ; then
-    if [[ -f "${HOME}/.ssh/id_rsa.pub" ]] ; then
-      local key="${HOME}/.ssh/id_rsa.pub"
+    if [[ -f "${HOME}/.ssh/id_ed25519.pub" ]] ; then
+      local key="${HOME}/.ssh/id_ed25519.pub"
     else
-      local key="${HOME}/.ssh/id_dsa.pub"
+      local key="${HOME}/.ssh/id_rsa.pub"
     fi
   else
     local key="$1"
@@ -992,14 +992,14 @@ authme() {
 # number (like `ssh.example.com:666').
 #
 # @param [String] remote ssh host in for form of [<user>@]host[:<port>]
-# @param [String] remote public key, using id_dsa.pub by default
+# @param [String] remote public key, using id_ed25519.pub by default
 mysshkey() {
   [[ -z "$1" ]] && printf "Usage: mysshkey <ssh_host> [<pub_key>]\n" && return 10
 
   local host="$1"
   shift
   if [[ -z "$1" ]] ; then
-    local key="id_dsa.pub"
+    local key="id_ed25519.pub"
   else
     local key="$1"
   fi
