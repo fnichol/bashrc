@@ -1331,14 +1331,6 @@ if command -v fzf >/dev/null; then
   fi
 fi
 
-if command -v starship >/dev/null ; then
-  eval "$(starship init bash)"
-  unset bput short_pwd __prompt_state bash_prompt
-else
-  bash_prompt
-  unset bash_prompt
-fi
-
 export IGNOREEOF=10
 
 shopt -s checkwinsize
@@ -1616,5 +1608,15 @@ case "$_os" in
 esac
 
 safe_source "${bashrc_prefix:-/etc/bash}/bashrc.local" "${HOME}/.bash_aliases"
+
+# Set shell prompt as late as possible to avoid other scripts (for example:
+# `/etc/profile.d/*.sh`) to affect the final prompt
+if command -v starship >/dev/null ; then
+  eval "$(starship init bash)"
+  unset bput short_pwd __prompt_state bash_prompt
+else
+  bash_prompt
+  unset bash_prompt
+fi
 
 cleanup
