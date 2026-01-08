@@ -1400,7 +1400,7 @@ if command -v nsc >/dev/null ; then
 fi
 
 if command -v si >/dev/null ; then
-  eval "$(si completions bash)"
+  eval "$(si completion bash)"
 fi
 
 
