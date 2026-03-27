@@ -455,7 +455,7 @@ __bashrc_init() {
   fi
 
   if [[ -n "$bashrc_local_install" ]] ; then
-    local p="${HOME}/.bash_profile"
+    local p="${HOME}/.bashrc"
 
     if [[ -r "$p" ]] && $egrep_cmd -q '${HOME}/.bash/bashrc' $p 2>&1 >/dev/null ; then
       printf ">> Mention of \${HOME}/.bash/bashrc found in \"$p\"\n"
