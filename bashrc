@@ -560,8 +560,8 @@ __bashrc_update() {
   elif command -v curl >/dev/null && command -v python >/dev/null; then
     local tarball_install=1
     case "$(uname -s)" in
-      SunOS)  local tar_cmd="$(which gtar)"  ;;
-      *)      local tar_cmd="$(which tar)"   ;;
+      SunOS)  local tar_cmd="$(command -v gtar)"  ;;
+      *)      local tar_cmd="$(command -v tar)"   ;;
     esac
     [[ -z "$tar_cmd" ]] && \
       printf ">>>> tar command not found on path, aborting.\n" && return 13
@@ -603,7 +603,7 @@ __bashrc_update() {
       touch "$old_file"
     fi
 
-    local git_cmd=$(which git)
+    local git_cmd=$(command -v git)
     super_cmd bash -c "( builtin cd $prefix && \
       $git_cmd log -1 --pretty=\"format:%h %ci\" > $prefix/tip.date)"
 
@@ -1262,10 +1262,10 @@ if [ -z "$SSH_CLIENT" ] ; then          # for local/console sessions
   case "$TERM" in
   screen*|xterm-256color)               # we're in screen or tmux
     if command -v vim >/dev/null ; then
-      export EDITOR="$(which vim)"
+      export EDITOR="$(command -v vim)"
       export BUNDLER_EDITOR="$EDITOR"
     else
-      export EDITOR="$(which vi)"
+      export EDITOR="$(command -v vi)"
       export BUNDLER_EDITOR="$EDITOR"
     fi
   ;;
@@ -1275,29 +1275,29 @@ if [ -z "$SSH_CLIENT" ] ; then          # for local/console sessions
         Apple_Terminal) _terminal="Terminal"  ;;
         iTerm.app)      _terminal="iTerm"     ;;
       esac
-      export EDITOR="$(which mvim) -f -c \"au VimLeave * !open -a ${_terminal}\""
-      export BUNDLER_EDITOR="$(which mvim)"
+      export EDITOR="$(command -v mvim) -f -c \"au VimLeave * !open -a ${_terminal}\""
+      export BUNDLER_EDITOR="$(command -v mvim)"
       unset _terminal
     elif command -v vim >/dev/null ; then
-      export EDITOR="$(which vim)"
+      export EDITOR="$(command -v vim)"
       export BUNDLER_EDITOR="$EDITOR"
     elif command -v gvim >/dev/null ; then
-      export EDITOR="$(which gvim) -f"
-      export BUNDLER_EDITOR="$(which gvim)"
+      export EDITOR="$(command -v gvim) -f"
+      export BUNDLER_EDITOR="$(command -v gvim)"
     elif command -v mate >/dev/null ; then
       export EDITOR="mate -w"
       export EDITOR="mate"
     else
-      export EDITOR="$(which vi)"
+      export EDITOR="$(command -v vi)"
       export BUNDLER_EDITOR="$EDITOR"
     fi
   ;;
   esac
 else                                    # for remote/ssh sessions
   if command -v vim >/dev/null ; then
-    export EDITOR="$(which vim)"
+    export EDITOR="$(command -v vim)"
   else
-    export EDITOR="$(which vi)"
+    export EDITOR="$(command -v vi)"
   fi
   export BUNDLER_EDITOR="$EDITOR"
 fi
@@ -1449,8 +1449,8 @@ if command -v homesick >/dev/null ; then
 
     for c in $castles ; do
       printf -- "-----> Updating $c castle ...\n"
-      $(which homesick) pull "$c" --force
-      $(which homesick) symlink "$c" --force
+      $(command -v homesick) pull "$c" --force
+      $(command -v homesick) symlink "$c" --force
     done ; unset c
 
     printf -- "-----> homesick castles [$castles] are up to date.\n"
