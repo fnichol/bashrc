@@ -1438,8 +1438,13 @@ fi
 # Set Aliases (Commonly Used Shortcuts)
 #---------------------------------------------------------------
 
-alias ll='ls -l'
-alias la='ls -al'
+if command -v eza >/dev/null ; then
+  alias ll='eza -l'
+  alias la='eza -al'
+else
+  alias ll='ls -l'
+  alias la='ls -al'
+fi
 alias lm='ll | less'
 
 alias bu='bashrc update'
