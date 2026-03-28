@@ -1260,8 +1260,11 @@ timestamp() {
 # Set the default editor
 if [ -z "$SSH_CLIENT" ] ; then          # for local/console sessions
   case "$TERM" in
-  screen*|xterm-256color)               # we're in screen or tmux
-    if command -v vim >/dev/null ; then
+  screen | screen-* | tmux | tmux-*)               # we're in screen or tmux
+    if command -v nvim >/dev/null ; then
+      export EDITOR="$(command -v nvim)"
+      export BUNDLER_EDITOR="$EDITOR"
+    elif command -v vim >/dev/null ; then
       export EDITOR="$(command -v vim)"
       export BUNDLER_EDITOR="$EDITOR"
     else
@@ -1278,6 +1281,9 @@ if [ -z "$SSH_CLIENT" ] ; then          # for local/console sessions
       export EDITOR="$(command -v mvim) -f -c \"au VimLeave * !open -a ${_terminal}\""
       export BUNDLER_EDITOR="$(command -v mvim)"
       unset _terminal
+    elif command -v nvim >/dev/null ; then
+      export EDITOR="$(command -v nvim)"
+      export BUNDLER_EDITOR="$EDITOR"
     elif command -v vim >/dev/null ; then
       export EDITOR="$(command -v vim)"
       export BUNDLER_EDITOR="$EDITOR"
@@ -1294,7 +1300,9 @@ if [ -z "$SSH_CLIENT" ] ; then          # for local/console sessions
   ;;
   esac
 else                                    # for remote/ssh sessions
-  if command -v vim >/dev/null ; then
+  if command -v nvim >/dev/null ; then
+    export EDITOR="$(command -v vim)"
+  elif command -v nvim >/dev/null ; then
     export EDITOR="$(command -v vim)"
   else
     export EDITOR="$(command -v vi)"
