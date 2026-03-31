@@ -1558,10 +1558,6 @@ case "$_os" in
         alias tailscale='/Applications/Tailscale.app/Contents/MacOS/Tailscale'
       fi
     fi
-
-    if [[ -d "/etc/profile.d" ]] && [[ -n "$(find /etc/profile.d -name '*.sh')" ]] ; then
-      safe_source $(ls -1 /etc/profile.d/*.sh | sort | xargs)
-    fi
   ;;
   SunOS)
     # Colorize ls by default, courtesy of:
@@ -1604,14 +1600,6 @@ case "$_os" in
       alias pbcopy='xsel --clipboard --input'
       alias pbpaste='xsel --clipboard --output'
     fi
-
-    # If the shell is interactive and not a login shell (i.e. the first
-    # character of argument zero is a `-`), then `/etc/profile` won't be
-    # sourced so we'll source any items under `/etc/profile.d` directly.
-    if [[ ! "$0" =~ ^- ]] && [[ -d "/etc/profile.d" ]] \
-      && [[ -n "$(find /etc/profile.d -name '*.sh')" ]] ; then
-      safe_source $(ls -1 /etc/profile.d/*.sh | sort | xargs)
-    fi
   ;;
   FreeBSD)
     # Colorize ls by default
@@ -1622,6 +1610,46 @@ case "$_os" in
     alias egrep='egrep --color=auto'
     alias fgrep='fgrep --color=auto'
   ;;
+esac
+
+# OS-specific profile.d sourcing
+case "$_os" in
+  Darwin)
+    if [[ -d "/etc/profile.d" ]] \
+      && [[ -n "$(find /etc/profile.d -name '*.sh')" ]] ; then
+      safe_source $(ls -1 /etc/profile.d/*.sh | sort | xargs)
+    fi
+    ;;
+  Linux)
+    if [[ -f "/etc/os-release" ]] ; then
+      case "$(. /etc/os-release && echo "${ID:-}")" in
+        # There are files under `/etc/profile.d` that rely on an `append_path`
+        # function which is defined in `/etc/profile` on Arch-based
+        # distributions. Define a vendored version before sourcing the files,
+        # then unset the function, just like in `/etc/profile`.
+        arch | cachyos)
+          append_path() {
+            case ":$PATH:" in
+              *:"$1":*)
+                ;;
+              *)
+                PATH="${PATH:+$PATH:}$1"
+            esac
+          }
+          ;;
+      esac
+    fi
+
+    # If the shell is interactive and not a login shell (i.e. the first
+    # character of argument zero is a `-`), then `/etc/profile` won't be
+    # sourced so we'll source any items under `/etc/profile.d` directly.
+    if [[ ! "$0" =~ ^- ]] && [[ -d "/etc/profile.d" ]] \
+      && [[ -n "$(find /etc/profile.d -name '*.sh')" ]] ; then
+      safe_source $(ls -1 /etc/profile.d/*.sh | sort | xargs)
+    fi
+
+    unset append_path
+    ;;
 esac
 
 safe_source "${bashrc_prefix:-/etc/bash}/bashrc.local" "${HOME}/.bash_aliases"
