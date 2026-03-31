@@ -1386,8 +1386,6 @@ else
 fi
 alias lm='ll | less'
 
-alias tf='tail -f'
-
 # Strip out ANSI color and escape characters on STDIN, thanks to:
 # http://unix.stackexchange.com/questions/4527/program-that-passes-stdin-to-stdout-with-color-codes-stripped
 alias strip-ansi="perl -pe 's/\e\[?.*?[\@-~]//g'"
