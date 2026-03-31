@@ -1024,14 +1024,6 @@ web_serve() {
   fi
 }
 
-##
-# Launch view using input from STDIN initialized with a desired filetype.
-#
-# @param [String] vim/view filetype, such as `json`, `yaml`, etc.
-viewin() {
-  vim -R -c "set ft=$1" -
-}
-
 #
 # Performs an egrep on the process list. Use any arguments that egrep accetps.
 #
