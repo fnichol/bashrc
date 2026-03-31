@@ -1258,7 +1258,7 @@ if [ -z "$SSH_CLIENT" ] ; then          # for local/console sessions
   esac
 else                                    # for remote/ssh sessions
   if command -v nvim >/dev/null ; then
-    export EDITOR="$(command -v vim)"
+    export EDITOR="$(command -v nvim)"
   elif command -v nvim >/dev/null ; then
     export EDITOR="$(command -v vim)"
   else
