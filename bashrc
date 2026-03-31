@@ -1390,16 +1390,6 @@ alias lm='ll | less'
 # http://unix.stackexchange.com/questions/4527/program-that-passes-stdin-to-stdout-with-color-codes-stripped
 alias strip-ansi="perl -pe 's/\e\[?.*?[\@-~]//g'"
 
-if command -v vagrant >/dev/null ; then
-  alias vsh='vagrant ssh'
-  alias vst='vagrant status'
-  vup() { time (vagrant up $*) ; }
-  vpr() { time (vagrant provision $*) ; }
-  vre() { time (vagrant reload $*) ; }
-  alias vsu='vagrant suspend'
-  alias vde='vagrant destroy'
-fi
-
 if command -v tmux >/dev/null; then
   alias tn='tmux -u new -s "$(basename `pwd` | sed 's/\\\\./-/g')" || tmux -u attach -t "$(basename `pwd` | sed 's/\\\\./-/g')"'
   alias ta='tmux -u attach'
