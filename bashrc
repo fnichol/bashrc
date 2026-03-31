@@ -278,9 +278,6 @@ __push_path PATH $HOME/.local/bin
 # If a $HOME/.cargo/bin directory exists, add it to the PATH in front
 __push_path PATH $HOME/.cargo/bin
 
-# If a $HOME/.volta/bin directory exists, add it to the PATH in front
-__push_path PATH $HOME/.volta/bin
-
 # If a $HOME/.luarocks/bin directory exists, add it to the PATH in front
 __push_path PATH $HOME/.luarocks/bin
 
@@ -301,10 +298,6 @@ case "$_os" in
 esac # uname -s
 
 export PATH super_cmd
-
-if [[ -x "$HOME/.volta/bin/volta" ]]; then
-  export VOLTA_HOME="$HOME/.volta"
-fi
 
 if [[ -r "${bashrc_prefix:-/etc/bash}/bashrc.local" ]] ; then
   source "${bashrc_prefix:-/etc/bash}/bashrc.local"
@@ -1385,10 +1378,6 @@ esac
 if command -v rustup >/dev/null ; then
   eval "$(rustup completions bash rustup)"
   eval "$(rustup completions bash cargo)"
-fi
-
-if command -v volta >/dev/null ; then
-  eval "$(volta completions bash)"
 fi
 
 if command -v aws_completer >/dev/null ; then
