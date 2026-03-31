@@ -1220,13 +1220,10 @@ if [ -z "$SSH_CLIENT" ] ; then          # for local/console sessions
   screen | screen-* | tmux | tmux-*)               # we're in screen or tmux
     if command -v nvim >/dev/null ; then
       export EDITOR="$(command -v nvim)"
-      export BUNDLER_EDITOR="$EDITOR"
     elif command -v vim >/dev/null ; then
       export EDITOR="$(command -v vim)"
-      export BUNDLER_EDITOR="$EDITOR"
     else
       export EDITOR="$(command -v vi)"
-      export BUNDLER_EDITOR="$EDITOR"
     fi
   ;;
   *)                                      # we're on a normal term console
@@ -1236,23 +1233,18 @@ if [ -z "$SSH_CLIENT" ] ; then          # for local/console sessions
         iTerm.app)      _terminal="iTerm"     ;;
       esac
       export EDITOR="$(command -v mvim) -f -c \"au VimLeave * !open -a ${_terminal}\""
-      export BUNDLER_EDITOR="$(command -v mvim)"
       unset _terminal
     elif command -v nvim >/dev/null ; then
       export EDITOR="$(command -v nvim)"
-      export BUNDLER_EDITOR="$EDITOR"
     elif command -v vim >/dev/null ; then
       export EDITOR="$(command -v vim)"
-      export BUNDLER_EDITOR="$EDITOR"
     elif command -v gvim >/dev/null ; then
       export EDITOR="$(command -v gvim) -f"
-      export BUNDLER_EDITOR="$(command -v gvim)"
     elif command -v mate >/dev/null ; then
       export EDITOR="mate -w"
       export EDITOR="mate"
     else
       export EDITOR="$(command -v vi)"
-      export BUNDLER_EDITOR="$EDITOR"
     fi
   ;;
   esac
@@ -1264,10 +1256,8 @@ else                                    # for remote/ssh sessions
   else
     export EDITOR="$(command -v vi)"
   fi
-  export BUNDLER_EDITOR="$EDITOR"
 fi
 export VISUAL="$EDITOR"
-export GEM_EDITOR="$BUNDLER_EDITOR"
 
 # Set default visual tabstop to 2 characters, rather than 8
 export EXINIT="set tabstop=2 bg=dark"
@@ -1419,8 +1409,6 @@ if command -v tmux >/dev/null; then
   alias ta='tmux -u attach'
   alias tl='tmux ls'
 fi
-
-alias be='bundle exec'
 
 # If pine is installed, eliminated the .pine-debugX files
 [[ -s "/usr/local/bin/pine" ]] && alias pine="pine -d 0"
