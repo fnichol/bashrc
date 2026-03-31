@@ -1200,21 +1200,6 @@ diskusage() {
     }'
 }
 
-if [[ ! -f "$HOME/.homesick/repos/homeshick/homeshick.sh" ]]; then
-  homeshick_install() {
-    if command -v git >/dev/null ; then
-      git clone git://github.com/andsens/homeshick.git \
-        "$HOME/.homesick/repos/homeshick"
-      safe_source "$HOME/.homesick/repos/homeshick/homeshick.sh"
-      unset homeshick_install
-      printf -- "-----> homeshick installed and loaded.\n"
-    else
-      printf ">>>> Could not find git command on PATH. Install and retry.\n"
-      return 70
-    fi
-  }
-fi
-
 if command -v fd >/dev/null && command -v fzf >/dev/null; then
   ##
   # Changes directory based on a fuzzy finder list of directories
