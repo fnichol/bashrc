@@ -1404,22 +1404,6 @@ alias tf='tail -f'
 # http://unix.stackexchange.com/questions/4527/program-that-passes-stdin-to-stdout-with-color-codes-stripped
 alias strip-ansi="perl -pe 's/\e\[?.*?[\@-~]//g'"
 
-if command -v homesick >/dev/null ; then
-  __homesick_update() {
-    local castles="$(homesick list | awk '{print $2}' | \
-      sed -e 's|^\([a-zA-Z0-9_ -]\{1,\}\).*$|\1|' | xargs)"
-
-    for c in $castles ; do
-      printf -- "-----> Updating $c castle ...\n"
-      $(command -v homesick) pull "$c" --force
-      $(command -v homesick) symlink "$c" --force
-    done ; unset c
-
-    printf -- "-----> homesick castles [$castles] are up to date.\n"
-  }
-  alias hsu=__homesick_update
-fi
-
 if command -v vagrant >/dev/null ; then
   alias vsh='vagrant ssh'
   alias vst='vagrant status'
