@@ -1386,8 +1386,6 @@ else
 fi
 alias lm='ll | less'
 
-alias bu='bashrc update'
-
 alias tf='tail -f'
 
 # Strip out ANSI color and escape characters on STDIN, thanks to:
