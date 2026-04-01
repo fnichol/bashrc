@@ -1501,11 +1501,22 @@ case "$_os" in
     # Force tmux to assume the terminal supports 256 colors.
     alias tmux='tmux -2'
 
-    # Add macOS style `pbcopy` and `pbpaste` aliases using `xsel`, thanks to:
+    # Add macOS style `pbcopy` and `pbpaste` aliases using `xsel` for X11,
+    # thanks to:
     # https://gist.github.com/aarnone/83ce3b053ace037ada850d13133317f2
     if command -v xsel >/dev/null ; then
       alias pbcopy='xsel --clipboard --input'
       alias pbpaste='xsel --clipboard --output'
+    fi
+
+    # Add macOS style `pbcopy` and `pbpaste` aliases using `wl-clipboard` for
+    # Wayland, thanks to:
+    # https://www.danielkossmann.com/how-to-use-pbcopy-pbpaste-linux-ubuntu/
+    if command -v wl-copy >/dev/null ; then
+      alias pbcopy='wl-copy'
+    fi
+    if command -v wl-paste >/dev/null ; then
+      alias pbpaste='wl-paste'
     fi
   ;;
   FreeBSD)
