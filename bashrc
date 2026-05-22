@@ -1397,7 +1397,7 @@ if command -v tmux >/dev/null; then
 fi
 
 if command -v podman >/dev/null; then
-  if _p="$(command -v docker)" && ! echo "$_p" | grep -q "^alias "; then
+  if _p="$(command -v docker)" || ! echo "$_p" | grep -q "^alias "; then
     alias docker="podman"
   fi
   unset _p
