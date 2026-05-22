@@ -1396,6 +1396,13 @@ if command -v tmux >/dev/null; then
   alias tl='tmux ls'
 fi
 
+if command -v podman; then
+  if _p="$(command -v docker)" && ! echo "$_p" | grep -q "^alias "; then
+    alias docker="podman"
+  fi
+  unset _p
+fi
+
 # If pine is installed, eliminated the .pine-debugX files
 [[ -s "/usr/local/bin/pine" ]] && alias pine="pine -d 0"
 
