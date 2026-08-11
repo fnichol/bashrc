@@ -1358,10 +1358,6 @@ fi
 # load homeshick if installed
 safe_source "$HOME/.homesick/repos/homeshick/homeshick.sh"
 
-if command -v zoxide >/dev/null ; then
-  eval "$(zoxide init bash)"
-fi
-
 if command -v direnv >/dev/null ; then
   # Ensure better compatibility between tmux & direnv, thanks to:
   # https://github.com/direnv/direnv/issues/106#issuecomment-1027330218
@@ -1579,6 +1575,11 @@ esac
 
 safe_source "${bashrc_prefix:-/etc/bash}/bashrc.local" "${HOME}/.bash_aliases"
 
+
+#---------------------------------------------------------------
+# Late/final initialization
+#---------------------------------------------------------------
+
 # Set shell prompt as late as possible to avoid other scripts (for example:
 # `/etc/profile.d/*.sh`) to affect the final prompt
 if command -v starship >/dev/null ; then
@@ -1588,5 +1589,14 @@ else
   bash_prompt
   unset bash_prompt
 fi
+
+if command -v zoxide >/dev/null ; then
+  eval "$(zoxide init bash)"
+fi
+
+
+#---------------------------------------------------------------
+# Final cleanup
+#---------------------------------------------------------------
 
 cleanup
