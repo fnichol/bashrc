@@ -1350,6 +1350,10 @@ if command -v nsc >/dev/null ; then
   eval "$(nsc completion bash)"
 fi
 
+if command -v mise >/dev/null ; then
+  eval "$(mise completion bash)"
+fi
+
 
 #---------------------------------------------------------------
 # Post-environment initialization
